@@ -1,0 +1,54 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Every six hours, matching the data cache, so the site stays current with no push.
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Keep the live data as a fallback
+        run: |
+          mkdir -p public/data
+          for source in aa cursorbench; do
+            curl -fsSL "https://jeinn-co.github.io/ai-model-compare/data/$source.json" -o "public/data/$source.json" \
+              || rm -f "public/data/$source.json"
+          done
+      - run: npm run snapshot
+      - run: npm run build
+        env:
+          BASE_PATH: /ai-model-compare/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
