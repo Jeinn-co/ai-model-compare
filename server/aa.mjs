@@ -14,7 +14,7 @@ async function page(url) {
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const response = await fetch(url, {
-        headers: { "user-agent": "cursorbench-local" },
+        headers: { "user-agent": "ai-model-compare" },
         signal: AbortSignal.timeout(40_000),
       })
       if (!response.ok) throw new Error(`${url}: ${response.status}`)

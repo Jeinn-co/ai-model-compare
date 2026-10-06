@@ -106,7 +106,7 @@ ${text}`).digest("hex")
 export async function loadBench() {
   const cached = await readCache()
   try {
-    const response = await fetch(PAGE, { headers: { "user-agent": "cursorbench-local" } })
+    const response = await fetch(PAGE, { headers: { "user-agent": "ai-model-compare" } })
     if (!response.ok) throw new Error(String(response.status))
     const html = await response.text()
     const hash = tableHash(html)
