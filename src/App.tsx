@@ -15,6 +15,7 @@ import {
   formatVerbosity,
   modelLine,
   previousGenerations,
+  sourceMeta,
   yValue,
   type ProviderId,
   type Row,
@@ -31,7 +32,7 @@ function formatFetchedAt(value: string) {
   return `${at.getFullYear()}-${pad(at.getMonth() + 1)}-${pad(at.getDate())} ${pad(at.getHours())}:${pad(at.getMinutes())}`
 }
 
-type Loaded = { rows: Row[]; fetchedAt: string | null }
+type Loaded = { rows: Row[]; fetchedAt: string | null; version: string | null }
 
 const NO_ROWS: Row[] = []
 
@@ -96,6 +97,7 @@ export default function App() {
   const [errors, setErrors] = useState<Partial<Record<SourceId, string>>>({})
   const rows = loaded[source]?.rows ?? NO_ROWS
   const fetchedAt = loaded[source]?.fetchedAt ?? null
+  const version = loaded[source]?.version ?? null
   const error = loaded[source] ? null : (errors[source] ?? null)
   const [hover, setHover] = useState<string | null>(null)
   const [pinned, setPinned] = useState<string | null>(null)
@@ -108,9 +110,15 @@ export default function App() {
       const url = import.meta.env.DEV ? `/api/bench?source=${id}` : `${import.meta.env.BASE_URL}data/${id}.json`
       fetch(url, { signal: controller.signal })
         .then(async (response) => {
-          const body = (await response.json()) as { rows?: Row[]; changed?: boolean; error?: string; fetchedAt?: string }
+          const body = (await response.json()) as {
+            rows?: Row[]
+            changed?: boolean
+            error?: string
+            fetchedAt?: string
+            version?: string | null
+          }
           if (!response.ok || !body.rows?.length) throw new Error(body.error ?? String(response.status))
-          const next = { rows: body.rows, fetchedAt: body.fetchedAt ?? null }
+          const next = { rows: body.rows, fetchedAt: body.fetchedAt ?? null, version: body.version ?? null }
           setLoaded((current) => ({ ...current, [id]: body.changed === false && current[id] ? current[id] : next }))
           setErrors((current) => ({ ...current, [id]: undefined }))
         })
@@ -172,7 +180,7 @@ export default function App() {
     setHover(null)
     setYAxis(next)
   }
-  const meta = SOURCES[source]
+  const meta = sourceMeta(source, version)
 
   const visible = useMemo(
     () => rows.filter((row) => !hidden.has(row.provider) && !hiddenModels.has(row.model)),

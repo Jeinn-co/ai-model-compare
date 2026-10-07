@@ -68,14 +68,22 @@ export const SOURCES: Record<
   cursorbench: {
     id: "cursorbench",
     name: "CursorBench",
-    eyebrow: "CursorBench 4.0",
+    eyebrow: "CursorBench",
     url: "https://cursor.com/cursorbench",
     unit: "%",
-    scoreName: "CursorBench 4.0 score",
+    scoreName: "CursorBench score",
   },
 }
 
-export const APP_VERSION = "1.0.0"
+// The source's labels with the benchmark version the data was fetched under
+// ("CursorBench 4.0"). Only CursorBench reports one; without it the labels stay plain.
+export function sourceMeta(id: SourceId, version: string | null) {
+  const meta = SOURCES[id]
+  if (id !== "cursorbench" || !version) return meta
+  return { ...meta, eyebrow: `CursorBench ${version}`, scoreName: `CursorBench ${version} score` }
+}
+
+export const APP_VERSION = "1.0.1"
 
 export const REPO_URL = "https://github.com/Jeinn-co/ai-model-compare"
 

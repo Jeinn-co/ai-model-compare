@@ -14,10 +14,10 @@ let failed = 0
 for (const [id, load] of Object.entries(SOURCES)) {
   const file = new URL(`${id}.json`, OUT)
   try {
-    const { fetchedAt, source, rows } = await load()
+    const { fetchedAt, source, version, rows } = await load()
     if (!rows?.length) throw new Error("no rows")
-    await writeFile(file, JSON.stringify({ fetchedAt, source, rows }))
-    console.log(`${id}: ${rows.length} rows, fetched ${fetchedAt}`)
+    await writeFile(file, JSON.stringify({ fetchedAt, source, ...(version ? { version } : {}), rows }))
+    console.log(`${id}: ${rows.length} rows, fetched ${fetchedAt}${version ? `, version ${version}` : ""}`)
   } catch (error) {
     try {
       await access(file)

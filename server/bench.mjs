@@ -103,6 +103,15 @@ function tableHash(html) {
 ${text}`).digest("hex")
 }
 
+// The benchmark version the page currently shows ("4.0"), from its <h1> or, failing that,
+// the chart's "CursorBench 4.0 score" label. Null when neither is found, so the page shows
+// plain "CursorBench" rather than a stale number.
+export function versionFromHtml(html) {
+  const match =
+    html.match(/<h1[^>]*>\s*CursorBench\s+(\d+(?:\.\d+)*)\s*</) ?? html.match(/CursorBench\s+(\d+(?:\.\d+)*)\s+score/)
+  return match ? match[1] : null
+}
+
 export async function loadBench() {
   const cached = await readCache()
   try {
@@ -110,8 +119,9 @@ export async function loadBench() {
     if (!response.ok) throw new Error(String(response.status))
     const html = await response.text()
     const hash = tableHash(html)
+    const version = versionFromHtml(html)
     if (cached?.tableHash === hash && Array.isArray(cached.shown)) {
-      return { changed: false, fetchedAt: cached.fetchedAt, source: PAGE, rows: cached.shown }
+      return { changed: false, fetchedAt: cached.fetchedAt, source: PAGE, version, rows: cached.shown }
     }
     const rows = rowsFromHtml(html)
     if (rows.length === 0) throw new Error("empty")
@@ -119,16 +129,18 @@ export async function loadBench() {
     const payload = {
       fetchedAt: new Date().toISOString(),
       source: PAGE,
+      version,
       tableHash: hash,
       rows,
       shown,
     }
     await mkdir(dirname(CACHE), { recursive: true })
     await writeFile(CACHE, JSON.stringify(payload))
-    return { changed: true, fetchedAt: payload.fetchedAt, source: PAGE, rows: shown }
+    return { changed: true, fetchedAt: payload.fetchedAt, source: PAGE, version, rows: shown }
   } catch (error) {
-    if (cached?.shown) return { changed: false, fetchedAt: cached.fetchedAt, source: PAGE, rows: cached.shown }
-    if (cached?.rows) return { changed: false, fetchedAt: cached.fetchedAt, source: PAGE, rows: selectRows(cached.rows) }
+    const version = cached?.version ?? null
+    if (cached?.shown) return { changed: false, fetchedAt: cached.fetchedAt, source: PAGE, version, rows: cached.shown }
+    if (cached?.rows) return { changed: false, fetchedAt: cached.fetchedAt, source: PAGE, version, rows: selectRows(cached.rows) }
     throw error
   }
 }
