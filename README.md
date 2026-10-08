@@ -6,7 +6,7 @@ A small local viewer that plots **score vs. cost per task** for the models behin
 
 | CLI         | Lines in the ▾ menu (every listed version of each)        |
 | ----------- | --------------------------------------------------------- |
-| Claude Code | Fable, Opus, Sonnet                                       |
+| Claude Code | Fable, Opus, Sonnet, Haiku                                |
 | Codex       | GPT Astra, Sol, Terra, Luna                               |
 | Grok        | Grok, Grok Build                                          |
 | Muse        | Muse Spark, Muse Glimmer                                  |
@@ -54,7 +54,7 @@ Open the URL Vite prints (default http://localhost:5173). The dev server fetches
 - **Source toggle:** Artificial Analysis (default) or CursorBench.
 - **Y axis:** always vs. cost. On AA: Intelligence (default), Speed, Verbosity or Latency. On CursorBench: Score (default), Tokens per task or Steps per task. `?y=speed`, `?source=cursorbench&y=steps` and so on. AA's Verbosity counts output tokens over the whole index and CursorBench's Tokens are per task, so they are separate buttons.
 - **Legend chips:** each shows the CLI's product mark and is an on/off switch for the whole CLI. Turning it off and on again keeps the models you ticked in its menu. The number is how many points it has, or shown/total when some models are unticked.
-- **▾ next to a chip:** tick or untick that CLI's models one by one, or all at once. Models are listed by line (Fable, Opus, Sonnet; GPT Astra, Sol, Terra, Luna; Grok, Grok Build; Muse Spark, Glimmer; Gemini Argon, Flash, Flash-Lite, Pro), newest version first within each line, under a title per line; ticking a title ticks or unticks that whole line. Esc or a click outside closes it.
+- **▾ next to a chip:** tick or untick that CLI's models one by one, or all at once. Models are listed by line (Fable, Opus, Sonnet, Haiku; GPT Astra, Sol, Terra, Luna; Grok, Grok Build; Muse Spark, Glimmer; Gemini Argon, Flash, Flash-Lite, Pro), newest version first within each line, under a title per line; ticking a title ticks or unticks that whole line. Esc or a click outside closes it.
 - **Remembered:** chip switches and menu ticks are saved in this browser (localStorage), so a reload or the next visit keeps them. Ticks are kept per source, since the two list different models. A model a source shows for the first time starts unchecked, unless it is the new default of its line; then the older versions of that line are unchecked.
 - **Hover** a point to highlight its label, score, and cost. The readout under the chart also lists Speed, Verbosity and Latency on AA, and Tokens and Steps on CursorBench.
 - **Click** a point to pin it. Click again to unpin.
@@ -127,5 +127,6 @@ Product marks on the legend chips come from [LobeHub Icons](https://github.com/l
 
 ## Changelog
 
+- **1.0.2** (2026-10-09): Include Haiku in the Claude model filter for both data sources, so scored Haiku releases appear in the model menu. Invalidate the CursorBench parser cache to apply the updated filter even when its table is unchanged.
 - **1.0.1** (2026-10-07): The CursorBench label reads the benchmark version from the CursorBench page ("CursorBench 4.0" today), so a new CursorBench version shows up with no code change; when no version is found it says plain "CursorBench".
 - **1.0.0** (2026-10-06): First release as AI Model Compare. Inspired by CursorBench, with Artificial Analysis as the default data source and CursorBench available as an alternative.

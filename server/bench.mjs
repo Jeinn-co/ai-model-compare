@@ -6,8 +6,8 @@ import { loadAa } from "./aa.mjs"
 
 const PAGE = "https://cursor.com/cursorbench"
 const CACHE = join(dirname(fileURLToPath(import.meta.url)), "..", "data", "bench-cache.json")
-// Bump when rowsFromHtml reads new columns, so an unchanged table is parsed again.
-const PARSER = "2"
+// Bump when row parsing or model selection changes, so an unchanged table is parsed again.
+const PARSER = "3"
 const EFFORTS = ["Extra High", "Minimal", "Medium", "High", "Low", "Max"]
 
 function decode(value) {
@@ -29,7 +29,7 @@ function splitLabel(label) {
 const GPT_MODEL = /^GPT-(\d+(?:\.\d+)?) (Astra|Sol|Terra|Luna)$/
 
 export function providerOf(model) {
-  if (/^(Opus|Sonnet|Fable) /.test(model)) return "claude"
+  if (/^(Opus|Sonnet|Fable|Haiku) /.test(model)) return "claude"
   if (GPT_MODEL.test(model)) return "codex"
   if (model.startsWith("Grok ")) return "grok"
   if (model.startsWith("Muse ")) return "muse"

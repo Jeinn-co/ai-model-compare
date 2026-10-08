@@ -83,7 +83,7 @@ export function sourceMeta(id: SourceId, version: string | null) {
   return { ...meta, eyebrow: `CursorBench ${version}`, scoreName: `CursorBench ${version} score` }
 }
 
-export const APP_VERSION = "1.0.1"
+export const APP_VERSION = "1.0.2"
 
 export const REPO_URL = "https://github.com/Jeinn-co/ai-model-compare"
 
