@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { PROVIDERS, compareModels, modelLine, seriesColor, type ProviderId, type Row } from "./bench"
 import { LOGO_PATHS } from "./logos"
 
@@ -38,6 +38,23 @@ function modelsOf(rows: Row[], provider: ProviderId) {
 export default function Legend({ rows, previous, hiddenProviders, hiddenModels, onToggleProvider, onSetModels }: Props) {
   const [open, setOpen] = useState<ProviderId | null>(null)
   const ref = useRef<HTMLDivElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    if (!open) return
+    const place = () => {
+      const menu = menuRef.current
+      if (!menu) return
+      const trigger = menu.parentElement?.getBoundingClientRect()
+      if (!trigger) return
+      const availableRight = document.documentElement.clientWidth - 12
+      const left = Math.max(12 - trigger.left, Math.min(0, availableRight - trigger.left - menu.offsetWidth))
+      menu.style.left = `${left}px`
+    }
+    place()
+    window.addEventListener("resize", place)
+    return () => window.removeEventListener("resize", place)
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -87,12 +104,13 @@ export default function Legend({ rows, previous, hiddenProviders, hiddenModels, 
               aria-label={`Choose ${provider.name} models`}
               aria-haspopup="true"
               aria-expanded={isOpen}
+              aria-controls={`models-${provider.id}`}
               onClick={() => setOpen(isOpen ? null : provider.id)}
             >
               ▾
             </button>
             {isOpen ? (
-              <div className="menu" role="group" aria-label={`${provider.name} models`}>
+              <div className="menu" id={`models-${provider.id}`} role="group" aria-label={`${provider.name} models`} ref={menuRef}>
                 <label className="menu-row menu-all">
                   <input
                     type="checkbox"

@@ -1,20 +1,29 @@
 # AI Model Compare
 
-A small local viewer that plots **score vs. cost per task** for the models behind five coding CLIs, from the [Artificial Analysis](https://artificialanalysis.ai/models/releases) Intelligence Index (the default) or the [CursorBench](https://cursor.com/cursorbench) leaderboard, so you can see at a glance which model and effort level gives the most score per dollar. Cost is per task at API prices, not a subscription.
+A small local viewer that plots **score vs. cost per task** for coding AI models, including DeepSeek and GLM, from the [Artificial Analysis](https://artificialanalysis.ai/models/releases) Intelligence Index (the default) or the [CursorBench](https://cursor.com/cursorbench) leaderboard, so you can see at a glance which model and effort level gives the most score per dollar. Cost is per task at API prices, not a subscription.
 
 **Live:** https://jeinn-co.github.io/ai-model-compare/ (data refreshed every six hours)
 
-| CLI         | Lines in the ▾ menu (every listed version of each)        |
+| Provider    | Lines in the ▾ menu (every listed version of each)        |
 | ----------- | --------------------------------------------------------- |
 | Claude Code | Fable, Opus, Sonnet, Haiku                                |
 | Codex       | GPT Astra, Sol, Terra, Luna                               |
 | Grok        | Grok, Grok Build                                          |
 | Muse        | Muse Spark, Muse Glimmer                                  |
 | Gemini      | Gemini Argon, Flash, Flash-Lite, Pro                      |
+| DeepSeek    | Flash, Pro, Flash Vision                                 |
+| GLM         | GLM, Flash, Turbo, Vision Turbo                           |
+| Cursor      | Composer                                                 |
 
 Every effort level the source lists (Minimal → Max) appears as its own point, and each model's points are connected into one line.
 
-The page opens on Artificial Analysis, with one model checked per CLI: the newest version the source lists of Opus, GPT Sol, Grok, Muse Spark and Gemini Flash (today Opus 5.5, GPT-6.1 Sol, Grok 4.7, Muse Spark 1.3 and Gemini 3.8 Flash; on CursorBench, GPT-5.6 Sol). When a newer version shows up, such as Opus 5.6, it is checked in place of the old one with no code change. A CLI that has none of these lines on a source gets the first model of its menu instead. Every other model the source lists for these five CLIs, every version of every line, is in the ▾ menu to tick. On Artificial Analysis only releases from roughly the last eight months are drawn, and a model AA scored without a cost per task (for example Opus 4.7 or Grok 4.20) cannot be placed on the cost axis and is left out.
+DeepSeek and GLM have their own legend chips and model menus. Their defaults follow the newest DeepSeek Flash and base GLM release the source lists. A provider only appears on a source that has scored, costed rows for it: DeepSeek currently appears on Artificial Analysis, while GLM appears on both sources.
+
+Cursor's Composer models have their own chip on CursorBench, with the newest listed version checked by default.
+
+**Selection policy:** Keep recognizable model families with ongoing developer discussion. A benchmark listing alone is not a reason to add a family. Review new families before adding them to the supported list; do not automatically expand to every model a source lists. Scores and costs compare the selected models, not their popularity.
+
+The page opens on Artificial Analysis, with one model checked per provider: the newest version the source lists of Opus, GPT Sol, Grok, Muse Spark, Gemini Flash, DeepSeek Flash, base GLM and Composer. When a newer version shows up, such as Opus 5.6, it is checked in place of the old one with no code change. A provider that has none of these lines on a source gets the first model of its menu instead. Every other supported model the source lists, every version of every line, is in the ▾ menu to tick. On Artificial Analysis only releases from roughly the last eight months are drawn, and a model AA scored without a cost per task (for example Opus 4.7 or Grok 4.20) cannot be placed on the cost axis and is left out.
 
 ![Demo: score vs. cost per task for five coding CLIs](docs/demo.png)
 
@@ -72,7 +81,7 @@ CursorBench has no public API or data file, so the dev server scrapes the leader
 
 The Artificial Analysis source (`/api/bench?source=aa`, in [server/aa.mjs](server/aa.mjs)) works differently:
 
-1. It fetches the AA "All releases" page and picks every scored release of the five CLIs' providers from the last 240 days. A release is found from its release entry or from its variants, since some releases (such as GPT-5.6 Sol) only appear through their variants.
+1. It fetches the AA "All releases" page and picks every scored release of the supported providers from the last 240 days. A release is found from its release entry or from its variants, since some releases (such as GPT-5.6 Sol) only appear through their variants.
 2. It fetches each picked release page (four at a time) and reads that release's own per-effort entries. An effort without an index score or a cost per task is left out; a reasoning variant with no effort level becomes one point without an effort; non-reasoning variants are left out.
 3. Results are cached in `data/aa-cache.json` for 6 hours. If a release page fails, its last cached rows are kept.
 
@@ -123,10 +132,11 @@ Which providers count is `providerOf` in [server/bench.mjs](server/bench.mjs); t
 
 ## Credits
 
-Product marks on the legend chips come from [LobeHub Icons](https://github.com/lobehub/lobe-icons) (MIT): `claudecode`, `codex`, `grok`, `metaai` (Muse has no mark of its own) and `gemini`. They are trademarks of their owners and are used only to tell the CLIs apart.
+Product marks on the legend chips come from [LobeHub Icons](https://github.com/lobehub/lobe-icons) (MIT): `claudecode`, `codex`, `grok`, `metaai` (Muse has no mark of its own), `gemini`, `deepseek`, `zai` and `cursor`. They are trademarks of their owners and are used only to tell the providers apart.
 
 ## Changelog
 
+- **1.1.0** (2026-10-09): Add DeepSeek and GLM to the supported models, plus Cursor's Composer on CursorBench. Select their newest listed model by default, keep model menus within mobile viewports, and document the selection policy for recognizable families with developer discussion.
 - **1.0.2** (2026-10-09): Include Haiku in the Claude model filter for both data sources, so scored Haiku releases appear in the model menu. Invalidate the CursorBench parser cache to apply the updated filter even when its table is unchanged.
 - **1.0.1** (2026-10-07): The CursorBench label reads the benchmark version from the CursorBench page ("CursorBench 4.0" today), so a new CursorBench version shows up with no code change; when no version is found it says plain "CursorBench".
 - **1.0.0** (2026-10-06): First release as AI Model Compare. Inspired by CursorBench, with Artificial Analysis as the default data source and CursorBench available as an alternative.

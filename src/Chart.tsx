@@ -64,7 +64,7 @@ export default function Chart({ rows, previous, unit, scoreName, scoreLabel, yAx
   }
 
   if (rows.length === 0) {
-    return <div className="chart chart-empty">Turn on at least one CLI.</div>
+    return <div className="chart chart-empty">Turn on at least one provider.</div>
   }
 
   const values = rows.map((row) => yValue(row, yAxis)).filter((value): value is number => value != null)

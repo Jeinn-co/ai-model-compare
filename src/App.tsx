@@ -277,7 +277,7 @@ export default function App() {
           </div>
 
         <div className="control control-wide">
-          <span className="control-label">CLIs</span>
+          <span className="control-label">Models</span>
           <Legend
             rows={rows}
             previous={previous}
