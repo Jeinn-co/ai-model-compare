@@ -2,7 +2,7 @@
 
 A small local viewer that plots **score vs. cost per task** for coding AI models, including DeepSeek and GLM, from the [Artificial Analysis](https://artificialanalysis.ai/models/releases) Intelligence Index (the default) or the [CursorBench](https://cursor.com/cursorbench) leaderboard, so you can see at a glance which model and effort level gives the most score per dollar. Cost is per task at API prices, not a subscription.
 
-**Live:** https://jeinn-co.github.io/ai-model-compare/ (data refreshed every six hours)
+**Live:** https://jeinn-co.github.io/ai-model-compare/ (both sources checked every six hours; data published only when it changes)
 
 | Provider    | Lines in the ▾ menu (every listed version of each)        |
 | ----------- | --------------------------------------------------------- |
@@ -96,6 +96,7 @@ The Artificial Analysis source (`/api/bench?source=aa`, in [server/aa.mjs](serve
 | `npm run build`    | Type-check and build to `dist/`, including `public/data/`    |
 | `npm run preview`  | Serve the build, reading the snapshot like the live site     |
 | `npm run lint`     | Run ESLint                                                   |
+| `npm test`         | Check snapshot change detection and fallback behavior       |
 
 ## Publishing
 
@@ -103,11 +104,15 @@ The site is static and runs on GitHub Pages. React runs in the visitor's browser
 
 [.github/workflows/pages.yml](.github/workflows/pages.yml) runs on every push to `main`, every six hours, and on demand:
 
-1. Downloads the live `data/*.json` as a fallback.
-2. Runs `npm run snapshot`. A source that cannot be fetched keeps the previous file, so a blocked request never blanks the site; with nothing to fall back on, the run fails.
-3. Builds with `BASE_PATH=/ai-model-compare/` and deploys `dist/` to Pages.
+1. Downloads the live `data/*.json` for comparison and as a fallback.
+2. Runs `npm run snapshot` to check **both Artificial Analysis and CursorBench**. It compares each source's rows, source URL and benchmark version, ignoring `fetchedAt`. An unchanged source keeps its exact published JSON and update time. A source that cannot be fetched keeps its last valid snapshot; with no valid fallback, the run fails.
+3. On a scheduled or manual run, if neither source changed, skips package installation, build, artifact upload and deployment. A change in either source requests publication. Pushes to `main` also request publication so website code and version changes reach the live site.
+4. Restores the website build cached for the exact commit. When available, reuses its HTML/CSS/JS without installing packages or rebuilding React. On a new commit or a cache miss, runs `npm ci` and builds with `BASE_PATH=/ai-model-compare/`, then caches `dist/`.
+5. Copies the current snapshots into `dist/data/` and deploys the complete site artifact to Pages. Updating data still requires publishing the new JSON, but normally does not require rebuilding the frontend. After publication, reloading the browser reads the updated files.
 
-The published page reads `data/<source>.json` and shows when the data was fetched in the footer; the dev server keeps answering `/api/bench` live.
+The published page reads `data/<source>.json`. Its footer's **Updated** time belongs to the selected source and records the fetch that last changed its published data; it does not advance just because a check ran or the browser reloaded. Each run's UTC check time and each source's result are recorded in the Actions log and job summary, without modifying an unchanged site's files. The dev server keeps answering `/api/bench` live with its existing local cache behavior.
+
+The snapshot scripts use only Node.js built-ins, so Actions can check the sources before installing React/Vite build dependencies. GitHub Pages serves static files; there is no application service to restart. React currently loads the snapshots with `useEffect` and `fetch`, without React Query.
 
 ## Project layout
 
@@ -136,6 +141,7 @@ Product marks on the legend chips come from [LobeHub Icons](https://github.com/l
 
 ## Changelog
 
+- **1.1.1** (2026-10-11): Check both sources every six hours, keep unchanged snapshots and their footer update times, and skip publishing when neither source changed. Reuse the website build for data-only publications; install dependencies and rebuild only when no matching build is cached. Record check results in Actions logs and summaries, make AA score ties deterministic, and add snapshot regression tests.
 - **1.1.0** (2026-10-09): Add DeepSeek and GLM to the supported models, plus Cursor's Composer on CursorBench. Select their newest listed model by default, keep model menus within mobile viewports, and document the selection policy for recognizable families with developer discussion.
 - **1.0.2** (2026-10-09): Include Haiku in the Claude model filter for both data sources, so scored Haiku releases appear in the model menu. Invalidate the CursorBench parser cache to apply the updated filter even when its table is unchanged.
 - **1.0.1** (2026-10-07): The CursorBench label reads the benchmark version from the CursorBench page ("CursorBench 4.0" today), so a new CursorBench version shows up with no code change; when no version is found it says plain "CursorBench".

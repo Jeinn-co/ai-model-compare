@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   schedule:
-    # Every six hours, matching the data cache, so the site stays current with no push.
+    # Check both sources every six hours; publish only when chart data changes.
     - cron: "17 */6 * * *"
   workflow_dispatch:
 
@@ -20,13 +20,14 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.publish.outputs.publish }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
       - name: Keep the live data as a fallback
         run: |
           mkdir -p public/data
@@ -34,17 +35,57 @@ jobs:
             curl -fsSL "https://jeinn-co.github.io/ai-model-compare/data/$source.json" -o "public/data/$source.json" \
               || rm -f "public/data/$source.json"
           done
-      - run: npm run snapshot
-      - run: npm run build
+      - name: Check both sources for changes
+        id: snapshot
+        run: npm run snapshot
+      - name: Decide whether to publish
+        id: publish
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DATA_CHANGED: ${{ steps.snapshot.outputs.changed }}
+        run: |
+          if [ "$EVENT_NAME" = "push" ] || [ "$DATA_CHANGED" = "true" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "No chart data changed. Skipping package installation, build and deployment." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Restore the website built for this commit
+        if: steps.publish.outputs.publish == 'true'
+        id: site
+        uses: actions/cache/restore@v4
+        with:
+          path: dist
+          key: pages-site-${{ runner.os }}-${{ github.sha }}
+      - name: Install build dependencies
+        if: steps.publish.outputs.publish == 'true' && steps.site.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Build the website when no matching build is cached
+        if: steps.publish.outputs.publish == 'true' && steps.site.outputs.cache-hit != 'true'
+        run: npm run build
         env:
           BASE_PATH: /ai-model-compare/
+      - name: Cache the website build
+        if: steps.publish.outputs.publish == 'true' && steps.site.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: dist
+          key: pages-site-${{ runner.os }}-${{ github.sha }}
+      - name: Copy the current snapshots into the website
+        if: steps.publish.outputs.publish == 'true'
+        run: |
+          mkdir -p dist/data
+          cp public/data/aa.json public/data/cursorbench.json dist/data/
       - uses: actions/configure-pages@v5
+        if: steps.publish.outputs.publish == 'true'
       - uses: actions/upload-pages-artifact@v3
+        if: steps.publish.outputs.publish == 'true'
         with:
           path: dist
 
   deploy:
     needs: build
+    if: needs.build.outputs.publish == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

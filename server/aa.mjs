@@ -136,7 +136,9 @@ async function readCache() {
 
 function payload(data, changed) {
   const rows = Object.values(data.releases).flat()
-  rows.sort((a, b) => b.score - a.score)
+  // Release pages finish in different orders. Keep tied scores deterministic so
+  // fetching identical figures does not look like a snapshot change.
+  rows.sort((a, b) => b.score - a.score || a.label.localeCompare(b.label) || a.cost - b.cost)
   rows.forEach((row, index) => (row.rank = index + 1))
   return { changed, fetchedAt: data.fetchedAt, source: BASE, rows }
 }
