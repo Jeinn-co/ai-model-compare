@@ -9,7 +9,7 @@ const CACHE = join(dirname(fileURLToPath(import.meta.url)), "..", "data", "aa-ca
 const TTL_MS = 6 * 60 * 60 * 1000
 const EFFORT_BY_LEVEL = { 10: "Minimal", 20: "Low", 30: "Medium", 40: "High", 50: "Extra High", 60: "Max" }
 
-async function page(url) {
+export async function page(url) {
   let lastError
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
@@ -44,7 +44,7 @@ function objectEnd(text, start) {
 }
 
 // Every JSON object whose text starts with `prefix` (a RegExp source).
-function objects(text, prefix) {
+export function objects(text, prefix) {
   const out = []
   for (const match of text.matchAll(new RegExp(prefix, "g"))) {
     const end = objectEnd(text, match.index)
@@ -63,7 +63,7 @@ const displayName = (name) => name.replace(/^Claude /, "")
 
 // AA lists every release back to 2023; only those from roughly the last eight months are
 // drawn, so the window moves with time instead of pinning a date.
-const RECENT_DAYS = 240
+export const RECENT_DAYS = 240
 
 // Releases to show, as [{ slug, model }], picked from AA's full release list.
 // A release appears either as a release object (slug, name, releaseDate) or only

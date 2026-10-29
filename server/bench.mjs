@@ -3,6 +3,9 @@ import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import { loadAa } from "./aa.mjs"
+import { loadArc } from "./arc.mjs"
+import { loadArena } from "./arena.mjs"
+import { loadTbench } from "./tbench.mjs"
 
 const PAGE = "https://cursor.com/cursorbench"
 const CACHE = join(dirname(fileURLToPath(import.meta.url)), "..", "data", "bench-cache.json")
@@ -162,7 +165,7 @@ export function benchPlugin() {
     const url = req.url ?? ""
     if (!url.startsWith("/api/bench")) return next()
     const source = new URL(url, "http://localhost").searchParams.get("source")
-    const load = source === "aa" ? loadAa : loadBench
+    const load = { aa: loadAa, tbench: loadTbench, arc: loadArc, arena: loadArena }[source] ?? loadBench
     load().then(
       (payload) => send(res, 200, payload),
       (error) => send(res, 502, { error: error instanceof Error ? error.message : "fetch failed" }),

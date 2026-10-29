@@ -39,7 +39,8 @@ type Props = {
 
 function effortIndex(effort: string | null) {
   if (!effort) return 99
-  const order = ["Minimal", "Low", "Medium", "High", "Extra High", "Max"]
+  // None is reasoning off (ARC, Terminal-Bench): the cheapest end of the line.
+  const order = ["None", "Minimal", "Low", "Medium", "High", "Extra High", "Max"]
   const index = order.indexOf(effort)
   return index === -1 ? 98 : index
 }
@@ -155,6 +156,8 @@ export default function Chart({ rows, previous, unit, scoreName, scoreLabel, yAx
       viewBox={`0 0 ${VB_W} ${VB_H}`}
       role="img"
       aria-labelledby="chart-desc"
+      // A click on empty space clears a pinned point; clicks on points stop before here.
+      onClick={() => onPick(null)}
     >
       <title id="chart-desc">
         {scoreName} vs. cost per task. Higher cost on the left, $0 on the right. Y axis: {yAxisLabel(yAxis)}.
@@ -244,7 +247,10 @@ export default function Chart({ rows, previous, unit, scoreName, scoreLabel, yAx
                   onPointerLeave={() => onHover(null)}
                   onFocus={() => onHover(row.label)}
                   onBlur={() => onHover(null)}
-                  onClick={() => onPick(row.label)}
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    onPick(row.label)
+                  }}
                   onKeyDown={(event) => {
                     if (event.key !== "Enter" && event.key !== " ") return
                     event.preventDefault()

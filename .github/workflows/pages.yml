@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   schedule:
-    # Check both sources every six hours; publish only when chart data changes.
+    # Check every source every six hours; publish only when chart data changes.
     - cron: "17 */6 * * *"
   workflow_dispatch:
 
@@ -31,11 +31,11 @@ jobs:
       - name: Keep the live data as a fallback
         run: |
           mkdir -p public/data
-          for source in aa cursorbench; do
+          for source in aa cursorbench tbench arc arena; do
             curl -fsSL "https://jeinn-co.github.io/ai-model-compare/data/$source.json" -o "public/data/$source.json" \
               || rm -f "public/data/$source.json"
           done
-      - name: Check both sources for changes
+      - name: Check all sources for changes
         id: snapshot
         run: npm run snapshot
       - name: Decide whether to publish
@@ -75,7 +75,7 @@ jobs:
         if: steps.publish.outputs.publish == 'true'
         run: |
           mkdir -p dist/data
-          cp public/data/aa.json public/data/cursorbench.json dist/data/
+          cp public/data/aa.json public/data/cursorbench.json public/data/tbench.json public/data/arc.json public/data/arena.json dist/data/
       - uses: actions/configure-pages@v5
         if: steps.publish.outputs.publish == 'true'
       - uses: actions/upload-pages-artifact@v3

@@ -12,9 +12,13 @@ export type Row = {
   speed?: number
   verbosity?: number
   latency?: number
-  // CursorBench per-task columns; omitted on AA.
+  // Per-task columns: tokens on CursorBench and Terminal-Bench, steps on CursorBench only.
   tokens?: number
   steps?: number
+  // Terminal-Bench only: the 95% confidence half-width of the score and the agent harness
+  // that ran it (Gemini runs in mini-SWE-agent, GLM in Claude Code).
+  ci?: number
+  agent?: string
 }
 
 export type YAxis = "score" | "speed" | "verbosity" | "latency" | "tokens" | "steps"
@@ -33,6 +37,8 @@ export const Y_AXES: readonly { id: YAxis; name: string; label: string }[] = [
 export const SOURCE_AXES: Record<SourceId, readonly YAxis[]> = {
   aa: ["score", "speed", "verbosity", "latency"],
   cursorbench: ["score", "tokens", "steps"],
+  tbench: ["score", "tokens"],
+  arc: ["score"],
 }
 
 export const PROVIDERS: readonly {
@@ -55,7 +61,7 @@ export const PROVIDERS: readonly {
   { id: "cursor", name: "Cursor", color: "#475569" },
 ]
 
-export type SourceId = "cursorbench" | "aa"
+export type SourceId = "cursorbench" | "aa" | "tbench" | "arc"
 
 export const SOURCES: Record<
   SourceId,
@@ -69,6 +75,14 @@ export const SOURCES: Record<
     unit: "",
     scoreName: "Artificial Analysis Intelligence Index",
   },
+  arc: {
+    id: "arc",
+    name: "ARC-AGI-2",
+    eyebrow: "ARC-AGI-2",
+    url: "https://arcprize.org/leaderboard",
+    unit: "%",
+    scoreName: "ARC-AGI-2 score",
+  },
   cursorbench: {
     id: "cursorbench",
     name: "CursorBench",
@@ -77,17 +91,25 @@ export const SOURCES: Record<
     unit: "%",
     scoreName: "CursorBench score",
   },
+  tbench: {
+    id: "tbench",
+    name: "Terminal-Bench",
+    eyebrow: "Terminal-Bench",
+    url: "https://www.tbench.ai/leaderboard",
+    unit: "%",
+    scoreName: "Terminal-Bench resolution rate",
+  },
 }
 
 // The source's labels with the benchmark version the data was fetched under
-// ("CursorBench 4.0"). Only CursorBench reports one; without it the labels stay plain.
+// ("CursorBench 4.0", "Terminal-Bench 4.0"). AA reports none; without one the labels stay plain.
 export function sourceMeta(id: SourceId, version: string | null) {
   const meta = SOURCES[id]
-  if (id !== "cursorbench" || !version) return meta
-  return { ...meta, eyebrow: `CursorBench ${version}`, scoreName: `CursorBench ${version} score` }
+  if (!version) return meta
+  return { ...meta, eyebrow: `${meta.name} ${version}`, scoreName: meta.scoreName.replace(meta.name, `${meta.name} ${version}`) }
 }
 
-export const APP_VERSION = "1.1.1"
+export const APP_VERSION = "1.2.0"
 
 export const REPO_URL = "https://github.com/Jeinn-co/ai-model-compare"
 

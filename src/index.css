@@ -443,6 +443,69 @@ tbody tr:hover {
   text-decoration-color: currentColor;
 }
 
+.arena {
+  margin-top: 28px;
+}
+
+.arena-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.arena-note {
+  max-width: 44rem;
+  margin: 6px 0 0;
+  line-height: 1.5;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.arena tbody tr {
+  cursor: default;
+}
+
+.arena tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.arena-score {
+  color: #1a73c7;
+  font-weight: 600;
+}
+
+.arena .minor {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.arena-model {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.arena-empty {
+  padding: 28px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.arena .readout .segment {
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
 @media (max-width: 720px) {
   h1 {
     font-size: 32px;

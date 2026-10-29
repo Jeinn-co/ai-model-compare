@@ -1,5 +1,5 @@
 // Writes the chart data for the static site: public/data/<source>.json, one per source.
-// The GitHub Pages workflow checks both sources every six hours. Unchanged chart data
+// The GitHub Pages workflow checks every source every six hours. Unchanged chart data
 // leaves the published snapshot (including its update time) untouched. A failed source
 // keeps its last valid snapshot; without one, the run fails.
 import { appendFile, mkdir, readFile, realpath, writeFile } from "node:fs/promises"
@@ -7,10 +7,13 @@ import { resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { isDeepStrictEqual } from "node:util"
 import { loadAa } from "../server/aa.mjs"
+import { loadArc } from "../server/arc.mjs"
+import { loadArena } from "../server/arena.mjs"
 import { loadBench } from "../server/bench.mjs"
+import { loadTbench } from "../server/tbench.mjs"
 
 const OUT = new URL("../public/data/", import.meta.url)
-const SOURCES = { aa: loadAa, cursorbench: loadBench }
+const SOURCES = { aa: loadAa, cursorbench: loadBench, tbench: loadTbench, arc: loadArc, arena: loadArena }
 
 async function readSnapshot(file) {
   try {

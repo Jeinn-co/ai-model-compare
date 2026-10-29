@@ -22,6 +22,7 @@ import {
   type SourceId,
   type YAxis,
 } from "./bench"
+import Arena from "./Arena"
 import Chart from "./Chart"
 import Legend from "./Legend"
 
@@ -37,7 +38,8 @@ type Loaded = { rows: Row[]; fetchedAt: string | null; version: string | null }
 const NO_ROWS: Row[] = []
 
 function initialSource(): SourceId {
-  return new URLSearchParams(window.location.search).get("source") === "cursorbench" ? "cursorbench" : "aa"
+  const source = new URLSearchParams(window.location.search).get("source")
+  return source && source in SOURCES ? (source as SourceId) : "aa"
 }
 
 function initialYAxis(): YAxis {
@@ -46,7 +48,7 @@ function initialYAxis(): YAxis {
 }
 
 // Chip switches and menu ticks are remembered in this browser only. Ticks are kept per
-// source, since the two list different models; `seen` marks the models already given a
+// source, since each lists different models; `seen` marks the models already given a
 // default, so a model that shows up later starts unticked. Storage can be missing or
 // blocked (private window, preview), so every access is guarded.
 const STORAGE_KEY = "ai-model-compare:visibility:v2"
@@ -57,7 +59,7 @@ type PerSource = Record<SourceId, Ticks>
 const EMPTY: Ticks = { hidden: new Set(), seen: new Set() }
 
 function loadVisibility(): { providers: ProviderId[]; perSource: PerSource } {
-  const perSource: PerSource = { aa: EMPTY, cursorbench: EMPTY }
+  const perSource: PerSource = { aa: EMPTY, cursorbench: EMPTY, tbench: EMPTY, arc: EMPTY }
   try {
     const data = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "{}")
     for (const id of Object.keys(perSource) as SourceId[]) {
@@ -91,7 +93,7 @@ export default function App() {
   const hiddenModels = perSource[source].hidden
 
   useEffect(() => saveVisibility(hidden, perSource), [hidden, perSource])
-  // Both sources are fetched up front and kept, so switching shows the other one at once
+  // Every source is fetched up front and kept, so switching shows the other one at once
   // instead of dropping the chart for a loading line.
   const [loaded, setLoaded] = useState<Partial<Record<SourceId, Loaded>>>({})
   const [errors, setErrors] = useState<Partial<Record<SourceId, string>>>({})
@@ -101,6 +103,15 @@ export default function App() {
   const error = loaded[source] ? null : (errors[source] ?? null)
   const [hover, setHover] = useState<string | null>(null)
   const [pinned, setPinned] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!pinned) return
+    const clear = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setPinned(null)
+    }
+    window.addEventListener("keydown", clear)
+    return () => window.removeEventListener("keydown", clear)
+  }, [pinned])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -233,7 +244,7 @@ export default function App() {
         </h1>
         <p className="deck">
           Each point is a model: score vs. cost per task at API prices. Cheaper is farther right. Click ▾ on a chip to add more
-          versions; older versions are paler. The two sources use different test sets, so don't compare their scores.
+          versions; older versions are paler. The sources use different test sets, so don't compare their scores.
         </p>
       </header>
 
@@ -320,13 +331,21 @@ export default function App() {
             {formatLatency(focus.latency) ? <span>Latency {formatLatency(focus.latency)}</span> : null}
             {formatTokens(focus.tokens) ? <span>Tokens {formatTokens(focus.tokens)}</span> : null}
             {formatSteps(focus.steps) ? <span>Steps {formatSteps(focus.steps)}</span> : null}
+            {focus.ci ? <span>±{focus.ci.toFixed(1)} pts (95%)</span> : null}
+            {focus.agent ? <span>Agent {focus.agent}</span> : null}
           </>
         ) : source === "aa" ? (
           "Hover over a point to see Intelligence, Cost, Speed, Verbosity, and Latency."
+        ) : source === "arc" ? (
+          "Hover over a point to see Score and Cost per task. ARC-AGI-2 is abstract reasoning puzzles, not coding."
+        ) : source === "tbench" ? (
+          "Hover over a point to see Score, Cost, and Tokens per task, the 95% margin, and the agent that ran it."
         ) : (
           "Hover over a point to see Score, Cost, Tokens, and Steps per task."
         )}
       </p>
+
+      <Arena hiddenProviders={hidden} />
 
       <footer className="foot">
         <span>

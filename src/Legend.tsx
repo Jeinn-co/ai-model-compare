@@ -37,7 +37,6 @@ function modelsOf(rows: Row[], provider: ProviderId) {
 
 export default function Legend({ rows, previous, hiddenProviders, hiddenModels, onToggleProvider, onSetModels }: Props) {
   const [open, setOpen] = useState<ProviderId | null>(null)
-  const ref = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
@@ -58,8 +57,10 @@ export default function Legend({ rows, previous, hiddenProviders, hiddenModels, 
 
   useEffect(() => {
     if (!open) return
+    // Anything outside the open chip (its ▾ and menu) closes the menu, including the rest of
+    // the legend row and the other chips.
     const onPointer = (event: PointerEvent) => {
-      if (!ref.current?.contains(event.target as Node)) setOpen(null)
+      if (!menuRef.current?.parentElement?.contains(event.target as Node)) setOpen(null)
     }
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(null)
@@ -73,7 +74,7 @@ export default function Legend({ rows, previous, hiddenProviders, hiddenModels, 
   }, [open])
 
   return (
-    <div className="legend" role="group" aria-label="Visible providers" ref={ref}>
+    <div className="legend" role="group" aria-label="Visible providers">
       {PROVIDERS.map((provider) => {
         const models = modelsOf(rows, provider.id)
         if (models.length === 0) return null
