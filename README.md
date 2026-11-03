@@ -31,7 +31,7 @@ Hovering a point spotlights that model: the other lines fade, a crosshair marks 
 
 ![Demo: hover spotlights one model and dims the rest](docs/demo-hover.png)
 
-Each legend chip also has a ▾ menu to tick that CLI's models one by one, grouped by line with the newest version first; a line's title ticks the whole line. Here Codex shows its default, GPT-6.1 Sol: 5 of its 35 points. All screenshots on this page show the defaults.
+Each legend chip also has a ▾ menu to tick that CLI's models one by one, grouped by line with the newest version first; a line's title ticks the whole line. Here Codex shows its default, GPT-6.1 Sol: 5 of its 22 points. All screenshots on this page show the defaults.
 
 ![Demo: the model menu under a legend chip](docs/demo-menu.png)
 
@@ -39,7 +39,7 @@ Clicking a legend chip shows or hides that CLI. Here only Codex is visible.
 
 ![Demo: legend chips filter the chart to one CLI](docs/demo-filter.png)
 
-**Version rule:** every version the source lists for a line is in the ▾ menu, so on Artificial Analysis GPT-6.1 Sol, GPT-6 Sol and GPT-5.6 Sol are all there, as are Opus 5.5 and Opus 5; only ticked ones are drawn. A new version joins the menu as soon as the source lists it, with no code change, and starts unticked. Versions compare as decimals, so Grok 4.20 counts as older than Grok 4.7.
+**Version rule:** every version the source lists for a line is in the ▾ menu, so on Artificial Analysis GPT-6.1 Sol and GPT-6 Sol are both there, as are Opus 5.5 and Opus 5; only ticked ones are drawn. A new version joins the menu as soon as the source lists it, with no code change, and starts unticked. Versions compare as decimals, so Grok 4.20 counts as older than Grok 4.7.
 
 **Colours:** each CLI has one colour family, taken from an official colour that does not clash with the others: Claude Code terracotta `#D97757`, Codex OpenAI green `#10A37F`, Grok xAI black, Muse Meta AI violet `#9553FF` and Gemini blue `#3186FF`. Within a family the flagship line is darker and the small line lighter. The newest version of a line keeps the full colour; older versions fade toward white the older they are, so a faded line still reads as its CLI.
 
