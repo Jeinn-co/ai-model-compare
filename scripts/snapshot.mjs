@@ -1,7 +1,9 @@
 // Writes the chart data for the static site: public/data/<source>.json, one per source.
 // The GitHub Pages workflow checks every source every six hours. Unchanged chart data
 // leaves the published snapshot (including its update time) untouched. A failed source
-// keeps its last valid snapshot; without one, the run fails.
+// keeps its last valid snapshot; without one, the run fails. Claude and Codex rows are
+// limited to the models each vendor currently lists; if that check fails, every source
+// keeps its last snapshot.
 import { appendFile, mkdir, readFile, realpath, writeFile } from "node:fs/promises"
 import { resolve } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -10,6 +12,7 @@ import { loadAa } from "../server/aa.mjs"
 import { loadArc } from "../server/arc.mjs"
 import { loadArena } from "../server/arena.mjs"
 import { loadBench } from "../server/bench.mjs"
+import { keepOfficial, loadOfficial } from "../server/official.mjs"
 import { loadTbench } from "../server/tbench.mjs"
 
 const OUT = new URL("../public/data/", import.meta.url)
@@ -31,18 +34,23 @@ function chartData({ source, version = null, rows }) {
   return { source, version, rows }
 }
 
-export async function runSnapshot({ out = OUT, sources = SOURCES } = {}) {
+export async function runSnapshot({ out = OUT, sources = SOURCES, official = loadOfficial } = {}) {
   await mkdir(out, { recursive: true })
   let failed = 0
   let changed = false
   const checkedAt = new Date().toISOString()
   const results = []
   console.log(`Checking sources at ${checkedAt}`)
+  const current = await official().catch((error) => error)
+  if (current instanceof Error) console.warn(`official models: ${current.message}`)
   for (const [id, load] of Object.entries(sources)) {
     const file = new URL(`${id}.json`, out)
     const previous = await readSnapshot(file)
     try {
-      const { fetchedAt, source, version, rows } = await load()
+      if (current instanceof Error) throw new Error(`official model check failed (${current.message})`)
+      const loaded = await load()
+      const { fetchedAt, source, version } = loaded
+      const rows = Array.isArray(loaded.rows) ? keepOfficial(loaded.rows, current) : loaded.rows
       if (!fetchedAt || !source || !Array.isArray(rows) || !rows.length) throw new Error("invalid or empty snapshot")
       const next = { fetchedAt, source, ...(version ? { version } : {}), rows }
       if (previous && isDeepStrictEqual(chartData(previous), chartData(next))) {

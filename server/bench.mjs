@@ -35,8 +35,6 @@ const GPT_MODEL = /^GPT-(\d+(?:\.\d+)?) (Astra|Sol|Terra|Luna)$/
 // family. Appearing on a benchmark alone is not a reason to include one.
 export function providerOf(model) {
   if (/^(Opus|Sonnet|Fable|Haiku) /.test(model)) return "claude"
-  if (/^DeepSeek[ -]/.test(model)) return "deepseek"
-  if (/^GLM[ -]/.test(model)) return "glm"
   if (model.startsWith("Composer ")) return "cursor"
   if (GPT_MODEL.test(model)) return "codex"
   if (model.startsWith("Grok ")) return "grok"

@@ -6,12 +6,14 @@ import { join } from "node:path"
 import { pathToFileURL } from "node:url"
 import test from "node:test"
 import { promisify } from "node:util"
-import { runSnapshot } from "./snapshot.mjs"
+import { runSnapshot as snapshot } from "./snapshot.mjs"
 
 const row = { rank: 1, label: "Opus 5.5 High", model: "Opus 5.5", effort: "High", score: 80, cost: 1, provider: "claude" }
 const old = { fetchedAt: "2026-10-10T00:00:00.000Z", source: "https://example.com", rows: [row] }
 const fresh = { ...old, fetchedAt: "2026-10-11T00:00:00.000Z" }
 const execFileAsync = promisify(execFile)
+// No official-model check unless a test asks for one: {} filters nothing.
+const runSnapshot = (options) => snapshot({ official: async () => ({}), ...options })
 
 async function setup(t, previous = { aa: old, cursorbench: old }) {
   const dir = await mkdtemp(join(tmpdir(), "ai-model-compare-snapshot-"))
@@ -122,12 +124,15 @@ for (const changed of [false, true]) {
     await mkdir(join(dir, "server"))
     await mkdir(join(dir, "public", "data"), { recursive: true })
     await copyFile(new URL("./snapshot.mjs", import.meta.url), join(dir, "scripts", "snapshot.mjs"))
-    for (const [id, exported] of [["aa", "loadAa"], ["cursorbench", "loadBench"]]) {
+    const loaders = [["aa", "aa", "loadAa"], ["cursorbench", "bench", "loadBench"], ["tbench", "tbench", "loadTbench"],
+      ["arc", "arc", "loadArc"], ["arena", "arena", "loadArena"]]
+    for (const [id, file, exported] of loaders) {
       const next = changed && id === "cursorbench" ? { ...fresh, rows: [{ ...row, score: 81 }] } : fresh
       await writeFile(join(dir, "public", "data", `${id}.json`), JSON.stringify(old))
-      await writeFile(join(dir, "server", id === "aa" ? "aa.mjs" : "bench.mjs"),
-        `export async function ${exported}() { return ${JSON.stringify(next)} }`)
+      await writeFile(join(dir, "server", `${file}.mjs`), `export async function ${exported}() { return ${JSON.stringify(next)} }`)
     }
+    await writeFile(join(dir, "server", "official.mjs"),
+      "export async function loadOfficial() { return {} }\nexport const keepOfficial = (rows) => rows")
     const output = join(dir, "output")
     const summary = join(dir, "summary")
     const { stdout } = await execFileAsync(process.execPath, [join(dir, "scripts", "snapshot.mjs")], {
@@ -142,3 +147,23 @@ for (const changed of [false, true]) {
     assert.ok(report.includes(`Chart data changed: **${changed}**`))
   })
 }
+
+test("Claude and Codex rows keep only the models the vendors currently list", async (t) => {
+  const { dir, out } = await setup(t, {})
+  const rows = [row, { ...row, model: "Opus 5", label: "Opus 5 High" }, { ...row, model: "GPT-6.1 Sol", label: "GPT-6.1 Sol High", provider: "codex" },
+    { ...row, model: "GPT-5.6 Sol", label: "GPT-5.6 Sol High", provider: "codex" }, { ...row, model: "Grok 4.7", label: "Grok 4.7 High", provider: "grok" }]
+  const official = async () => ({ claude: new Set(["Opus 5.5"]), codex: new Set(["GPT-6.1 Sol"]) })
+  await snapshot({ out, official, sources: { aa: async () => ({ ...fresh, rows }) } })
+  const written = JSON.parse(await readFile(join(dir, "aa.json"), "utf8"))
+  assert.deepEqual(written.rows.map((r) => r.model), ["Opus 5.5", "GPT-6.1 Sol", "Grok 4.7"])
+})
+
+test("a failed official-model check keeps every previous snapshot", async (t) => {
+  const { dir, out } = await setup(t)
+  const before = await readFile(join(dir, "aa.json"), "utf8")
+  const result = await snapshot({ out, official: async () => { throw new Error("docs down") },
+    sources: { aa: async () => fresh } })
+  assert.equal(result.failed, 0)
+  assert.match(result.results[0].status, /keeping previous/)
+  assert.equal(await readFile(join(dir, "aa.json"), "utf8"), before)
+})

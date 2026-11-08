@@ -1,4 +1,4 @@
-export type ProviderId = "claude" | "codex" | "grok" | "muse" | "gemini" | "deepseek" | "glm" | "cursor"
+export type ProviderId = "claude" | "codex" | "grok" | "muse" | "gemini" | "cursor"
 
 export type Row = {
   rank: number
@@ -16,7 +16,7 @@ export type Row = {
   tokens?: number
   steps?: number
   // Terminal-Bench only: the 95% confidence half-width of the score and the agent harness
-  // that ran it (Gemini runs in mini-SWE-agent, GLM in Claude Code).
+  // that ran it (Gemini runs in mini-SWE-agent).
   ci?: number
   agent?: string
 }
@@ -55,9 +55,6 @@ export const PROVIDERS: readonly {
   { id: "grok", name: "Grok", color: "#000000" },
   { id: "muse", name: "Muse", color: "#9553ff" },
   { id: "gemini", name: "Gemini", color: "#3186ff" },
-  { id: "deepseek", name: "DeepSeek", color: "#4d6bfe" },
-  // An amber chart colour separates GLM from Grok's black and the blue providers.
-  { id: "glm", name: "GLM", color: "#a16207" },
   { id: "cursor", name: "Cursor", color: "#475569" },
 ]
 
@@ -126,16 +123,6 @@ export function providerById(id: ProviderId) {
 export function modelLine(model: string) {
   const gpt = model.match(/^GPT-(\d+(?:\.\d+)?) (\w+)$/)
   if (gpt) return { line: gpt[2], version: parseFloat(gpt[1]) }
-  const deepseek = model.match(/^DeepSeek V(\d+(?:\.\d+)?)\s*(.*)$/)
-  if (deepseek) {
-    const suffix = deepseek[2].replace(/\s+\d{4}$/, "")
-    return { line: `DeepSeek ${suffix}`.trim(), version: parseFloat(deepseek[1]) }
-  }
-  const glm = model.match(/^GLM[- ](\d+(?:\.\d+)?)(V)?(?:[- ](.*))?$/)
-  if (glm) {
-    const suffix = [glm[2] ? "Vision" : "", glm[3] ?? ""].filter(Boolean).join(" ")
-    return { line: `GLM ${suffix}`.trim(), version: parseFloat(glm[1]) }
-  }
   const tokens = model.split(/\s+/)
   const at = tokens.findIndex((token) => /^\d+(?:\.\d+)?$/.test(token))
   const version = at >= 0 ? parseFloat(tokens[at]) : 0
@@ -169,8 +156,6 @@ const LINE_COLOR: Record<string, string> = {
   Grok: "#000000", "Grok Build": "#6b6b6b",
   "Muse Spark": "#9553ff", "Muse Glimmer": "#c3a3ff",
   "Gemini Argon": "#1554c7", "Gemini Pro Preview": "#1f6ae6", "Gemini Flash": "#3186ff", "Gemini Flash-Lite": "#8dbcff",
-  "DeepSeek Pro": "#293fba", "DeepSeek Flash": "#4d6bfe", "DeepSeek Flash Vision": "#8599ff",
-  GLM: "#a16207", "GLM Flash": "#d49a33", "GLM Turbo": "#bd7d16", "GLM Vision Turbo": "#c99544",
   Composer: "#475569",
 }
 
@@ -284,8 +269,6 @@ const LINE_ORDER = [
   "Grok", "Grok Build",
   "Muse Spark", "Muse Glimmer",
   "Gemini Argon", "Gemini Flash", "Gemini Flash-Lite", "Gemini Pro Preview",
-  "DeepSeek Flash", "DeepSeek Pro", "DeepSeek Flash Vision",
-  "GLM", "GLM Flash", "GLM Turbo", "GLM Vision Turbo",
   "Composer",
 ]
 
@@ -300,7 +283,7 @@ export function compareModels(a: string, b: string) {
 // Ticked by default: the newest version of the line each CLI is mostly run with, so
 // Opus 5.6 takes over from Opus 5.5 as soon as the source lists it. A CLI with none of
 // these lines in a source gets the first model of its menu instead.
-export const DEFAULT_LINES = new Set(["Opus", "Sol", "Grok", "Muse Spark", "Gemini Flash", "DeepSeek Flash", "GLM", "Composer"])
+export const DEFAULT_LINES = new Set(["Opus", "Sol", "Grok", "Muse Spark", "Gemini Flash", "Composer"])
 
 export function defaultTicked(rows: readonly Row[]) {
   const byProvider = new Map<ProviderId, string[]>()

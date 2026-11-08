@@ -6,24 +6,24 @@ A small chart of **score vs. cost per task** for coding AI models, from the [Art
 
 | Provider    | Lines in the ▾ menu (every listed version of each)        |
 | ----------- | --------------------------------------------------------- |
-| Claude Code | Fable, Opus, Sonnet, Haiku                                |
-| Codex       | GPT Astra, Sol, Terra, Luna                               |
+| Claude Code | Fable, Opus, Sonnet, Haiku (current models only)          |
+| Codex       | GPT Astra, Sol, Terra, Luna (current models only)         |
 | Grok        | Grok, Grok Build                                          |
 | Muse        | Muse Spark, Muse Glimmer                                  |
 | Gemini      | Gemini Argon, Flash, Flash-Lite, Pro                      |
-| DeepSeek    | Flash, Pro, Flash Vision                                 |
-| GLM         | GLM, Flash, Turbo, Vision Turbo                           |
 | Cursor      | Composer                                                 |
 
 Every effort level the source lists (None → Max) appears as its own point, and each model's points are connected into one line.
 
-DeepSeek and GLM have their own legend chips and model menus; each defaults to the newest DeepSeek Flash or base GLM release the source lists. A provider appears only on a source that has scored, costed rows for it: DeepSeek is currently on Artificial Analysis and ARC-AGI-2, GLM on all four.
+**Current models only (Claude and Codex):** each snapshot reads the [Claude models overview](https://platform.claude.com/docs/en/models/overview) and the [Codex models page](https://learn.chatgpt.com/docs/models) and drops every Claude or Codex model those pages do not list as current, so retired and legacy models (for example Opus 5 or GPT-5.6 Sol) are not charted. If either page cannot be read or parsed, every source keeps its last published snapshot. Other providers are not checked.
+
+A provider appears only on a source that has scored, costed rows for it.
 
 Cursor's Composer models have their own chip on CursorBench, with the newest listed version checked by default.
 
 **Selection policy:** Only recognizable model families that developers are actively discussing are included. A benchmark listing alone is not a reason to add a family: review each new family before adding it, rather than taking every model a source lists. Scores and costs compare the selected models, not their popularity.
 
-The page opens on Artificial Analysis with one model checked per provider: the newest listed version of Opus, GPT Sol, Grok, Muse Spark, Gemini Flash, DeepSeek Flash, base GLM and Composer. When a newer version appears, such as Opus 5.6, it is checked in place of the old one with no code change. A provider with none of these lines on a source gets the first model of its menu instead. Every other supported model the source lists, in every version, is in the ▾ menu to tick. On Artificial Analysis and ARC-AGI-2 only releases from about the last eight months are drawn, and a model AA scored without a cost per task (for example Opus 4.7 or Grok 4.20) cannot be placed on the cost axis, so it is left out.
+The page opens on Artificial Analysis with one model checked per provider: the newest listed version of Opus, GPT Sol, Grok, Muse Spark, Gemini Flash and Composer. When a newer version appears, such as Opus 5.6, it is checked in place of the old one with no code change. A provider with none of these lines on a source gets the first model of its menu instead. Every other supported model the source lists, in every version, is in the ▾ menu to tick. On Artificial Analysis and ARC-AGI-2 only releases from about the last eight months are drawn, and a model AA scored without a cost per task (for example Opus 4.7 or Grok 4.20) cannot be placed on the cost axis, so it is left out.
 
 ![Demo: score vs. cost per task for five coding CLIs](docs/demo.png)
 
@@ -100,7 +100,7 @@ The Artificial Analysis source (`/api/bench?source=aa`, in [server/aa.mjs](serve
 The Terminal-Bench source (`/api/bench?source=tbench`, in [server/tbench.mjs](server/tbench.mjs)) reads the official leaderboard at tbench.ai, which embeds every entry in the page:
 
 1. Each entry gives a resolution rate, the number of trials (every task, five times each), and the whole run's cost and tokens. Cost and tokens per task are those totals divided by the trial count.
-2. Entries are run by the Terminal-Bench maintainers, each CLI in its own harness (Claude Code, Codex, Grok Build, Muse Code). Gemini runs in mini-SWE-agent and GLM in Claude Code, so the readout names the agent. An entry with no cost (Muse Spark 1.3 lists $0) is left out, since it cannot be placed on the cost axis.
+2. Entries are run by the Terminal-Bench maintainers, each CLI in its own harness (Claude Code, Codex, Grok Build, Muse Code). Gemini runs in mini-SWE-agent, so the readout names the agent. An entry with no cost (Muse Spark 1.3 lists $0) is left out, since it cannot be placed on the cost axis.
 3. With only about 66 tasks, the 95% margin is about ±3 points: gaps smaller than about 6 points do not tell two models apart.
 4. The last good rows are kept in `data/tbench-cache.json` and served if tbench.ai is unreachable.
 
@@ -177,10 +177,11 @@ The supported providers are set by `providerOf` in [server/bench.mjs](server/ben
 
 ## Credits
 
-Product marks on the legend chips come from [LobeHub Icons](https://github.com/lobehub/lobe-icons) (MIT): `claudecode`, `codex`, `grok`, `metaai` (Muse has no mark of its own), `gemini`, `deepseek`, `zai` and `cursor`. They are trademarks of their owners and are used only to tell the providers apart.
+Product marks on the legend chips come from [LobeHub Icons](https://github.com/lobehub/lobe-icons) (MIT): `claudecode`, `codex`, `grok`, `metaai` (Muse has no mark of its own), `gemini` and `cursor`. They are trademarks of their owners and are used only to tell the providers apart.
 
 ## Changelog
 
+- **1.3.0** (2026-11-09): Chart only the Claude and Codex models their vendors currently list: every snapshot checks the official model pages and drops retired and legacy models, keeping the last snapshot if that check fails. Remove DeepSeek and GLM. Fix the snapshot CLI tests, which lacked stubs for Terminal-Bench, ARC-AGI-2 and LMArena.
 - **1.2.0** (2026-10-29): Add Terminal-Bench as a chart source, with cost and tokens per task, the 95% margin and the agent that ran each entry. Add ARC-AGI-2 as a chart source, with a point for every effort ARC ran. Add a human-preference list from LMArena's WebDev and Text arenas under the chart. The snapshot workflow checks and publishes all five. A pinned point now also clears on a click on empty chart space or Esc, not only on its own second click. A model menu now also closes on a click elsewhere in the legend row.
 - **1.1.1** (2026-10-11): Check both sources every six hours, keep unchanged snapshots and their footer update times, and skip publishing when neither source changed. Reuse the website build for data-only publications; install dependencies and rebuild only when no matching build is cached. Record check results in Actions logs and summaries, make AA score ties deterministic, and add snapshot regression tests.
 - **1.1.0** (2026-10-09): Add DeepSeek and GLM to the supported models, plus Cursor's Composer on CursorBench. Select their newest listed model by default, keep model menus within mobile viewports, and document the selection policy for recognizable families with developer discussion.

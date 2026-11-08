@@ -17,14 +17,14 @@ test("Terminal-Bench rows are per task, keep the agent, and skip uncosted or uns
   const page = `"title":"Terminal-Bench 4.0" ${[
     entry("Opus 5.5", "max", { accuracy: 64.85, n_trials: 330, total_cost_usd: 4718.65, total_tokens: 8034082467, accuracy_ci95_half_width: 3.11 }),
     entry("Opus 5.5", "max", { accuracy: 60, n_trials: 330, total_cost_usd: 1 }),
-    entry("GLM-5.3-Flash", "none", { accuracy: 35.76, n_trials: 330, total_cost_usd: 118.8 }),
+    entry("Grok 4.7", "none", { accuracy: 35.76, n_trials: 330, total_cost_usd: 118.8 }),
     entry("Muse Spark 1.3", "xhigh", { accuracy: 14.55, n_trials: 330, total_cost_usd: 0 }, "Muse Code"),
     entry("Qwen3.8-Max-0902", "max", { accuracy: 26.97, n_trials: 330, total_cost_usd: 4636.5 }),
   ].join(",")}`
   // The page embeds the rows as escaped JSON, which page() unescapes before parsing.
   const rows = rowsFromHtml(page)
   assert.equal(versionFromHtml(page), "4.0")
-  assert.deepEqual(rows.map((row) => row.label), ["Opus 5.5 Max", "GLM-5.3-Flash None"])
+  assert.deepEqual(rows.map((row) => row.label), ["Opus 5.5 Max", "Grok 4.7 None"])
   assert.equal(rows[0].cost.toFixed(2), "14.30")
   assert.equal(rows[0].agent, "Claude Code")
   assert.equal(rows[0].ci, 3.11)
