@@ -52,9 +52,9 @@ export const PROVIDERS: readonly {
   // Gemini blue #3186FF (from the Gemini mark).
   { id: "claude", name: "Claude Code", color: "#d97757" },
   { id: "codex", name: "Codex", color: "#10a37f" },
+  { id: "gemini", name: "Gemini", color: "#3186ff" },
   { id: "grok", name: "Grok", color: "#000000" },
   { id: "muse", name: "Muse", color: "#9553ff" },
-  { id: "gemini", name: "Gemini", color: "#3186ff" },
   { id: "cursor", name: "Cursor", color: "#475569" },
 ]
 
