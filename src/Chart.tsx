@@ -1,3 +1,4 @@
+import type { Translate } from "./language"
 import { useEffect, useState } from "react"
 import {
   formatCost,
@@ -26,6 +27,7 @@ type Label = {
 }
 
 type Props = {
+  t: Translate
   rows: Row[]
   previous: ReadonlyMap<string, number>
   unit: string
@@ -45,7 +47,8 @@ function effortIndex(effort: string | null) {
   return index === -1 ? 98 : index
 }
 
-export default function Chart({ rows, previous, unit, scoreName, scoreLabel, yAxis, active, onHover, onPick }: Props) {
+export default function Chart({ t, rows: visibleRows, previous, unit, scoreName, scoreLabel, yAxis, active, onHover, onPick }: Props) {
+  const axisLabel = t(yAxisLabel(yAxis), ({ score: "分數", speed: "速度", verbosity: "輸出長度", latency: "延遲", tokens: "每次任務 Token 數", steps: "每次任務步驟數" })[yAxis])
   const [narrow, setNarrow] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches,
   )
@@ -64,13 +67,14 @@ export default function Chart({ rows, previous, unit, scoreName, scoreLabel, yAx
     b: 46,
   }
 
-  if (rows.length === 0) {
-    return <div className="chart chart-empty">Turn on at least one provider.</div>
+  if (visibleRows.length === 0) {
+    return <div className="chart chart-empty">{t("Turn on at least one provider.", "請至少啟用一個供應商。")}</div>
   }
 
+  const rows = visibleRows.filter((row) => yValue(row, yAxis) != null)
   const values = rows.map((row) => yValue(row, yAxis)).filter((value): value is number => value != null)
   if (values.length === 0) {
-    return <div className="chart chart-empty">None of these models have data for this Y axis.</div>
+    return <div className="chart chart-empty">{t("None of these models have data for this Y axis.", "這些模型沒有此 Y 軸的資料。")}</div>
   }
   const xMax = niceCeil(Math.max(...rows.map((row) => row.cost)) * 1.08)
   const lo = Math.min(...values)
@@ -160,7 +164,7 @@ export default function Chart({ rows, previous, unit, scoreName, scoreLabel, yAx
       onClick={() => onPick(null)}
     >
       <title id="chart-desc">
-        {scoreName} vs. cost per task. Higher cost on the left, $0 on the right. Y axis: {yAxisLabel(yAxis)}.
+        {t(`${scoreName} vs. cost per task. Higher cost on the left, $0 on the right. Y axis: ${yAxisLabel(yAxis)}.`, `${scoreName} 與每次任務成本。左側成本較高，右側為 $0。Y 軸：${axisLabel}。`)}
       </title>
       <rect x={pad.l} y={pad.t} width={plotW} height={plotH} fill="#ffffff" />
       {yTicks.map((tick) => (
@@ -204,10 +208,10 @@ export default function Chart({ rows, previous, unit, scoreName, scoreLabel, yAx
         </g>
       ))}
       <text x={pad.l} y={16} className="axis-name">
-        {yAxis === "score" ? scoreLabel : yAxisLabel(yAxis)}
+        {yAxis === "score" ? scoreLabel : axisLabel}
       </text>
       <text x={pad.l + plotW / 2} y={pad.t + plotH + 40} textAnchor="middle" className="axis-name">
-        Cost per task
+        {t("Cost per task", "每次任務成本")}
       </text>
       {[...byModel.entries()].map(([model, points]) => {
         const color = colorOf(model, points[0].provider)
@@ -241,7 +245,7 @@ export default function Chart({ rows, previous, unit, scoreName, scoreLabel, yAx
                   tabIndex={0}
                   className="point-hit"
                   aria-pressed={on}
-                  aria-label={`${row.model} ${row.effort ?? ""}: ${formatScore(row.score, unit)}, ${formatCost(row.cost)} per task`}
+                  aria-label={`${row.model} ${row.effort ?? ""}: ${formatScore(row.score, unit)}, ${formatCost(row.cost)} ${t("per task", "／次任務")}`}
                   transform={`translate(${xOf(row.cost).toFixed(1)} ${yOf(yValue(row, yAxis) ?? 0).toFixed(1)})`}
                   onPointerEnter={() => onHover(row.label)}
                   onPointerLeave={() => onHover(null)}

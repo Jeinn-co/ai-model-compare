@@ -1,8 +1,10 @@
+import type { Translate } from "./language"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { PROVIDERS, compareModels, modelLine, seriesColor, type ProviderId, type Row } from "./bench"
 import { LOGO_PATHS } from "./logos"
 
 type Props = {
+  t: Translate
   rows: Row[]
   previous: ReadonlyMap<string, number>
   hiddenProviders: ReadonlySet<ProviderId>
@@ -35,7 +37,7 @@ function modelsOf(rows: Row[], provider: ProviderId) {
   return [...byModel.values()].sort((a, b) => compareModels(a.model, b.model))
 }
 
-export default function Legend({ rows, previous, hiddenProviders, hiddenModels, onToggleProvider, onSetModels }: Props) {
+export default function Legend({ t, rows, previous, hiddenProviders, hiddenModels, onToggleProvider, onSetModels }: Props) {
   const [open, setOpen] = useState<ProviderId | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -74,7 +76,7 @@ export default function Legend({ rows, previous, hiddenProviders, hiddenModels, 
   }, [open])
 
   return (
-    <div className="legend" role="group" aria-label="Visible providers">
+    <div className="legend" role="group" aria-label={t("Visible providers", "顯示的供應商")}>
       {PROVIDERS.map((provider) => {
         const models = modelsOf(rows, provider.id)
         if (models.length === 0) return null
@@ -95,14 +97,14 @@ export default function Legend({ rows, previous, hiddenProviders, hiddenModels, 
                 <path d={LOGO_PATHS[provider.id]} fill={provider.color} fillRule="evenodd" clipRule="evenodd" />
               </svg>
               {provider.name}
-              <span className="count" title={`${shownPoints} of ${total} points shown`}>
+              <span className="count" title={t(`${shownPoints} of ${total} points shown`, `顯示 ${shownPoints}／${total} 個資料點`)}>
                 {shownPoints === total ? total : `${shownPoints}/${total}`}
               </span>
             </button>
             <button
               type="button"
               className="chip-caret"
-              aria-label={`Choose ${provider.name} models`}
+              aria-label={t(`Choose ${provider.name} models`, `選擇 ${provider.name} 模型`)}
               aria-haspopup="true"
               aria-expanded={isOpen}
               aria-controls={`models-${provider.id}`}
@@ -111,7 +113,7 @@ export default function Legend({ rows, previous, hiddenProviders, hiddenModels, 
               ▾
             </button>
             {isOpen ? (
-              <div className="menu" id={`models-${provider.id}`} role="group" aria-label={`${provider.name} models`} ref={menuRef}>
+              <div className="menu" id={`models-${provider.id}`} role="group" aria-label={t(`${provider.name} models`, `${provider.name} 模型`)} ref={menuRef}>
                 <label className="menu-row menu-all">
                   <input
                     type="checkbox"
@@ -121,7 +123,7 @@ export default function Legend({ rows, previous, hiddenProviders, hiddenModels, 
                     }}
                     onChange={(event) => onSetModels(models.map((item) => item.model), event.target.checked)}
                   />
-                  All models
+                  {t("All models", "全部模型")}
                 </label>
                 {groupsOf(models).map((group) => {
                   const groupShown = group.items.filter((item) => !hiddenModels.has(item.model)).length

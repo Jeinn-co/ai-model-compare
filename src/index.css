@@ -1,11 +1,12 @@
 :root {
-  --paper: #e4edf1;
-  --ink: #17232e;
-  --muted: #5c7080;
-  --line: #d3dee6;
-  --sheet: #f4f8fa;
+  --paper: #f8fafc;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --sheet: #f1f5f9;
+  --accent: #2563eb;
   color-scheme: light;
-  font-family: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   color: var(--ink);
   background: var(--paper);
   font-synthesis: none;
@@ -29,11 +30,49 @@ a {
 .sheet {
   max-width: 1120px;
   margin: 0 auto;
-  padding: 28px 20px 48px;
+  padding: 24px clamp(14px, 4vw, 40px) 48px;
 }
 
 .head {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+.language {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--line);
+  color: var(--ink);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.language:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.toolbar-icon {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .eyebrow {
@@ -47,10 +86,10 @@ a {
 
 h1 {
   margin: 0;
-  font-size: 40px;
+  font-size: 28px;
   font-weight: 600;
-  letter-spacing: -0.04em;
-  line-height: 1;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 .version {
@@ -69,7 +108,7 @@ h1 {
 }
 
 .deck {
-  margin: 10px 0 0;
+  margin: 16px 0 0;
   max-width: 44rem;
   color: var(--muted);
   font-size: 15px;
@@ -79,8 +118,8 @@ h1 {
 .controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px 28px;
-  margin-bottom: 16px;
+  gap: 20px 28px;
+  margin-bottom: 24px;
 }
 
 .control {
@@ -287,7 +326,7 @@ tr:focus-visible {
   height: auto;
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 16px;
   touch-action: manipulation;
 }
 
@@ -358,7 +397,7 @@ tr:focus-visible {
   gap: 8px 14px;
   align-items: center;
   min-height: 28px;
-  margin: 12px 0 18px;
+  margin: 18px 4px 24px;
   font-size: 14px;
   font-variant-numeric: tabular-nums;
 }
@@ -370,19 +409,19 @@ tr:focus-visible {
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 14px;
   background: #fff;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 th,
 td {
-  padding: 8px 10px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--line);
   text-align: left;
   white-space: nowrap;
@@ -427,8 +466,8 @@ tbody tr:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 6px 20px;
-  margin: 8px 0 0;
-  padding-top: 16px;
+  margin: 32px 4px 0;
+  padding-top: 20px;
   border-top: 1px solid var(--line);
   font-size: 13px;
 }
@@ -444,7 +483,7 @@ tbody tr:hover {
 }
 
 .arena {
-  margin-top: 28px;
+  margin-top: 48px;
 }
 
 .arena-head {
@@ -453,7 +492,7 @@ tbody tr:hover {
   gap: 12px 28px;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
 }
 
 h2 {
@@ -508,11 +547,22 @@ h2 {
 
 @media (max-width: 720px) {
   h1 {
-    font-size: 32px;
+    font-size: 24px;
   }
 
   .sheet {
-    padding: 18px 12px 36px;
+    padding: 24px 14px 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  th,
+  td {
+    padding: 9px 12px;
+  }
+
+  .arena {
+    margin-top: 40px;
   }
 }
 

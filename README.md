@@ -4,6 +4,9 @@ A small chart of **score vs. cost per task** for coding AI models, from the [Art
 
 **Live:** https://jeinn-co.github.io/ai-model-compare/ (every source checked every six hours; data published only when it changes)
 
+Use the globe button to switch between English and Traditional Chinese. The page
+starts with your browser language and remembers your choice.
+
 | Provider    | Lines in the ▾ menu (every listed version of each)        |
 | ----------- | --------------------------------------------------------- |
 | Claude Code | Fable, Opus, Sonnet, Haiku (current models only)          |

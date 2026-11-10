@@ -106,9 +106,9 @@ export function releaseRows(html, release) {
     const cost = variant.intelligenceIndexCostPerTask?.cost?.total
     if (score == null || !(cost > 0)) continue
     // The other three AA model-page cards; missing ones stay off the row.
-    const speed = variant.medianOutputSpeed
+    const speed = variant.outputSpeed ?? variant.medianOutputSpeed
     const verbosity = variant.canonicalIntelligenceIndexTokenCount?.output
-    const latency = variant.timeToFirstAnswerToken?.total
+    const latency = variant.timeToFirstAnswerToken?.total ?? variant.timeToFirstAnswerToken
     rows.set(variant.slug, {
       rank: 0,
       label: effort ? `${release.model} ${effort}` : release.model,
