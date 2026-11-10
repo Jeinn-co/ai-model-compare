@@ -80,6 +80,17 @@ async function readCache() {
   }
 }
 
+const PUBLISHED = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "data", "arena.json")
+
+async function publishedRows() {
+  try {
+    const rows = JSON.parse(await readFile(PUBLISHED, "utf8"))?.rows
+    return Array.isArray(rows) ? rows : []
+  } catch {
+    return []
+  }
+}
+
 const payload = (data, changed) => ({
   changed,
   fetchedAt: data.fetchedAt,
@@ -95,8 +106,10 @@ export async function loadArena() {
     try {
       arenas[arena] = await loadArenaRows(arena)
     } catch {
-      // Keep the last good rows for an arena that failed this time.
-      if (cached?.arenas?.[arena]) arenas[arena] = cached.arenas[arena]
+      // Keep the last good rows for an arena that failed this time. CI has no cache, so fall
+      // back to the live snapshot the Pages workflow downloads into public/data first.
+      const kept = cached?.arenas?.[arena] ?? (await publishedRows()).filter((row) => row.arena === arena)
+      if (kept.length) arenas[arena] = kept
     }
   }
   if (!Object.values(arenas).some((rows) => rows.length)) {

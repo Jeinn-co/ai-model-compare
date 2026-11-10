@@ -117,7 +117,7 @@ The LMArena list (`/api/bench?source=arena`, in [server/arena.mjs](server/arena.
 
 1. lmarena.ai sits behind a Cloudflare challenge, so the rows come from the leaderboard dataset LMArena publishes on Hugging Face ([lmarena-ai/leaderboard-dataset](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset)), read as JSON through the Hugging Face datasets API with no extra dependency.
 2. Only the `overall` category of the Text and WebDev arenas is read, then filtered to the supported families. The model name is LMArena's own (minus "Claude "), since its brackets mix efforts and build dates.
-3. That API often answers slowly or with a temporary error, so each request retries with backoff. Results are cached in `data/arena-cache.json` for 6 hours; an arena that fails keeps its last cached rows.
+3. That API often answers slowly or with a temporary error, so each request retries with backoff. Results are cached in `data/arena-cache.json` for 6 hours; an arena that fails keeps its last cached rows, or, with no cache (as on CI), its rows from the live `arena.json` the workflow downloads first.
 
 `data/` is git-ignored, so the cache is created on your first run.
 

@@ -155,7 +155,7 @@ const LINE_COLOR: Record<string, string> = {
   Astra: "#0a6e56", Sol: "#10a37f", Terra: "#45c39f", Luna: "#93dcc4",
   Grok: "#000000", "Grok Build": "#6b6b6b",
   "Muse Spark": "#9553ff", "Muse Glimmer": "#c3a3ff",
-  "Gemini Argon": "#1554c7", "Gemini Pro Preview": "#1f6ae6", "Gemini Flash": "#3186ff", "Gemini Flash-Lite": "#8dbcff",
+  "Gemini Carbon": "#0b3a8c", "Gemini Argon": "#1554c7", "Gemini Pro Preview": "#1f6ae6", "Gemini Flash": "#3186ff", "Gemini Flash-Lite": "#8dbcff",
   Composer: "#475569",
 }
 
@@ -260,7 +260,7 @@ export function tickValues(min: number, max: number, count: number) {
 }
 
 // Menu order: by line first (Fable, Opus, Sonnet; GPT Astra, Sol, Terra, Luna; Grok, Grok
-// Build; Muse Spark, Glimmer; Gemini Argon, Flash, Flash-Lite, Pro), then newest version
+// Build; Muse Spark, Glimmer; Gemini Carbon, Argon, Flash, Flash-Lite, Pro), then newest version
 // first within a line. Pro comes last for Gemini so both Gemini 3.1 models sit at the
 // bottom. The order does not reshuffle when scores move.
 const LINE_ORDER = [
@@ -268,7 +268,7 @@ const LINE_ORDER = [
   "Astra", "Sol", "Terra", "Luna",
   "Grok", "Grok Build",
   "Muse Spark", "Muse Glimmer",
-  "Gemini Argon", "Gemini Flash", "Gemini Flash-Lite", "Gemini Pro Preview",
+  "Gemini Carbon", "Gemini Argon", "Gemini Flash", "Gemini Flash-Lite", "Gemini Pro Preview",
   "Composer",
 ]
 
