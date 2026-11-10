@@ -45,16 +45,18 @@ Clicking a legend chip shows or hides that CLI. Here only Codex is visible.
 
 As of 2026-10-23 CursorBench lists no GPT-6 models, so it shows only GPT-5.6. GPT-6 has no Terra line.
 
-**Data source switch:** the toggle above the legend swaps the [Artificial Analysis](https://artificialanalysis.ai/models/releases) Intelligence Index (the default) for ARC-AGI-2, CursorBench or Terminal-Bench, using the same lines and the same version rule. Each source scores a different test set, so read each on its own and do not compare scores across them:
+**Data source switch:** the toggle above the legend swaps the [Artificial Analysis](https://artificialanalysis.ai/models/releases) Intelligence Index (the default) for Terminal-Bench, ARC-AGI-2 or CursorBench, using the same lines and the same version rule. The toggle orders the sources from the most to the least independent: CursorBench is run by Cursor, whose own Composer is on it. Each source scores a different test set, so read each on its own and do not compare scores across them:
 
 | Source | What it measures | Points per model (2026-10-29) |
 | --- | --- | --- |
 | Artificial Analysis | A general intelligence index over many evaluations | About 3 on average; nearly half have one |
+| Terminal-Bench | About 66 terminal tasks, each CLI in its own harness where it has one | Most have one (Max) |
 | ARC-AGI-2 | Abstract reasoning puzzles | Most have 3–6 |
 | CursorBench | Agents on ambiguous, multi-file tasks from real Cursor sessions | About 4 on average |
-| Terminal-Bench | About 66 terminal tasks, each CLI in its own harness where it has one | Most have one (Max) |
 
-AA lists GPT-6.1 Sol, GPT-6 Sol, GPT-6 Astra and GPT-6 Luna, which CursorBench does not yet. AA scores fewer efforts for some models: Muse Spark 1.3 has two points on AA against six on CursorBench. Each view other than AA is kept in the URL: `?source=arc`, `?source=cursorbench` or `?source=tbench`.
+**No Codex on CursorBench:** CursorBench has only scored GPT-5.6 Sol, Terra and Luna, and the Codex models page no longer lists GPT-5.6, so every Codex row is dropped. The note under the chart says so while it lasts; Codex comes back on its own once CursorBench scores a current GPT model.
+
+AA lists GPT-6.1 Sol, GPT-6 Sol, GPT-6 Astra and GPT-6 Luna, which CursorBench does not yet. AA scores fewer efforts for some models: Muse Spark 1.3 has two points on AA against six on CursorBench. Each view other than AA is kept in the URL: `?source=tbench`, `?source=arc` or `?source=cursorbench`.
 
 ![Demo: the same chart on CursorBench](docs/demo-cursorbench.png)
 

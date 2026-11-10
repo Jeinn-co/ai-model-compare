@@ -72,6 +72,14 @@ export const SOURCES: Record<
     unit: "",
     scoreName: "Artificial Analysis Intelligence Index",
   },
+  tbench: {
+    id: "tbench",
+    name: "Terminal-Bench",
+    eyebrow: "Terminal-Bench",
+    url: "https://www.tbench.ai/leaderboard",
+    unit: "%",
+    scoreName: "Terminal-Bench resolution rate",
+  },
   arc: {
     id: "arc",
     name: "ARC-AGI-2",
@@ -87,14 +95,6 @@ export const SOURCES: Record<
     url: "https://cursor.com/cursorbench",
     unit: "%",
     scoreName: "CursorBench score",
-  },
-  tbench: {
-    id: "tbench",
-    name: "Terminal-Bench",
-    eyebrow: "Terminal-Bench",
-    url: "https://www.tbench.ai/leaderboard",
-    unit: "%",
-    scoreName: "Terminal-Bench resolution rate",
   },
 }
 

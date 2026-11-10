@@ -341,7 +341,12 @@ export default function App() {
         ) : source === "tbench" ? (
           "Hover over a point to see Score, Cost, and Tokens per task, the 95% margin, and the agent that ran it."
         ) : (
-          "Hover over a point to see Score, Cost, Tokens, and Steps per task."
+          <>
+            Hover over a point to see Score, Cost, Tokens, and Steps per task.
+            {rows.length && !rows.some((row) => row.provider === "codex")
+              ? " No Codex: CursorBench has not scored a current GPT model yet, and retired GPT versions are not charted."
+              : null}
+          </>
         )}
       </p>
 
