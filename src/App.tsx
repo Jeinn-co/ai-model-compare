@@ -350,7 +350,7 @@ export default function App() {
         )}
       </p>
 
-      <Arena hiddenProviders={hidden} />
+      <Arena />
 
       <footer className="foot">
         <span>

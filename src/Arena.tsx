@@ -24,8 +24,9 @@ const SOURCE_URL = "https://lmarena.ai/leaderboard"
 const TOP = 20
 
 // Human preference from LMArena, shown under the chart. It has no cost, so it is a ranked
-// list rather than another chart source. The chip switches above hide a CLI here too.
-export default function Arena({ hiddenProviders }: { hiddenProviders: ReadonlySet<ProviderId> }) {
+// list rather than another chart source. It is a ranking of its own, so the chart's chip
+// switches do not filter it.
+export default function Arena() {
   const [rows, setRows] = useState<ArenaRow[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [arena, setArena] = useState<ArenaId>("webdev")
@@ -46,7 +47,7 @@ export default function Arena({ hiddenProviders }: { hiddenProviders: ReadonlySe
     return () => controller.abort()
   }, [])
 
-  const listed = (rows ?? []).filter((row) => row.arena === arena && !hiddenProviders.has(row.provider))
+  const listed = (rows ?? []).filter((row) => row.arena === arena)
   const shown = all ? listed : listed.slice(0, TOP)
   const meta = ARENAS.find((item) => item.id === arena) ?? ARENAS[0]
 
@@ -86,7 +87,7 @@ export default function Arena({ hiddenProviders }: { hiddenProviders: ReadonlySe
       ) : !rows ? (
         <div className="table-wrap arena-empty">Loading LMArena…</div>
       ) : listed.length === 0 ? (
-        <div className="table-wrap arena-empty">No {meta.name} ratings for the CLIs switched on.</div>
+        <div className="table-wrap arena-empty">No {meta.name} ratings yet.</div>
       ) : (
         <div className="table-wrap">
           <table>
