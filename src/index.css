@@ -52,7 +52,7 @@ a {
   height: 34px;
   padding: 0 14px;
   border: 0;
-  border-radius: 999px;
+  border-radius: 4px;
   background: var(--line);
   color: var(--ink);
   font-size: 13px;
@@ -97,7 +97,7 @@ h1 {
   margin-left: 6px;
   padding: 2px 8px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 4px;
   background: #fff;
   color: var(--muted);
   font-family: "IBM Plex Mono", ui-monospace, monospace;
@@ -147,14 +147,14 @@ h1 {
   align-self: flex-start;
   padding: 3px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 4px;
   background: #fff;
 }
 
 .segment {
   padding: 5px 12px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 4px;
   background: transparent;
   color: var(--muted);
   cursor: pointer;
@@ -191,7 +191,7 @@ h1 {
   gap: 8px;
   padding: 6px 10px 6px 8px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 4px;
   background: #fff;
   font-size: 14px;
 }
@@ -212,7 +212,7 @@ h1 {
 }
 
 .chip-group .chip {
-  border-radius: 999px 0 0 999px;
+  border-radius: 4px 0 0 4px;
   border-right: 0;
 }
 
@@ -220,7 +220,7 @@ h1 {
   padding: 0 10px 0 6px;
   border: 1px solid var(--line);
   border-left: 1px solid var(--line);
-  border-radius: 0 999px 999px 0;
+  border-radius: 0 4px 4px 0;
   background: #fff;
   color: var(--muted);
   cursor: pointer;
@@ -247,7 +247,7 @@ h1 {
   max-width: calc(100vw - 24px);
   padding: 6px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 4px;
   background: #fff;
   box-shadow: 0 8px 24px rgb(23 35 46 / 12%);
 }
@@ -257,7 +257,7 @@ h1 {
   align-items: center;
   gap: 8px;
   padding: 6px 8px;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -269,7 +269,7 @@ h1 {
 .menu-all {
   margin-bottom: 4px;
   border-bottom: 1px solid var(--line);
-  border-radius: 6px 6px 0 0;
+  border-radius: 4px 4px 0 0;
   color: var(--muted);
 }
 
@@ -326,7 +326,7 @@ tr:focus-visible {
   height: auto;
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 4px;
   touch-action: manipulation;
 }
 
@@ -409,7 +409,7 @@ tr:focus-visible {
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 4px;
   background: #fff;
 }
 
@@ -532,6 +532,176 @@ h2 {
   display: inline-flex;
   gap: 8px;
   align-items: center;
+}
+
+.guidance {
+  /* Body copy a step softer than headings, derived from the ink token. */
+  --guidance-body: color-mix(in srgb, var(--ink) 68%, #fff);
+  --guidance-pick: #e7f0f6;
+}
+
+.guidance-effort {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.guidance-card {
+  padding: 14px 18px 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #fff;
+}
+
+
+.guidance-named {
+  margin-top: 12px;
+}
+
+.guidance-label {
+  margin: 0 0 6px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.guidance-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guidance-rows li {
+  margin: 0 -10px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--line);
+  color: var(--guidance-body);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.guidance-rows li:first-child,
+.guidance-rows .guidance-pick,
+.guidance-rows .guidance-pick + li {
+  border-top-color: transparent;
+}
+
+.guidance-rows .guidance-pick {
+  border-radius: 4px;
+  background: var(--guidance-pick);
+  color: var(--ink);
+}
+
+.guidance-rows strong,
+.guidance-rows strong .guidance-lead {
+  font-weight: 600;
+}
+
+.guidance-lead {
+  color: var(--ink);
+}
+
+.guidance-money {
+  color: var(--ink);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.92em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.guidance-table td {
+  vertical-align: top;
+}
+
+.guidance-table td.guidance-cli {
+  width: 1%;
+  padding-top: 19px;
+}
+
+.guidance-table td.guidance-cell {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  white-space: normal;
+}
+
+.guidance-sortbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.guidance-sort {
+  color: var(--muted);
+  font: inherit;
+  white-space: nowrap;
+}
+
+.guidance-sort.on {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.guidance-prices {
+  margin-top: 12px;
+}
+
+.guidance-prices td.num {
+  color: var(--ink);
+}
+
+.guidance-prices td.minor {
+  min-width: 13rem;
+  white-space: normal;
+}
+
+@media (min-width: 860px) {
+  .guidance-effort {
+    grid-template-columns: 2fr 3fr;
+  }
+}
+
+/* Phone: each CLI becomes a block (name, then its lines) instead of a side-by-side row. */
+@media (max-width: 640px) {
+  .guidance-table,
+  .guidance-table thead,
+  .guidance-table tbody,
+  .guidance-table tr,
+  .guidance-table td.guidance-cli,
+  .guidance-table td.guidance-cell {
+    display: block;
+    width: auto;
+  }
+
+  .guidance-table thead tr {
+    display: flex;
+  }
+
+  .guidance-table th + th {
+    flex: 1;
+  }
+
+  .guidance-table td.guidance-cli {
+    padding-top: 12px;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .guidance-table td.guidance-cell {
+    padding-top: 4px;
+  }
+
+  .guidance-rows li {
+    font-size: 14px;
+  }
+
+  .guidance-card {
+    padding: 12px 14px 8px;
+  }
 }
 
 .arena-empty {

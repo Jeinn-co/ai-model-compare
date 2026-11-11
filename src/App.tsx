@@ -24,6 +24,7 @@ import {
 } from "./bench"
 import { initialLanguage, LANGUAGE_KEY, type Language } from "./language"
 import Arena from "./Arena"
+import Guidance from "./Guidance"
 import Chart from "./Chart"
 import Legend from "./Legend"
 
@@ -370,6 +371,8 @@ export default function App() {
           </>
         )}
       </p>
+
+      <Guidance t={t} aaRows={loaded.aa?.rows ?? NO_ROWS} />
 
       <Arena t={t} />
 

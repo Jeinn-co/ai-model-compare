@@ -82,6 +82,7 @@ Open the URL Vite prints (default http://localhost:5173). The dev server fetches
 - **▾ next to a chip:** tick or untick that CLI's models one by one, or all at once. Models are grouped by line (see the table at the top), newest version first, under a title per line; ticking a title ticks or unticks the whole line. Esc or a click anywhere outside the open chip, including another chip, closes the menu.
 - **Remembered:** chip switches and menu ticks are saved in this browser (localStorage), so a reload or the next visit keeps them. Ticks are kept per source, since each lists different models. A model a source shows for the first time starts unchecked, unless it is the new default of its line; then the older versions of that line are unchecked.
 - **Hover** a point to highlight its label, score and cost. The readout under the chart also lists Speed, Verbosity and Latency on AA, Tokens and Steps on CursorBench, and Tokens, the 95% margin and the agent that ran it on Terminal-Bench.
+- **Official guidance** (under the chart): what each vendor's own pages say about choosing a model, Anthropic's note on what effort changes, and a table of standard API prices with each API's default effort, in English and Chinese. Carbon's Antigravity access requires Google AI Ultra for individual subscribers; Free, Plus and Pro do not include it. Enterprise and research eligibility are separate, as is paid Gemini API access. It is typed in by hand from the linked vendor pages (no feed publishes these), with the date it was checked. Like the human-preference list, the chips above do not filter it.
 - **Human preference** (under the chart): LMArena's WebDev arena (default, the closest to coding) or Text arena (the original Chatbot Arena), top 20 with a button to show all. Rank is LMArena's own among every model it rates, so gaps mean a model outside the supported families sits there. It is a ranking of its own: the chips above do not filter it.
 - **Click** a point to pin it. Click it again, click empty space in the chart, or press Esc to unpin.
 
@@ -166,6 +167,7 @@ server/arena.mjs      LMArena human-preference list (Hugging Face dataset, cache
 scripts/snapshot.mjs  Writes public/data/<source>.json for the static site
 src/App.tsx           Page layout, source toggle, data loading, visibility state
 src/Legend.tsx        Legend chips and the per-CLI model menu, grouped by line
+src/Guidance.tsx      Official guidance, API prices and default effort (hand-maintained)
 src/Arena.tsx         LMArena human-preference table under the chart
 src/Chart.tsx         SVG scatter/line chart (Y vs. cost; some sources can switch Y)
 src/bench.ts          Shared types, sources, colours, model lines, menu order, default ticks, formatting
