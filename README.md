@@ -13,7 +13,7 @@ starts with your browser language and remembers your choice.
 | Codex       | GPT Astra, Sol, Terra, Luna (current models only)         |
 | Grok        | Grok, Grok Build                                          |
 | Muse        | Muse Spark, Muse Glimmer                                  |
-| Gemini      | Gemini Argon, Flash, Flash-Lite, Pro                      |
+| Gemini      | Gemini Carbon, Argon, Hydrogen, Flash, Flash-Lite, Pro                      |
 | Cursor      | Composer                                                 |
 
 Every effort level the source lists (None → Max) appears as its own point, and each model's points are connected into one line.
@@ -26,7 +26,7 @@ Cursor's Composer models have their own chip on CursorBench, with the newest lis
 
 **Selection policy:** Only recognizable model families that developers are actively discussing are included. A benchmark listing alone is not a reason to add a family: review each new family before adding it, rather than taking every model a source lists. Scores and costs compare the selected models, not their popularity.
 
-The page opens on Artificial Analysis with one model checked per provider: the newest listed version of Opus, GPT Sol, Grok, Muse Spark, Gemini Flash and Composer. When a newer version appears, such as Opus 5.6, it is checked in place of the old one with no code change. A provider with none of these lines on a source gets the first model of its menu instead. Every other supported model the source lists, in every version, is in the ▾ menu to tick. On Artificial Analysis and ARC-AGI-2 only releases from about the last eight months are drawn, and a model AA scored without a cost per task (for example Opus 4.7 or Grok 4.20) cannot be placed on the cost axis, so it is left out.
+The page opens on Artificial Analysis with one model checked per provider: the newest listed version of Opus, GPT Sol, Grok, Muse Spark, Gemini Hydrogen (Flash when Hydrogen has no row) and Composer. When a newer version appears, such as Opus 5.6, it is checked in place of the old one with no code change. A provider with none of these lines on a source gets the first model of its menu instead. Every other supported model the source lists, in every version, is in the ▾ menu to tick. On Artificial Analysis and ARC-AGI-2 only releases from about the last eight months are drawn, and a model AA scored without a cost per task (for example Opus 4.7 or Grok 4.20) cannot be placed on the cost axis, so it is left out.
 
 ![Demo: score vs. cost per task for five coding CLIs](docs/demo.png)
 
@@ -82,7 +82,7 @@ Open the URL Vite prints (default http://localhost:5173). The dev server fetches
 - **▾ next to a chip:** tick or untick that CLI's models one by one, or all at once. Models are grouped by line (see the table at the top), newest version first, under a title per line; ticking a title ticks or unticks the whole line. Esc or a click anywhere outside the open chip, including another chip, closes the menu.
 - **Remembered:** chip switches and menu ticks are saved in this browser (localStorage), so a reload or the next visit keeps them. Ticks are kept per source, since each lists different models. A model a source shows for the first time starts unchecked, unless it is the new default of its line; then the older versions of that line are unchecked.
 - **Hover** a point to highlight its label, score and cost. The readout under the chart also lists Speed, Verbosity and Latency on AA, Tokens and Steps on CursorBench, and Tokens, the 95% margin and the agent that ran it on Terminal-Bench.
-- **Official guidance** (under the chart): what each vendor's own pages say about choosing a model, Anthropic's note on what effort changes, and a table of standard API prices with each API's default effort, in English and Chinese. Carbon's Antigravity access requires Google AI Ultra for individual subscribers; Free, Plus and Pro do not include it. Enterprise and research eligibility are separate, as is paid Gemini API access. It is typed in by hand from the linked vendor pages (no feed publishes these), with the date it was checked. Like the human-preference list, the chips above do not filter it.
+- **Official guidance** (under the chart): what each vendor's own pages say about choosing a model, Anthropic's note on what effort changes, and a table of standard API prices with each API's default effort, in English and Chinese. Hydrogen is the recommended upgrade from 3.8 Flash, with high as its API default and xhigh available. Carbon and Argon default to medium and stop at high. Antigravity eligibility is distinct from API access. Gemini prices not supplied for this update stay blank, including Carbon, Argon and 3.8 Flash. It is typed in by hand from the linked vendor pages (no feed publishes these), with the date it was checked. Like the human-preference list, the chips above do not filter it.
 - **Human preference** (under the chart): LMArena's WebDev arena (default, the closest to coding) or Text arena (the original Chatbot Arena), top 20 with a button to show all. Rank is LMArena's own among every model it rates, so gaps mean a model outside the supported families sits there. It is a ranking of its own: the chips above do not filter it.
 - **Click** a point to pin it. Click it again, click empty space in the chart, or press Esc to unpin.
 
