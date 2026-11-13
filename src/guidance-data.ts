@@ -13,7 +13,10 @@ const promotion = (model: (typeof catalog.models)[number]): Text => {
   const price = model.introductoryPricePerMillionTokens
   if (!price) return ["", ""]
   const rates = `$${price.input.toFixed(2)} / $${price.outputIncludingThinking.toFixed(2)}`
-  return [` (introductory ${rates} through ${price.through})`, `（推廣期 ${rates}，至 ${price.through}）`]
+  const halfPrice = price.input === model.pricePerMillionTokens.input / 2
+    && price.outputIncludingThinking === model.pricePerMillionTokens.outputIncludingThinking / 2
+  return [` (introductory ${halfPrice ? "50% off" : rates} through ${price.through})`,
+    `（推廣期 ${halfPrice ? "5 折" : rates}，至 ${price.through}）` ]
 }
 
 // One line per model, so each reads on its own.

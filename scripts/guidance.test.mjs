@@ -92,10 +92,10 @@ test("Gemini guidance shows regular rates and keeps introductory offers in the p
       const priceRow = [...priceTable.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map(match => match[1]).find(row => row.includes(model))
       if (model.includes("Carbon") || model.includes("Argon")) {
         for (const value of ["$4.00", "$20.00"]) assert.ok(row.includes(value))
-        for (const value of ["$2.00", "$10.00", "2026-11-30"]) assert.ok(priceRow.includes(value))
+        for (const value of [language === "zh" ? "5 折" : "50% off", "2026-11-30"]) assert.ok(priceRow.includes(value))
       } else if (model.includes("Flash")) {
         for (const value of ["$1.50", "$7.50"]) assert.ok(row.includes(value))
-        for (const value of ["$0.75", "$3.75", "2026-12-31"]) assert.ok(priceRow.includes(value))
+        for (const value of [language === "zh" ? "5 折" : "50% off", "2026-12-31"]) assert.ok(priceRow.includes(value))
       } else {
         for (const value of ["$1.50", "$7.50"]) assert.ok(row.includes(value))
       }
