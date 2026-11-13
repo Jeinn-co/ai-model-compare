@@ -147,6 +147,13 @@ export const PRICES: readonly Price[] = [
   }),
 ]
 
+// The chart and the price table share these official API defaults.
+export function isApiDefaultEffort(model: string, effort: string | null): boolean {
+  const configured = PRICES.find((row) => row.model.replace(/^Claude /, "") === model)?.effort
+  return typeof configured === "string" && effort !== null
+    && effort.toLowerCase().replace(/extra[ -]?high/, "xhigh") === configured.toLowerCase()
+}
+
 export const SOURCES: readonly { name: Text; url: string }[] = [
   { name: ["Gemini API pricing", "Gemini API 定價"], url: "https://aistudio.google.com/docs/pricing" },
   { name: ["Carbon compared with Argon", "Carbon 相較 Argon 的優勢"], url: "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/" },
