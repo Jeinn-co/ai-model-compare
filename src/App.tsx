@@ -340,6 +340,22 @@ export default function App() {
         />
       )}
 
+      <ul className="chart-key" aria-label={t("Point symbols", "點位圖例")}>
+        <li>
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" strokeWidth="1.25" />
+            <circle cx="12" cy="12" r="5.5" fill="currentColor" stroke="#fff" strokeWidth="2.5" />
+          </svg>
+          {t("Outer ring: official API default effort", "外圈：官方 API 預設 effort")}
+        </li>
+        <li>
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="7" fill="currentColor" stroke="#fff" strokeWidth="2.5" />
+          </svg>
+          {t("Larger dot: my regular choice", "大圓點：我的固定常用")}
+        </li>
+      </ul>
+
       <p className="readout">
         {focus ? (
           <>

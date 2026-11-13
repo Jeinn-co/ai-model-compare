@@ -753,3 +753,20 @@ h2 {
   width: fit-content;
   cursor: pointer;
 }
+
+.chart-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin: 10px 4px 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.chart-key li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
