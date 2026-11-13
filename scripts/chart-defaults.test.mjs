@@ -103,3 +103,18 @@ test("regular choices are larger than other points and xhigh remains unmarked", 
   assert.match(apiDefault[2], /class="point-default" r="7.5"/)
   assert.match(xhigh[2], /class="point" r="5.5"/)
 })
+
+test("a regular choice that matches the API default keeps both its larger dot and outer ring", () => {
+  const { data, render } = harness()
+  // Simulate choosing the model's API-default medium as the regular effort.
+  data.DAILY_CHOICES.find(choice => choice.model === "Opus 5.5").effort = "medium"
+  const selected = row("Opus 5.5", "Medium", "claude")
+  for (const axis of ["score", "speed", "verbosity", "latency", "tokens", "steps"]) {
+    for (const active of [null, selected.label]) {
+      const html = render([selected], axis, active)
+      assert.ok(html.includes("API default effort") && html.includes("My regular choice"))
+      assert.match(html, active ? /class="point" r="9"/ : /class="point" r="7"/)
+      assert.match(html, active ? /class="point-default" r="11"/ : /class="point-default" r="9"/)
+    }
+  }
+})
