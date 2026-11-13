@@ -572,6 +572,7 @@ h2 {
 }
 
 .guidance-rows li {
+  white-space: pre-line;
   margin: 0 -10px;
   padding: 8px 10px;
   border-top: 1px solid var(--line);
