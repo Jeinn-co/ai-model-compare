@@ -188,6 +188,7 @@ Product marks on the legend chips come from [LobeHub Icons](https://github.com/l
 
 ## Changelog
 
+- **1.8.3** (2026-11-13): Show GPT-6 Astra’s default effort as not given by OpenAI, note that medium suits agent work, and mark its medium point on the chart.
 - **1.8.2** (2026-11-13): Distinguish chart points by shape: a large filled dot for regular choices, a hollow circle with a thicker stroke for the API default, and a ring with a centre dot for both, kept within the regular dot's size. Mark Gemini 4 Hydrogen / high as a regular choice.
 - **1.8.1** (2026-11-13): Explain the combined larger-dot and outer-ring symbol in both languages and verify that regular choices retain their larger size when they also match the API default.
 - **1.8.0** (2026-11-13): Reduce API-default ring size, enlarge the confirmed Opus/high and Sol/high regular-choice points, and add bilingual point-symbol explanations below the chart.
