@@ -1,3 +1,4 @@
+import { parquetReadObjects } from "hyparquet"
 import { modelName } from "./gemini.mjs"
 import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
@@ -5,34 +6,13 @@ import { fileURLToPath } from "node:url"
 import { providerOf } from "./bench.mjs"
 
 // LMArena's own published leaderboard (arena.ai sits behind a Cloudflare challenge, so it
-// is read from the dataset LMArena publishes on Hugging Face, through its JSON API).
+// is read from the dataset LMArena publishes on Hugging Face).
 const SOURCE = "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset"
-const API = "https://datasets-server.huggingface.co/filter"
+const PARSER_VERSION = 2
 const CACHE = join(dirname(fileURLToPath(import.meta.url)), "..", "data", "arena-cache.json")
 const TTL_MS = 6 * 60 * 60 * 1000
 // Text is the original Chatbot Arena; WebDev is the coding one.
 export const ARENAS = ["text", "webdev"]
-const PAGE_SIZE = 100
-
-async function json(params) {
-  const url = `${API}?${new URLSearchParams({ dataset: "lmarena-ai/leaderboard-dataset", split: "latest", ...params })}`
-  let lastError
-  // The API answers "temporary internal issue" now and then, and "index is loading" (up to a
-  // minute) on the first query of an arena in a while; a retry with backoff goes through.
-  for (let attempt = 0; attempt < 6; attempt++) {
-    try {
-      const response = await fetch(url, { signal: AbortSignal.timeout(30_000) })
-      const body = await response.json()
-      if (!response.ok || body.error) throw new Error(body.error ?? String(response.status))
-      return body
-    } catch (error) {
-      lastError = error
-      await new Promise((done) => setTimeout(done, 2000 * 2 ** attempt))
-    }
-  }
-  throw lastError
-}
-
 export function arenaRows(arena, items) {
   const rows = []
   for (const item of items) {
@@ -43,33 +23,29 @@ export function arenaRows(arena, items) {
     if (!provider || !Number.isFinite(item.rating)) continue
     rows.push({
       arena,
-      rank: item.rank,
+      rank: Number(item.rank),
       name,
       provider,
       score: item.rating,
       lower: item.rating_lower,
       upper: item.rating_upper,
-      votes: item.vote_count,
+      votes: Number(item.vote_count),
       date: item.leaderboard_publish_date,
     })
   }
   return rows
 }
 
-async function loadArenaRows(arena) {
-  const items = []
-  for (let offset = 0; ; offset += PAGE_SIZE) {
-    const body = await json({
-      config: arena,
-      where: `"category"='overall'`,
-      orderby: `"rank"`,
-      offset: String(offset),
-      length: String(PAGE_SIZE),
-    })
-    items.push(...body.rows.map((entry) => entry.row))
-    if (body.rows.length < PAGE_SIZE || items.length >= body.num_rows_total) break
-  }
-  return arenaRows(arena, items)
+export async function loadArenaRows(arena) {
+  // The dataset query API can fail while the published source file remains available.
+  const response = await fetch(`${SOURCE}/resolve/main/${arena}/latest-00000-of-00001.parquet`, {
+    signal: AbortSignal.timeout(40_000),
+  })
+  if (!response.ok) throw new Error(`LMArena ${arena}: HTTP ${response.status}`)
+  const items = await parquetReadObjects({ file: await response.arrayBuffer() })
+  const rows = arenaRows(arena, items.filter((item) => item.category === "overall"))
+  if (!rows.length) throw new Error(`LMArena ${arena}: empty leaderboard`)
+  return rows.sort((a, b) => a.rank - b.rank)
 }
 
 async function readCache() {
@@ -83,12 +59,14 @@ async function readCache() {
 
 const PUBLISHED = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "data", "arena.json")
 
-async function publishedRows() {
+async function publishedSnapshot() {
   try {
-    const rows = JSON.parse(await readFile(PUBLISHED, "utf8"))?.rows
-    return Array.isArray(rows) ? rows : []
+    const data = JSON.parse(await readFile(PUBLISHED, "utf8"))
+    if (!data?.fetchedAt || !Array.isArray(data.rows) || !data.rows.length) return null
+    return { fetchedAt: data.fetchedAt,
+      arenas: Object.fromEntries(ARENAS.map((arena) => [arena, data.rows.filter((row) => row.arena === arena)])) }
   } catch {
-    return []
+    return null
   }
 }
 
@@ -101,23 +79,27 @@ const payload = (data, changed) => ({
 
 export async function loadArena() {
   const cached = await readCache()
-  if (cached && Date.now() - Date.parse(cached.fetchedAt) < TTL_MS) return payload(cached, false)
+  if (cached?.parserVersion === PARSER_VERSION && Date.now() - Date.parse(cached.fetchedAt) < TTL_MS) return payload(cached, false)
+  const previous = cached ?? await publishedSnapshot()
   const arenas = {}
+  let fresh = 0
   for (const arena of ARENAS) {
     try {
       arenas[arena] = await loadArenaRows(arena)
+      fresh++
     } catch {
       // Keep the last good rows for an arena that failed this time. CI has no cache, so fall
       // back to the live snapshot the Pages workflow downloads into public/data first.
-      const kept = cached?.arenas?.[arena] ?? (await publishedRows()).filter((row) => row.arena === arena)
+      const kept = previous?.arenas?.[arena] ?? []
       if (kept.length) arenas[arena] = kept
     }
   }
   if (!Object.values(arenas).some((rows) => rows.length)) {
-    if (cached) return payload(cached, false)
     throw new Error("no arena loaded")
   }
-  const data = { fetchedAt: new Date().toISOString(), arenas }
+  if (!fresh) return payload(previous, false)
+  const data = { parserVersion: PARSER_VERSION,
+    fetchedAt: fresh === ARENAS.length ? new Date().toISOString() : previous?.fetchedAt ?? new Date().toISOString(), arenas }
   await mkdir(dirname(CACHE), { recursive: true })
   await writeFile(CACHE, JSON.stringify(data))
   return payload(data, true)

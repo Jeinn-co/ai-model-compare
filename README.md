@@ -72,7 +72,7 @@ npm install
 npm run dev
 ```
 
-Open the URL Vite prints (default http://localhost:5173). The dev server fetches every source live. The first LMArena load can take a minute or two (see below); after that it is cached for six hours.
+Open the URL Vite prints (default http://localhost:5173). The dev server fetches every source live. LMArena downloads its official published files on the first load and caches them for six hours.
 
 ## Using the chart
 
@@ -119,9 +119,9 @@ The ARC-AGI-2 source (`/api/bench?source=arc`, in [server/arc.mjs](server/arc.mj
 
 The LMArena list (`/api/bench?source=arena`, in [server/arena.mjs](server/arena.mjs)) is not a chart source, since LMArena has no cost:
 
-1. lmarena.ai sits behind a Cloudflare challenge, so the rows come from the leaderboard dataset LMArena publishes on Hugging Face ([lmarena-ai/leaderboard-dataset](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset)), read as JSON through the Hugging Face datasets API with no extra dependency.
+1. lmarena.ai sits behind a Cloudflare challenge, so the rows come from the leaderboard dataset LMArena publishes on Hugging Face ([lmarena-ai/leaderboard-dataset](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset)), read directly from its published Parquet files using `hyparquet`, without depending on the datasets query API.
 2. Only the `overall` category of the Text and WebDev arenas is read, then filtered to the supported families. The model name is LMArena's own (minus "Claude "), since its brackets mix efforts and build dates.
-3. That API often answers slowly or with a temporary error, so each request retries with backoff. Results are cached in `data/arena-cache.json` for 6 hours; an arena that fails keeps its last cached rows, or, with no cache (as on CI), its rows from the live `arena.json` the workflow downloads first.
+3. Each source-file download has a 40-second timeout. Results are cached in `data/arena-cache.json` for 6 hours; an arena that fails keeps its last cached rows, or, with no cache (as on CI), its rows from the live `arena.json` the workflow downloads first. A full fallback does not rewrite the cache or advance its data timestamp; partial recovery retains the prior timestamp until both arenas refresh.
 
 `data/` is git-ignored, so the cache is created on your first run.
 
@@ -143,14 +143,14 @@ The site is static and runs on GitHub Pages. React runs in the visitor's browser
 [.github/workflows/pages.yml](.github/workflows/pages.yml) runs on every push to `main`, every six hours, and on demand:
 
 1. Downloads the live `data/*.json` for comparison and as a fallback.
-2. Runs `npm run snapshot` to check **Artificial Analysis, CursorBench, Terminal-Bench, ARC-AGI-2 and LMArena**. It compares each source's rows, source URL and benchmark version, ignoring `fetchedAt`. An unchanged source keeps its exact published JSON and update time. A source that cannot be fetched keeps its last valid snapshot; with no valid fallback, the run fails.
-3. On a scheduled or manual run where no source changed, skips package installation, build, artifact upload and deployment. A change in any source publishes. A push to `main` always publishes, so code and version changes reach the live site.
-4. Restores the website build cached for this exact commit and reuses its HTML/CSS/JS without installing packages or rebuilding React. On a new commit or a cache miss, runs `npm ci`, builds with `BASE_PATH=/ai-model-compare/` and caches `dist/`.
+2. Installs production dependencies with `npm ci --omit=dev --ignore-scripts`, then runs `npm run snapshot` to check **Artificial Analysis, CursorBench, Terminal-Bench, ARC-AGI-2 and LMArena**. It compares each source's rows, source URL and benchmark version, ignoring `fetchedAt`. An unchanged source keeps its exact published JSON and update time. A source that cannot be fetched keeps its last valid snapshot; with no valid fallback, the run fails.
+3. On a scheduled or manual run where no source changed, skips build dependencies, build, artifact upload and deployment. A change in any source publishes. A push to `main` always publishes, so code and version changes reach the live site.
+4. Restores the website build cached for this exact commit and reuses its HTML/CSS/JS without installing build dependencies or rebuilding React. On a new commit or a cache miss, runs `npm ci`, builds with `BASE_PATH=/ai-model-compare/` and caches `dist/`.
 5. Copies the current snapshots into `dist/data/` and deploys the whole site to Pages. New data is published as new JSON, usually without rebuilding the frontend; a browser reload then reads the updated files.
 
 The published page reads `data/<source>.json`. Its footer's **Updated** time belongs to the selected source and records the fetch that last changed its published data; it does not advance just because a check ran or the browser reloaded. Each run's UTC check time and each source's result are recorded in the Actions log and job summary, without modifying an unchanged site's files. The dev server keeps answering `/api/bench` live with its existing local cache behavior.
 
-The snapshot scripts use only Node.js built-ins, so Actions can check the sources before installing the React/Vite build dependencies. GitHub Pages serves static files only; there is no application server to restart. React loads the snapshots with `useEffect` and `fetch`.
+The snapshot scripts use Node.js and `hyparquet` to read LMArena’s official published files directly; they do not depend on the dataset query API. Actions installs production dependencies before checking sources and only installs React/Vite build dependencies when a build is needed. Failed arena fetches retain their prior data timestamp. GitHub Pages serves static files only; there is no application server to restart. React loads the snapshots with `useEffect` and `fetch`.
 
 ### Published data used by ai-usage
 
