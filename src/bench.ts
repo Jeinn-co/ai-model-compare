@@ -1,3 +1,5 @@
+import { version } from "../package.json"
+
 export type ProviderId = "claude" | "codex" | "grok" | "muse" | "gemini" | "cursor"
 
 export type Row = {
@@ -106,7 +108,7 @@ export function sourceMeta(id: SourceId, version: string | null) {
   return { ...meta, eyebrow: `${meta.name} ${version}`, scoreName: meta.scoreName.replace(meta.name, `${meta.name} ${version}`) }
 }
 
-export const APP_VERSION = "1.5.0"
+export const APP_VERSION = version
 
 export const REPO_URL = "https://github.com/Jeinn-co/ai-model-compare"
 
