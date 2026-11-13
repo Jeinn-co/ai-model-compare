@@ -63,7 +63,7 @@ export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }
         const plans = model.antigravity?.restricted ? model.antigravity.plans.join(", ") : ""
         const access = plans ? `\nSubscription required. Antigravity: ${plans}.` : ""
         const zhAccess = plans ? `\n限定訂閱使用。Antigravity：${plans}。` : ""
-        return [`${model.model}: ${model.useCases[0]}${access}`, `${model.model}：${model.useCases[1]}${zhAccess}`]
+        return [`${model.model}: ${model.useCases[0]}${access}`, `${model.model}：${model.useCases[1]}${zhAccess}`, model.id === "gemini-4-hydrogen"]
       }),
     ],
   },

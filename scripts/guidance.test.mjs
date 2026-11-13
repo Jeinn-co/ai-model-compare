@@ -63,7 +63,9 @@ test("a catalog-only model addition reaches both existing tables and uses source
   assert.ok(bodies.at(-1)[1].includes("Gemini Fixture"))
   assert.ok(bodies.at(-1)[1].includes("42.0"))
   const gemini = [...bodies[0][1].matchAll(/<tr>([\s\S]*?)<\/tr>/g)].at(-1)[1]
-  assert.ok(!gemini.includes("guidance-pick"))
+  const fixtureGuidance = [...gemini.matchAll(/<li([^>]*)>([\s\S]*?)<\/li>/g)]
+    .find((match) => match[2].includes("Gemini Fixture"))
+  assert.ok(fixtureGuidance && !fixtureGuidance[1].includes("guidance-pick"))
   const missing = renderGuidance({ models })
   const fixtureRow = [...missing.matchAll(/<tr>([\s\S]*?)<\/tr>/g)]
     .map((m) => m[1]).findLast((row) => row.includes("Gemini Fixture"))
