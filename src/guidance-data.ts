@@ -139,8 +139,8 @@ export const PRICES: readonly Price[] = [
       input: price ? `$${price.input.toFixed(2)}` : "—",
       output: price ? `$${price.outputIncludingThinking.toFixed(2)}` : "—",
       effort: model.defaultEffort ?? NOT_STATED,
-      note: [(promo[0] + (price ? ` Cached input $${price.cachedInput} / 1M; output includes thinking.` : " Price unavailable.")).trim(),
-        (promo[1] + (price ? ` 快取輸入 $${price.cachedInput}／百萬；輸出含 thinking。` : " 價格未提供。")).trim()],
+      note: [(promo[0] + (price ? " Output includes thinking." : " Price unavailable.")).trim(),
+        (promo[1] + (price ? " 輸出含 thinking。" : " 價格未提供。")).trim()],
     }
   }),
 ]
