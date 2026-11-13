@@ -17,7 +17,7 @@ const dataSource = await readFile(new URL("../src/guidance-data.ts", import.meta
 const catalog = JSON.parse(await readFile(new URL("../public/data/gemini-models.json", import.meta.url), "utf8"))
 const dataCode = ts.transpileModule(dataSource, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText
 
-function renderGuidance({ sort = null, models = catalog, aaRows = [] } = {}) {
+function renderGuidance({ sort = null, models = catalog, aaRows = [], language = "en" } = {}) {
   const data = { exports: {} }
   runInNewContext(dataCode, { exports: data.exports, require: (id) =>
     id.endsWith("gemini-models.json") ? { default: models } : require(id) })
@@ -29,14 +29,19 @@ function renderGuidance({ sort = null, models = catalog, aaRows = [] } = {}) {
     return require(id)
   } })
   return renderToStaticMarkup(React.createElement(module.exports.default, {
-    t: (english) => english, aaRows,
+    t: (english, chinese) => language === "zh" ? chinese : english, aaRows,
   }))
 }
 
 test("unverified Gemini prices render blank and sort last in both directions", () => {
+  const models = structuredClone(catalog)
+  for (const model of models.models.slice(1)) {
+    delete model.pricePerMillionTokens
+    delete model.introductoryPricePerMillionTokens
+  }
   for (const key of ["input", "output"]) {
     for (const dir of [1, -1]) {
-      const markup = renderGuidance({ sort: { key, dir } })
+      const markup = renderGuidance({ sort: { key, dir }, models })
       const body = [...markup.matchAll(/<tbody>([\s\S]*?)<\/tbody>/g)].at(-1)[1]
       const rows = [...body.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map((m) => m[1])
       assert.equal(rows.length, 12)
@@ -70,4 +75,24 @@ test("a catalog-only model addition reaches both existing tables and uses source
   const fixtureRow = [...missing.matchAll(/<tr>([\s\S]*?)<\/tr>/g)]
     .map((m) => m[1]).findLast((row) => row.includes("Gemini Fixture"))
   assert.ok(fixtureRow.includes('<td class="num">—</td>'))
+})
+
+test("all Gemini guidance rows show verified rates and dated introductory offers in both languages", () => {
+  for (const language of ["en", "zh"]) {
+    const markup = renderGuidance({ language })
+    const body = [...markup.matchAll(/<tbody>([\s\S]*?)<\/tbody>/g)][0][1]
+    const gemini = [...body.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].at(-1)[1]
+    const rows = [...gemini.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)].map(match => match[1])
+    for (const model of ["Gemini 4 Hydrogen", "Gemini 4 Carbon", "Gemini 4 Argon", "Gemini 3.8 Flash"]) {
+      const row = rows.find(row => row.includes(model + (language === "zh" ? "：" : ":")))
+      assert.ok(row && row.includes("guidance-money"), model)
+      if (model.includes("Carbon") || model.includes("Argon")) {
+        for (const value of ["$4.00", "$20.00", "$2.00", "$10.00", "2026-11-30"]) assert.ok(row.includes(value))
+      } else if (model.includes("Flash")) {
+        for (const value of ["$1.50", "$7.50", "$0.75", "$3.75", "2026-12-31"]) assert.ok(row.includes(value))
+      } else {
+        for (const value of ["$1.50", "$7.50"]) assert.ok(row.includes(value))
+      }
+    }
+  }
 })

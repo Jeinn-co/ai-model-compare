@@ -8,6 +8,14 @@ export type Text = readonly [english: string, chinese: string]
 // A guidance line; `strong` marks the model each vendor points to first.
 export type Line = readonly [english: string, chinese: string, strong?: boolean]
 
+// Promotional rates share the same catalog as regular API prices.
+const promotion = (model: (typeof catalog.models)[number]): Text => {
+  const price = model.introductoryPricePerMillionTokens
+  if (!price) return ["", ""]
+  const rates = `$${price.input.toFixed(2)} / $${price.outputIncludingThinking.toFixed(2)}`
+  return [` (introductory ${rates} through ${price.through})`, `（推廣期 ${rates}，至 ${price.through}）`]
+}
+
 // One line per model, so each reads on its own.
 export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }[] = [
   {
@@ -62,10 +70,11 @@ export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }
       ...catalog.models.map((model): Line => {
         const price = model.pricePerMillionTokens
         const amount = price ? ` $${price.input.toFixed(2)} / $${price.outputIncludingThinking.toFixed(2)}` : ""
+        const promo = promotion(model)
         const plans = model.antigravity?.restricted ? model.antigravity.plans.join(", ") : ""
         const access = plans ? `\nSubscription required. Antigravity: ${plans}.` : ""
         const zhAccess = plans ? `\n限定訂閱使用。Antigravity：${plans}。` : ""
-        return [`${model.model}: ${model.useCases[0]}${amount}${access}`, `${model.model}：${model.useCases[1]}${amount}${zhAccess}`, model.id === "gemini-4-hydrogen"]
+        return [`${model.model}: ${model.useCases[0]}${amount}${promo[0]}${access}`, `${model.model}：${model.useCases[1]}${amount}${promo[1]}${zhAccess}`, model.id === "gemini-4-hydrogen"]
       }),
     ],
   },
@@ -125,18 +134,20 @@ export const PRICES: readonly Price[] = [
   { provider: "codex", model: "GPT-6 Luna", input: "$0.10", output: "$0.50", effort: "medium" },
   ...catalog.models.map((model): Price => {
     const price = model.pricePerMillionTokens
+    const promo = promotion(model)
     return {
       provider: "gemini", model: model.model,
       input: price ? `$${price.input.toFixed(2)}` : "—",
       output: price ? `$${price.outputIncludingThinking.toFixed(2)}` : "—",
       effort: model.defaultEffort ?? NOT_STATED,
-      note: [model.useCases[0] + (price ? ` Cached input $${price.cachedInput} / 1M; output includes thinking.` : " Price unavailable."),
-        model.useCases[1] + (price ? ` 快取輸入 $${price.cachedInput}／百萬；輸出含 thinking。` : " 價格未提供。")],
+      note: [model.useCases[0] + promo[0] + (price ? ` Cached input $${price.cachedInput} / 1M; output includes thinking.` : " Price unavailable."),
+        model.useCases[1] + promo[1] + (price ? ` 快取輸入 $${price.cachedInput}／百萬；輸出含 thinking。` : " 價格未提供。")],
     }
   }),
 ]
 
 export const SOURCES: readonly { name: Text; url: string }[] = [
+  { name: ["Gemini API pricing", "Gemini API 定價"], url: "https://aistudio.google.com/docs/pricing" },
   { name: ["Carbon compared with Argon", "Carbon 相較 Argon 的優勢"], url: "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/" },
   { name: ["Gemini 4 Hydrogen", "Gemini 4 Hydrogen"], url: "https://aistudio.google.com/docs/whats-new-gemini-4-hydrogen" },
   { name: ["Hydrogen in Antigravity", "Antigravity 的 Hydrogen"], url: "https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/" },
