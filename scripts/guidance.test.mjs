@@ -35,7 +35,7 @@ function renderGuidance({ sort = null, models = catalog, aaRows = [], language =
 
 test("unverified Gemini prices render blank and sort last in both directions", () => {
   const models = structuredClone(catalog)
-  for (const model of models.models.slice(1)) {
+  for (const model of models.models.filter(model => model.id !== "gemini-4-hydrogen")) {
     delete model.pricePerMillionTokens
     delete model.introductoryPricePerMillionTokens
   }
