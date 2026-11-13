@@ -2,7 +2,7 @@ import { useState } from "react"
 import { providerById, type ProviderId, type Row } from "./bench"
 import type { Translate } from "./language"
 
-import { CHECKED, GUIDANCE, NAMED, OPUS_LEVELS, EFFORT, PRICES, SOURCES, API_NOTES, type Text, type Line, type Price } from "./guidance-data"
+import { CHECKED, GUIDANCE, NAMED, OPUS_LEVELS, EFFORT, PRICES, SOURCES, API_NOTES, SELECTION_POLICY, type Text, type Line, type Price } from "./guidance-data"
 
 function Swatch({ provider }: { provider: ProviderId }) {
   return <span className="swatch" style={{ background: providerById(provider).color }} />
@@ -96,8 +96,7 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
       </div>
 
       <p className="arena-note">
-        {t("My selection policy for security work: safety and correctness come first. Choose the model and effort best suited to the risk; cost is not a reason to reduce necessary security rigor.",
-          "我的安全工作選型原則：安全性與正確性優先，依風險選最適合的模型與 effort；成本不作為降低必要安全強度的理由。")}
+        {say(SELECTION_POLICY)}
       </p>
 
       <div className="guidance-effort">

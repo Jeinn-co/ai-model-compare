@@ -183,3 +183,8 @@ export const API_NOTES: readonly Text[] = [
   ["Hydrogen API (released 2026-11-12): 1,048,576 tokens shared by input, thinking and output; synchronous output limit 65,536. No explicit caching. temperature, top_p and top_k are ignored; minimal returns an error.", "Hydrogen API（2026-11-12 發布）：input、thinking、output 共用 1,048,576 tokens；同步輸出上限 65,536。不支援 explicit caching；temperature、top_p、top_k 會被忽略；minimal 會報錯。"],
   ["Antigravity removes Claude Sonnet 4.6, Claude Opus 4.6 and GPT-OSS-120b on 2026-11-18. Model access depends on the account.", "Antigravity 將於 2026-11-18 移除 Claude Sonnet 4.6、Claude Opus 4.6、GPT-OSS-120b。實際模型使用權仍依帳號而定。"],
 ]
+
+export const SELECTION_POLICY: Text = [
+  "My local Gemini selection: Hydrogen / high for Planner, Designer, Executor, Reviewer and DevOps; Argon is excluded because of cost. Security keeps Carbon / high, with safety and correctness first. This draft is not synced to Notion.",
+  "我的 Gemini 本機選型：Planner、Designer、Executor、Reviewer、DevOps 使用 Hydrogen / high；因成本排除 Argon。Security 保留 Carbon / high，以安全性與正確性為優先。此草案尚未同步 Notion。",
+]
