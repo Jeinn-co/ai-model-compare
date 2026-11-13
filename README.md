@@ -188,6 +188,7 @@ Product marks on the legend chips come from [LobeHub Icons](https://github.com/l
 
 ## Changelog
 
+- **1.6.1** (2026-11-13): Order Claude guidance as Fable, Opus, Sonnet and Haiku while preserving the selected Opus highlight in both languages.
 - **1.6.0** (2026-11-13): Add Gemini 4 Hydrogen and benchmark aliases, publish the shared Gemini catalog, refresh bilingual model guidance and API prices, and simplify the comparison tables and sources.
 - **1.5.0** (2026-11-12): Add bilingual official model guidance, effort explanations and sortable API prices with AA scores. State Carbon's Antigravity subscription requirements separately from paid API access, link the official eligibility sources, and refine report spacing and controls.
 - **1.3.0** (2026-11-09): Chart only the Claude and Codex models their vendors currently list: every snapshot checks the official model pages and drops retired and legacy models, keeping the last snapshot if that check fails. Remove DeepSeek and GLM. Fix the snapshot CLI tests, which lacked stubs for Terminal-Bench, ARC-AGI-2 and LMArena.
