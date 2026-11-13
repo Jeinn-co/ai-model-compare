@@ -2,8 +2,7 @@ import type { ProviderId } from "./bench"
 import catalog from "../public/data/gemini-models.json"
 
 // shortcut: typed in by hand from each vendor's own pages (no feed publishes these);
-// re-check every row against SOURCES and update CHECKED whenever a vendor changes a price.
-export const CHECKED = "2026-11-12"
+// Re-check affected records against SOURCES when a vendor changes its model guidance or prices.
 
 export type Text = readonly [english: string, chinese: string]
 // A guidance line; `strong` marks the model each vendor points to first.
@@ -145,8 +144,8 @@ export const PRICES: readonly Price[] = [
       input: price ? `$${price.input.toFixed(2)}` : "—",
       output: price ? `$${price.outputIncludingThinking.toFixed(2)}` : "—",
       effort: model.defaultEffort ?? NOT_STATED,
-      note: [model.useCases[0] + (price ? ` Cached input $${price.cachedInput} / 1M; output includes thinking.` : " Price not rechecked."),
-        model.useCases[1] + (price ? ` 快取輸入 $${price.cachedInput}／百萬；輸出含 thinking。` : " 價格尚未重新核對。")],
+      note: [model.useCases[0] + (price ? ` Cached input $${price.cachedInput} / 1M; output includes thinking.` : " Price unavailable."),
+        model.useCases[1] + (price ? ` 快取輸入 $${price.cachedInput}／百萬；輸出含 thinking。` : " 價格未提供。")],
     }
   }),
 ]
@@ -185,6 +184,6 @@ export const API_NOTES: readonly Text[] = [
 ]
 
 export const SELECTION_POLICY: Text = [
-  "My local Gemini selection: Hydrogen / high as the starting level for the five general roles; upgrade to xhigh only when high cannot resolve a complex planning, review or incident-analysis task; Argon is excluded because of cost. Security keeps Carbon / high, with safety and correctness first. This draft is not synced to Notion.",
-  "我的 Gemini 本機選型：五個一般角色以 Hydrogen / high 開始；high 無法解決複雜規劃、審查或排障任務時才升 xhigh；因成本排除 Argon。Security 保留 Carbon / high，以安全性與正確性為優先。此草案尚未同步 Notion。",
+  "My Gemini choices: Hydrogen / high for routine work; xhigh when high is insufficient for complex reasoning. Carbon / high for security, prioritizing safety and correctness. Argon is excluded because of cost.",
+  "我的 Gemini 用法：日常工作用 Hydrogen / high；複雜推理在 high 不足時升 xhigh。安全工作用 Carbon / high，以安全性與正確性優先。Argon 因成本不納入選型。",
 ]

@@ -2,7 +2,7 @@ import { useState } from "react"
 import { providerById, type ProviderId, type Row } from "./bench"
 import type { Translate } from "./language"
 
-import { CHECKED, GUIDANCE, NAMED, OPUS_LEVELS, EFFORT, PRICES, SOURCES, API_NOTES, SELECTION_POLICY, type Text, type Line, type Price } from "./guidance-data"
+import { GUIDANCE, NAMED, OPUS_LEVELS, EFFORT, PRICES, SOURCES, API_NOTES, SELECTION_POLICY, type Text, type Line, type Price } from "./guidance-data"
 
 function Swatch({ provider }: { provider: ProviderId }) {
   return <span className="swatch" style={{ background: providerById(provider).color }} />
@@ -89,8 +89,8 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
           <p className="eyebrow">{t("Vendor docs", "官方文件")}</p>
           <h2 id="guidance-title">{t("Official guidance", "官方說法")}</h2>
           <p className="arena-note">
-            {t(`Gemini guidance and access rechecked against current Google articles and model documentation on 2026-11-13. Other vendor text retains its ${CHECKED} check date. Prices are per 1M input/output tokens; unverified Gemini prices stay blank.`,
-              `Gemini 選型與資格已依 2026-11-13 的 Google 官方文章及模型文件重新核對；其他廠商文案保留 ${CHECKED} 核對日。價格為每百萬輸入／輸出 token；本次未提供的 Gemini 價格留白。`)}
+            {t("Official model guidance, thinking levels and API prices per 1M tokens. Missing data is shown as —.",
+              "模型官方定位、思考等級與每百萬 token 的 API 價格。缺少的資料以 — 表示。")}
           </p>
         </div>
       </div>
