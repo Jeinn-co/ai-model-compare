@@ -343,23 +343,22 @@ export default function App() {
       <ul className="chart-key" aria-label={t("Point symbols", "點位圖例")}>
         <li>
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" strokeWidth="1.25" />
-            <circle cx="12" cy="12" r="5.5" fill="currentColor" stroke="#fff" strokeWidth="2.5" />
+            <circle cx="12" cy="12" r="7" fill="currentColor" stroke="#fff" strokeWidth="2.5" />
           </svg>
-          {t("Outer ring: official API default effort", "外圈：官方 API 預設 effort")}
+          {t("Large filled dot: my regular choice", "實心大圓：常用")}
         </li>
         <li>
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9" fill="currentColor" stroke="#fff" strokeWidth="2.5" />
+            <circle cx="12" cy="12" r="5.5" fill="#fff" stroke="currentColor" strokeWidth="1.5" />
           </svg>
-          {t("Larger dot: my regular choice", "大圓點：我的固定常用")}
+          {t("Hollow circle: API default", "空心圓：API 預設")}
         </li>
         <li>
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" strokeWidth="1.25" />
-            <circle cx="12" cy="12" r="9" fill="currentColor" stroke="#fff" strokeWidth="2.5" />
+            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.25" />
+            <circle cx="12" cy="12" r="7" fill="currentColor" stroke="#fff" strokeWidth="2.5" />
           </svg>
-          {t("Larger dot + ring: both", "大圓點＋外圈：同時符合兩者")}
+          {t("Large filled dot + ring: regular and default", "實心加外圈：常用＋預設")}
         </li>
       </ul>
 

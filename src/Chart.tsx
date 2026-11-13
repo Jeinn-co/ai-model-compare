@@ -241,7 +241,7 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
               const on = row.label === active
               const apiDefault = isApiDefaultEffort(row.model, row.effort)
               const daily = isDailyChoice(row.model, row.effort)
-              const radius = (daily ? 9 : 5.5) + (on ? 2 : 0)
+              const radius = (daily ? 7 : 5.5) + (on ? 1 : 0)
               return (
                 <g
                   key={row.label}
@@ -266,7 +266,7 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
                   }}
                 >
                   <circle r={16} fill="transparent" />
-                  {apiDefault ? (
+                  {apiDefault && daily ? (
                     <circle
                       className="point-default"
                       r={radius + 2}
@@ -280,10 +280,10 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
                   <circle
                     className="point"
                     r={radius}
-                    fill={color}
+                    fill={apiDefault && !daily ? "#ffffff" : color}
                     fillOpacity={hot || emphasis === null ? 1 : 0.45}
-                    stroke="#ffffff"
-                    strokeWidth={2.5}
+                    stroke={apiDefault && !daily ? color : "#ffffff"}
+                    strokeWidth={apiDefault && !daily ? 1.5 : 2.5}
                   />
                 </g>
               )
