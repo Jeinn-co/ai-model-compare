@@ -188,6 +188,7 @@ Product marks on the legend chips come from [LobeHub Icons](https://github.com/l
 
 ## Changelog
 
+- **1.6.0** (2026-11-13): Add Gemini 4 Hydrogen and benchmark aliases, publish the shared Gemini catalog, refresh bilingual model guidance and API prices, and simplify the comparison tables and sources.
 - **1.5.0** (2026-11-12): Add bilingual official model guidance, effort explanations and sortable API prices with AA scores. State Carbon's Antigravity subscription requirements separately from paid API access, link the official eligibility sources, and refine report spacing and controls.
 - **1.3.0** (2026-11-09): Chart only the Claude and Codex models their vendors currently list: every snapshot checks the official model pages and drops retired and legacy models, keeping the last snapshot if that check fails. Remove DeepSeek and GLM. Fix the snapshot CLI tests, which lacked stubs for Terminal-Bench, ARC-AGI-2 and LMArena.
 - **1.2.0** (2026-10-29): Add Terminal-Bench as a chart source, with cost and tokens per task, the 95% margin and the agent that ran each entry. Add ARC-AGI-2 as a chart source, with a point for every effort ARC ran. Add a human-preference list from LMArena's WebDev and Text arenas under the chart. The snapshot workflow checks and publishes all five. A pinned point now also clears on a click on empty chart space or Esc, not only on its own second click. A model menu now also closes on a click elsewhere in the legend row.
