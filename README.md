@@ -204,7 +204,7 @@ published in `public/data/gemini-models.json`; AA snapshots also carry its `mode
 array so consumers can distinguish an unscored model from an unknown model.
 Hydrogen replaces 3.8 Flash as the recommended upgrade. Its four levels are low,
 medium, high (default) and xhigh. API and Antigravity access are distinct; the
-catalog records the supplied 2026-11-13 availability snapshot, not account access.
+catalog records the current official model eligibility table rechecked on 2026-11-13, not verified account access. Hydrogen is now listed for Free, Plus, Pro, Ultra and Enterprise. The launch article describes the earlier paid Pro/Ultra rollout; the current model table takes precedence for access.
 
 Every benchmark score still comes from that source's existing loader. Aliases such
 as `gemini-4-hydrogen` and `Google Gemini 4 Hydrogen` normalize to `Gemini 4 Hydrogen`.
@@ -216,3 +216,10 @@ Other benchmark costs remain source-reported; missing score or cost stays absent
 Run `npm run snapshot -- --dry-run` to check all five sources without writing
 public snapshots. Loader caches may refresh. Tests use synthetic fixtures, not
 hand-entered benchmark results.
+
+Gemini official guidance was reread against the current Hydrogen API article and
+Antigravity model documentation: Orchestrator is the documented day-to-day
+development option; standalone Hydrogen handles everyday coding and agent
+execution, Carbon covers difficult architecture/debugging/security audits, and
+Argon covers advanced long-horizon work. These vendor descriptions do not change
+the personal s-agent role configuration or create a benchmark ranking.

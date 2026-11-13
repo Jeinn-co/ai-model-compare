@@ -58,24 +58,24 @@ const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }[] = [
     provider: "gemini",
     lines: [
       [
-        "Gemini 4 Hydrogen: recommended upgrade from Gemini 3.8 Flash. low / medium / high (default) / xhigh. $1.50 input / $7.50 output per 1M tokens; output includes thinking.",
-        "Gemini 4 Hydrogen：Gemini 3.8 Flash 的建議升級版。low / medium / high（預設）/ xhigh。每百萬 token 輸入 $1.50、輸出 $7.50，輸出含 thinking。",
+        "Antigravity: Google recommends Orchestrator for day-to-day feature work, debugging and refactoring. Carbon or Argon plans and reviews; Hydrogen implements. Choose a standalone model to set its thinking level yourself.",
+        "Antigravity：Google 建議日常功能開發、除錯與重構使用 Orchestrator，由 Carbon 或 Argon 規劃及審查、Hydrogen 實作。要自行設定 thinking level，可選獨立模型。",
       ],
       [
-        "Gemini 4 Carbon: low / medium (default) / high. Antigravity: Google AI Ultra or Enterprise.",
-        "Gemini 4 Carbon：low / medium（預設）/ high。Antigravity 限 Google AI Ultra 或 Enterprise。",
+        "Gemini 4 Hydrogen: everyday coding, tool-using agents and parallel subagent execution; recommended upgrade from 3.8 Flash. low / medium / high (default) / xhigh. Antigravity's current eligibility table includes Free, Plus, Pro, Ultra and Enterprise.",
+        "Gemini 4 Hydrogen：日常程式、工具型 agent 與平行子 agent 實作；3.8 Flash 的建議升級版。low / medium / high（預設）/ xhigh。目前 Antigravity 資格表列 Free、Plus、Pro、Ultra、Enterprise 可用。",
       ],
       [
-        "Gemini 4 Argon: low / medium (default) / high. Antigravity: paid Google AI Pro (†), Ultra or Enterprise.",
-        "Gemini 4 Argon：low / medium（預設）/ high。Antigravity 付費 Google AI Pro（†）、Ultra、Enterprise 可用。",
+        "Gemini 4 Carbon: complex architecture, difficult debugging and security audits. low / medium (default) / high. Antigravity: Ultra or Enterprise.",
+        "Gemini 4 Carbon：複雜架構、疑難除錯與安全稽核。low / medium（預設）/ high。Antigravity 限 Ultra 或 Enterprise。",
       ],
       [
-        "Gemini 3.8 Flash: low / medium / high. Google recommends upgrading to Hydrogen.",
-        "Gemini 3.8 Flash：low / medium / high。Google 建議升級至 Hydrogen。",
+        "Gemini 4 Argon: advanced long-horizon tasks. low / medium (default) / high. Antigravity: Pro (†), Ultra or Enterprise; † paid Pro or trials with eligible premium devices.",
+        "Gemini 4 Argon：進階長時程任務。low / medium（預設）/ high。Antigravity 為 Pro（†）、Ultra、Enterprise；† 指付費 Pro 或符合資格裝置的試用方案。",
       ],
       [
-        "Hydrogen access (2026-11-13 snapshot): Gemini API free tier with rate limits; Antigravity requires paid Google AI Pro or Ultra. The Antigravity models page does not yet list Hydrogen. API access and subscription access are separate.",
-        "Hydrogen 資格（2026-11-13 快照）：Gemini API 免費層可用，有 rate limit；Antigravity 限付費 Google AI Pro 或 Ultra，模型頁尚未列出。API 與訂閱使用資格分開看。",
+        "Hydrogen thinking levels: start at high for most complex tasks; use xhigh for hard multi-step problems when high falls short. medium suits interactive coding and prototyping; low suits latency-sensitive tasks. Evaluate against your quality bar.",
+        "Hydrogen thinking level：多數複雜任務從 high 開始；困難的多步驟問題在 high 不足時再用 xhigh。medium 適合互動程式與原型；low 適合重視延遲的任務。以自己的品質門檻驗證。",
       ],
     ],
   },
@@ -86,8 +86,8 @@ const NAMED: readonly Text[] = [
   ["Anthropic: Opus 5.5 (long-running agentic coding) and Fable 5.2 (long-horizon agentic work)", "Anthropic：Opus 5.5（長時間 agent 型程式）與 Fable 5.2（長時程 agent 工作）"],
   ["OpenAI: none named; Astra and Sol are described for complex code work", "OpenAI：沒有直接點名；Astra 與 Sol 的描述是複雜程式工作"],
   [
-    "Google: Gemini 4 Hydrogen is the recommended upgrade from Gemini 3.8 Flash",
-    "Google：Gemini 4 Hydrogen 是 Gemini 3.8 Flash 的建議升級版",
+    "Google: Hydrogen for everyday coding and agent execution; Carbon for architecture, difficult debugging and security audits; Argon for advanced long-horizon tasks",
+    "Google：Hydrogen 用於日常程式與 agent 實作；Carbon 用於架構、疑難除錯與安全稽核；Argon 用於進階長時程任務",
   ],
 ]
 
@@ -149,8 +149,8 @@ const PRICES: readonly Price[] = [
     note: ["Cached input $0.075 / 1M; output includes thinking; uniform context pricing", "快取輸入 $0.075 / 百萬；輸出含 thinking；整個 context 同費率"] },
   { provider: "gemini", model: "Gemini 4 Carbon", input: "—", output: "—", effort: "medium", note: UNVERIFIED_PRICE },
   { provider: "gemini", model: "Gemini 4 Argon", input: "—", output: "—", effort: "medium", note: UNVERIFIED_PRICE },
-  { provider: "gemini", model: "Gemini 3.8 Flash", input: "—", output: "—", effort: NOT_STATED,
-    note: ["Price and API default effort not supplied in this update", "本次更新未提供價格與 API 預設 effort"] },
+  { provider: "gemini", model: "Gemini 3.8 Flash", input: "—", output: "—", effort: "medium",
+    note: ["Price not rechecked; default effort confirmed by the Hydrogen migration guide", "價格尚未重新核對；預設 effort 依 Hydrogen 遷移指南確認"] },
 ]
 
 const SOURCES: readonly { name: Text; url: string }[] = [
@@ -265,8 +265,8 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
           <p className="eyebrow">{t("Vendor docs", "官方文件")}</p>
           <h2 id="guidance-title">{t("Official guidance", "官方說法")}</h2>
           <p className="arena-note">
-            {t(`Gemini model information updated 2026-11-13 from the supplied facts. Other vendor text retains its ${CHECKED} check date. Prices are per 1M input/output tokens; unverified Gemini prices stay blank.`,
-              `Gemini 模型資訊依提供資料更新至 2026-11-13；其他廠商文案保留 ${CHECKED} 核對日。價格為每百萬輸入／輸出 token；本次未提供的 Gemini 價格留白。`)}
+            {t(`Gemini guidance and access rechecked against current Google articles and model documentation on 2026-11-13. Other vendor text retains its ${CHECKED} check date. Prices are per 1M input/output tokens; unverified Gemini prices stay blank.`,
+              `Gemini 選型與資格已依 2026-11-13 的 Google 官方文章及模型文件重新核對；其他廠商文案保留 ${CHECKED} 核對日。價格為每百萬輸入／輸出 token；本次未提供的 Gemini 價格留白。`)}
           </p>
         </div>
       </div>
@@ -306,6 +306,13 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
                 </td>
                 <td className="guidance-cell">
                   <Rows lines={row.lines} t={t} />
+                  {row.provider === "gemini" && (
+                    <p className="minor">
+                      <a href="https://aistudio.google.com/docs/whats-new-gemini-4-hydrogen#choosing-between-models">{t("Google's model selection guide", "Google 模型選擇指南")}</a>
+                      {" · "}
+                      <a href="https://antigravity.google/docs/models">{t("Antigravity selection and access", "Antigravity 選型與資格")}</a>
+                    </p>
+                  )}
                 </td>
               </tr>
             ))}

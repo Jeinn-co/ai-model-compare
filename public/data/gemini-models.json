@@ -22,11 +22,11 @@
       "explicitCaching": false,
       "ignoredParameters": ["temperature", "top_p", "top_k"],
       "apiFreeTier": "Available with rate limits",
-      "antigravity": {"plans": ["paid Google AI Pro", "Google AI Ultra"], "listedOnModelsPage": false}
+      "antigravity": {"plans": ["Free", "Google AI Plus", "Google AI Pro", "Google AI Ultra", "Enterprise"], "listedOnModelsPage": true, "source": "https://antigravity.google/docs/models"}
     },
     {"id": "gemini-4-carbon", "model": "Gemini 4 Carbon", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium", "antigravity": {"plans": ["Google AI Ultra", "Enterprise"]}},
     {"id": "gemini-4-argon", "model": "Gemini 4 Argon", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium", "antigravity": {"plans": ["paid Google AI Pro (†)", "Google AI Ultra", "Enterprise"]}},
-    {"id": "gemini-3.8-flash", "model": "Gemini 3.8 Flash", "provider": "gemini", "efforts": ["low", "medium", "high"]}
+    {"id": "gemini-3.8-flash", "model": "Gemini 3.8 Flash", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium"}
   ],
   "antigravityRemovals": {"date": "2026-11-18", "models": ["claude-sonnet-4.6", "claude-opus-4.6", "gpt-oss-120b"]}
 }
