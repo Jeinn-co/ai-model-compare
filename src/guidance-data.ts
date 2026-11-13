@@ -185,6 +185,6 @@ export const API_NOTES: readonly Text[] = [
 ]
 
 export const SELECTION_POLICY: Text = [
-  "My local Gemini selection: Hydrogen / high for Planner, Designer, Executor, Reviewer and DevOps; Argon is excluded because of cost. Security keeps Carbon / high, with safety and correctness first. This draft is not synced to Notion.",
-  "我的 Gemini 本機選型：Planner、Designer、Executor、Reviewer、DevOps 使用 Hydrogen / high；因成本排除 Argon。Security 保留 Carbon / high，以安全性與正確性為優先。此草案尚未同步 Notion。",
+  "My local Gemini selection: Hydrogen / xhigh for Planner and Reviewer; Hydrogen / high for Designer, Executor and DevOps; Argon is excluded because of cost. Security keeps Carbon / high, with safety and correctness first. This draft is not synced to Notion.",
+  "我的 Gemini 本機選型：Planner、Reviewer 使用 Hydrogen / xhigh；Designer、Executor、DevOps 使用 Hydrogen / high；因成本排除 Argon。Security 保留 Carbon / high，以安全性與正確性為優先。此草案尚未同步 Notion。",
 ]
