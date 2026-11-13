@@ -223,3 +223,12 @@ development option; standalone Hydrogen handles everyday coding and agent
 execution, Carbon covers difficult architecture/debugging/security audits, and
 Argon covers advanced long-horizon work. These vendor descriptions do not change
 the personal s-agent role configuration or create a benchmark ranking.
+
+### Model data and presentation
+
+Gemini facts live in `public/data/gemini-models.json`. `src/guidance-data.ts`
+builds the existing guidance and price rows from those records; `Guidance.tsx`
+only renders and sorts them. Add a model to the catalog to add its row, supported
+efforts and official task positioning to the existing tables. AA score cells
+still read crawler data, including Hydrogen; missing values remain blank.
+No new comparison table or automatic text highlight is introduced.

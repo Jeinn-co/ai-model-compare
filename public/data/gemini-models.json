@@ -7,7 +7,7 @@
   ],
   "models": [
     {
-      "id": "gemini-4-hydrogen",
+      "id": "gemini-4-hydrogen", "useCases": ["Everyday coding and agent execution; recommended upgrade from 3.8 Flash.", "日常程式與 agent 實作；3.8 Flash 的建議升級版。"],
       "model": "Gemini 4 Hydrogen",
       "provider": "gemini",
       "releasedAt": "2026-11-12",
@@ -24,9 +24,9 @@
       "apiFreeTier": "Available with rate limits",
       "antigravity": {"plans": ["Free", "Google AI Plus", "Google AI Pro", "Google AI Ultra", "Enterprise"], "listedOnModelsPage": true, "source": "https://antigravity.google/docs/models"}
     },
-    {"id": "gemini-4-carbon", "model": "Gemini 4 Carbon", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium", "antigravity": {"plans": ["Google AI Ultra", "Enterprise"]}},
-    {"id": "gemini-4-argon", "model": "Gemini 4 Argon", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium", "antigravity": {"plans": ["paid Google AI Pro (†)", "Google AI Ultra", "Enterprise"]}},
-    {"id": "gemini-3.8-flash", "model": "Gemini 3.8 Flash", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium"}
+    {"id": "gemini-4-carbon", "useCases": ["Google's strongest frontier model, for complex architecture, difficult debugging and security audits.", "Google 定位最強的前沿模型，適用複雜架構、疑難除錯與安全稽核。"], "model": "Gemini 4 Carbon", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium", "antigravity": {"plans": ["Google AI Ultra", "Enterprise"]}},
+    {"id": "gemini-4-argon", "useCases": ["Advanced long-horizon tasks.", "進階長時程任務。"], "model": "Gemini 4 Argon", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium", "antigravity": {"plans": ["Google AI Pro (†)", "Google AI Ultra", "Enterprise"]}},
+    {"id": "gemini-3.8-flash", "useCases": ["Previous-generation everyday model; Google recommends upgrading to Hydrogen.", "上一代日常模型；Google 建議升級至 Hydrogen。"], "model": "Gemini 3.8 Flash", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium"}
   ],
   "antigravityRemovals": {"date": "2026-11-18", "models": ["claude-sonnet-4.6", "claude-opus-4.6", "gpt-oss-120b"]}
 }

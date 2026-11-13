@@ -14,13 +14,13 @@ export function hydrogenCostPerTask({ input, cachedInput = 0, output, tasks = 1 
   // Output includes thinking. Total tokens alone cannot identify the input/output split.
   if (![input, cachedInput, output].every((n) => Number.isFinite(n) && n >= 0)
       || cachedInput > input || !Number.isFinite(tasks) || tasks <= 0) return null
-  const price = GEMINI_MODELS[0].pricePerMillionTokens
+  const price = GEMINI_MODELS.find((model) => model.id === "gemini-4-hydrogen").pricePerMillionTokens
   return ((input - cachedInput) * price.input + cachedInput * price.cachedInput
     + output * price.outputIncludingThinking) / 1e6 / tasks
 }
 
 export function hydrogenAaCost(variant) {
-  const price = GEMINI_MODELS[0].pricePerMillionTokens
+  const price = GEMINI_MODELS.find((model) => model.id === "gemini-4-hydrogen").pricePerMillionTokens
   // AA already computes per-task costs. Accept them only at the supplied API rates.
   if (variant.price1mInputTokens !== price.input || variant.price1mOutputTokens !== price.outputIncludingThinking
       || variant.cacheHitPrice !== price.cachedInput) return null
