@@ -188,6 +188,7 @@ Product marks on the legend chips come from [LobeHub Icons](https://github.com/l
 
 ## Changelog
 
+- **1.8.1** (2026-11-13): Explain the combined larger-dot and outer-ring symbol in both languages and verify that regular choices retain their larger size when they also match the API default.
 - **1.8.0** (2026-11-13): Reduce API-default ring size, enlarge the confirmed Opus/high and Sol/high regular-choice points, and add bilingual point-symbol explanations below the chart.
 - **1.7.0** (2026-11-13): Add an outer ring to chart points at the official API default effort, sharing the price table’s model defaults across every axis and keeping selection states distinct.
 - **1.6.3** (2026-11-13): Read LMArena’s official published Parquet files directly, restore current Text/WebDev entries including Hydrogen, and preserve timestamps when source fetches fall back. Install snapshot dependencies before source checks in CI.
