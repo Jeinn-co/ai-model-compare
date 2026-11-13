@@ -116,7 +116,8 @@ export const EFFORT: readonly Line[] = [
 
 const NOT_STATED: Text = ["Not stated", "未標明"]
 
-export type Price = { provider: ProviderId; model: string; input: string; output: string; effort: string | Text; note?: Text }
+// chartEffort: the effort the chart rings when the table shows text instead of an official default.
+export type Price = { provider: ProviderId; model: string; input: string; output: string; effort: string | Text; chartEffort?: string; note?: Text }
 
 export const PRICES: readonly Price[] = [
   { provider: "claude", model: "Claude Fable 5.2", input: "$8", output: "$40", effort: "high" },
@@ -130,7 +131,10 @@ export const PRICES: readonly Price[] = [
     effort: "medium",
     note: ["Prompts up to 100K; $0.50 / $2.50 beyond", "100K 以內的 prompt；超過為 $0.50 / $2.50"],
   },
-  { provider: "codex", model: "GPT-6 Astra", input: "$10", output: "$50", effort: NOT_STATED },
+  {
+    provider: "codex", model: "GPT-6 Astra", input: "$10", output: "$50",
+    effort: ["Not given; medium suits agents", "未給定，medium 適合跑 agent"], chartEffort: "medium",
+  },
   { provider: "codex", model: "GPT-6.1 Sol", input: "$2", output: "$10", effort: "medium" },
   { provider: "codex", model: "GPT-6.1 Terra", input: "$1", output: "$5", effort: "medium" },
   { provider: "codex", model: "GPT-6 Luna", input: "$0.10", output: "$0.50", effort: "medium" },
@@ -160,7 +164,8 @@ export function isDailyChoice(model: string, effort: string | null): boolean {
 
 // The chart and the price table share these official API defaults.
 export function isApiDefaultEffort(model: string, effort: string | null): boolean {
-  const configured = PRICES.find((row) => row.model.replace(/^Claude /, "") === model)?.effort
+  const price = PRICES.find((row) => row.model.replace(/^Claude /, "") === model)
+  const configured = price?.chartEffort ?? price?.effort
   return typeof configured === "string" && effort !== null
     && effort.toLowerCase().replace(/extra[ -]?high/, "xhigh") === configured.toLowerCase()
 }

@@ -47,6 +47,7 @@ test("API defaults use the table's model/effort records, not personal picks or g
   assert.equal(data.isApiDefaultEffort("Gemini 4 Carbon", "Medium"), true)
   assert.equal(data.isApiDefaultEffort("Gemini 4 Argon", "High"), false)
   assert.equal(data.isApiDefaultEffort("GPT-6 Astra", "High"), false)
+  assert.equal(data.isApiDefaultEffort("GPT-6 Astra", "Medium"), true)
   assert.equal(data.isApiDefaultEffort("Unknown model", "Medium"), false)
   assert.equal(data.isApiDefaultEffort("GPT-6.1 Sol", null), false)
   data.PRICES.find(row => row.model === "GPT-6.1 Sol").effort = "high"
