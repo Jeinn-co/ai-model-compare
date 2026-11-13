@@ -742,3 +742,14 @@ h2 {
     transition: none;
   }
 }
+
+.guidance-sources {
+  margin: 0 4px 24px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.guidance-sources summary {
+  width: fit-content;
+  cursor: pointer;
+}

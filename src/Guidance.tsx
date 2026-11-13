@@ -2,7 +2,7 @@ import { useState } from "react"
 import { providerById, type ProviderId, type Row } from "./bench"
 import type { Translate } from "./language"
 
-import { GUIDANCE, OPUS_LEVELS, EFFORT, PRICES, SOURCES, API_NOTES, SELECTION_POLICY, type Text, type Line, type Price } from "./guidance-data"
+import { GUIDANCE, OPUS_LEVELS, EFFORT, PRICES, SOURCES, SELECTION_POLICY, type Text, type Line, type Price } from "./guidance-data"
 
 function Swatch({ provider }: { provider: ProviderId }) {
   return <span className="swatch" style={{ background: providerById(provider).color }} />
@@ -189,16 +189,18 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
       <p className="readout">
         <span>{t("Standard API prices in US dollars, not subscription quota.", "標準 API 價格（美元），不是訂閱額度。")}</span>
         <span>
-          {t("AA score: Artificial Analysis Intelligence Index at effort high, a third-party benchmark, not vendor data.",
-            "AA 分數：Artificial Analysis 智力指數（effort = high），第三方 benchmark，不是官方資料。")}
+          {t("AA score: Artificial Analysis Intelligence Index at high effort.",
+            "AA 分數：Artificial Analysis 智力指數（effort = high）。")}
         </span>
-        {API_NOTES.map((note) => <span key={note[0]}>{say(note)}</span>)}
-        {SOURCES.map((source) => (
-          <a key={source.url} href={source.url}>
-            {say(source.name)}
-          </a>
-        ))}
       </p>
+      <details className="guidance-sources">
+        <summary>{t("Sources", "來源")}</summary>
+        <div className="readout">
+          {SOURCES.map((source) => (
+            <a key={source.url} href={source.url}>{say(source.name)}</a>
+          ))}
+        </div>
+      </details>
     </section>
   )
 }

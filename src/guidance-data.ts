@@ -160,12 +160,7 @@ export const SOURCES: readonly { name: Text; url: string }[] = [
   { name: ["GPT-6.1 Sol", "GPT-6.1 Sol"], url: "https://developers.openai.com/api/docs/models/gpt-6.1-sol" },
   { name: ["GPT-6.1 Terra", "GPT-6.1 Terra"], url: "https://developers.openai.com/api/docs/models/gpt-6.1-terra" },
   { name: ["GPT-6 Luna", "GPT-6 Luna"], url: "https://developers.openai.com/api/docs/models/gpt-6-luna" },
-  { name: ["Gemini API pricing", "Gemini API 定價"], url: "https://aistudio.google.com/docs/pricing" },
   { name: ["Gemini models", "Gemini 模型"], url: "https://aistudio.google.com/docs/latest-model" },
-  {
-    name: ["Introducing Gemini 4 Carbon", "Gemini 4 Carbon 發表"],
-    url: "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/",
-  },
   {
     name: ["Gemini 4 Carbon available", "Gemini 4 Carbon 開放"],
     url: "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/",
@@ -176,11 +171,6 @@ export const SOURCES: readonly { name: Text; url: string }[] = [
   { name: ["Antigravity model availability", "Antigravity 模型資格表"], url: "https://antigravity.google/docs/models" },
 ]
 
-
-export const API_NOTES: readonly Text[] = [
-  ["Hydrogen API (released 2026-11-12): 1,048,576 tokens shared by input, thinking and output; synchronous output limit 65,536. No explicit caching. temperature, top_p and top_k are ignored; minimal returns an error.", "Hydrogen API（2026-11-12 發布）：input、thinking、output 共用 1,048,576 tokens；同步輸出上限 65,536。不支援 explicit caching；temperature、top_p、top_k 會被忽略；minimal 會報錯。"],
-  ["Antigravity removes Claude Sonnet 4.6, Claude Opus 4.6 and GPT-OSS-120b on 2026-11-18. Model access depends on the account.", "Antigravity 將於 2026-11-18 移除 Claude Sonnet 4.6、Claude Opus 4.6、GPT-OSS-120b。實際模型使用權仍依帳號而定。"],
-]
 
 export const SELECTION_POLICY: Text = [
   "My Gemini choices: Hydrogen / high for routine work; xhigh when high is insufficient for complex reasoning. Carbon / high for security, prioritizing safety and correctness. Argon is excluded because of cost.",
