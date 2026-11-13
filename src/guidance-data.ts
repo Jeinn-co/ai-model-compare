@@ -133,7 +133,7 @@ export const PRICES: readonly Price[] = [
   },
   {
     provider: "codex", model: "GPT-6 Astra", input: "$10", output: "$50",
-    effort: ["Not given; medium suits agents", "未給定，medium 適合跑 agent"], chartEffort: "medium",
+    effort: ["Not given\n(estimated medium)", "未給定\n(推估 medium)"], chartEffort: "medium",
   },
   { provider: "codex", model: "GPT-6.1 Sol", input: "$2", output: "$10", effort: "medium" },
   { provider: "codex", model: "GPT-6.1 Terra", input: "$1", output: "$5", effort: "medium" },
