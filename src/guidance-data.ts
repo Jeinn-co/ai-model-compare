@@ -71,20 +71,6 @@ export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }
   },
 ]
 
-// A named replacement supersedes its predecessor without changing the presentation.
-const currentGemini = catalog.models.filter((model) =>
-  !catalog.models.some((next) => next.recommendedUpgradeFrom === model.id))
-
-// Which models each vendor itself names for agentic coding, one line per vendor.
-export const NAMED: readonly Text[] = [
-  ["Anthropic: Opus 5.5 (long-running agentic coding) and Fable 5.2 (long-horizon agentic work)", "Anthropic：Opus 5.5（長時間 agent 型程式）與 Fable 5.2（長時程 agent 工作）"],
-  ["OpenAI: none named; Astra and Sol are described for complex code work", "OpenAI：沒有直接點名；Astra 與 Sol 的描述是複雜程式工作"],
-  [
-    "Google: " + currentGemini.map((model) => `${model.model}: ${model.useCases[0]}`).join(" "),
-    "Google：" + currentGemini.map((model) => `${model.model}：${model.useCases[1]}`).join(" "),
-  ],
-]
-
 // Opus 5.5's levels from Anthropic's effort table; `strong` marks high, the level used day to day.
 export const OPUS_LEVELS: readonly Line[] = [
   [

@@ -2,7 +2,7 @@ import { useState } from "react"
 import { providerById, type ProviderId, type Row } from "./bench"
 import type { Translate } from "./language"
 
-import { GUIDANCE, NAMED, OPUS_LEVELS, EFFORT, PRICES, SOURCES, API_NOTES, SELECTION_POLICY, type Text, type Line, type Price } from "./guidance-data"
+import { GUIDANCE, OPUS_LEVELS, EFFORT, PRICES, SOURCES, API_NOTES, SELECTION_POLICY, type Text, type Line, type Price } from "./guidance-data"
 
 function Swatch({ provider }: { provider: ProviderId }) {
   return <span className="swatch" style={{ background: providerById(provider).color }} />
@@ -141,11 +141,6 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
             ))}
           </tbody>
         </table>
-      </div>
-
-      <div className="guidance-card guidance-named">
-        <h3 className="guidance-label">{t("Named for agentic coding by the vendor", "各家明確點名適合 agent 型程式的模型")}</h3>
-        <Rows lines={NAMED} t={t} />
       </div>
 
       <div className="guidance-sortbar">
