@@ -70,11 +70,10 @@ export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }
       ...catalog.models.map((model): Line => {
         const price = model.pricePerMillionTokens
         const amount = price ? ` $${price.input.toFixed(2)} / $${price.outputIncludingThinking.toFixed(2)}` : ""
-        const promo = promotion(model)
         const plans = model.antigravity?.restricted ? model.antigravity.plans.join(", ") : ""
         const access = plans ? `\nSubscription required. Antigravity: ${plans}.` : ""
         const zhAccess = plans ? `\n限定訂閱使用。Antigravity：${plans}。` : ""
-        return [`${model.model}: ${model.useCases[0]}${amount}${promo[0]}${access}`, `${model.model}：${model.useCases[1]}${amount}${promo[1]}${zhAccess}`, model.id === "gemini-4-hydrogen"]
+        return [`${model.model}: ${model.useCases[0]}${amount}${access}`, `${model.model}：${model.useCases[1]}${amount}${zhAccess}`, model.id === "gemini-4-hydrogen"]
       }),
     ],
   },
