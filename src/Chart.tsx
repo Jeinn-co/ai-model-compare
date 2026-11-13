@@ -269,21 +269,22 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
                   {apiDefault && daily ? (
                     <circle
                       className="point-default"
-                      r={radius + 2}
+                      r={radius - 0.5}
                       fill="none"
                       stroke={color}
-                      strokeWidth={1.25}
+                      strokeWidth={2.5}
                       pointerEvents="none"
                       aria-hidden="true"
                     />
                   ) : null}
                   <circle
                     className="point"
-                    r={radius}
+                    // Both: ring plus a small centre dot inside the regular dot's footprint.
+                    r={apiDefault && daily ? radius - 3.5 : radius}
                     fill={apiDefault && !daily ? "#ffffff" : color}
                     fillOpacity={hot || emphasis === null ? 1 : 0.45}
-                    stroke={apiDefault && !daily ? color : "#ffffff"}
-                    strokeWidth={apiDefault && !daily ? 1.5 : 2.5}
+                    stroke={apiDefault && !daily ? color : apiDefault ? "none" : "#ffffff"}
+                    strokeWidth={2.5}
                   />
                 </g>
               )

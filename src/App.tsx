@@ -349,14 +349,14 @@ export default function App() {
         </li>
         <li>
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="5.5" fill="#fff" stroke="currentColor" strokeWidth="1.5" />
+            <circle cx="12" cy="12" r="5.5" fill="#fff" stroke="currentColor" strokeWidth="2.5" />
           </svg>
           {t("Hollow circle: API default", "空心圓：API 預設")}
         </li>
         <li>
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.25" />
-            <circle cx="12" cy="12" r="7" fill="currentColor" stroke="#fff" strokeWidth="2.5" />
+            <circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" strokeWidth="2.5" />
+            <circle cx="12" cy="12" r="3.5" fill="currentColor" />
           </svg>
           {t("Large filled dot + ring: regular and default", "實心加外圈：常用＋預設")}
         </li>
