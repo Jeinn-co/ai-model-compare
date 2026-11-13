@@ -56,11 +56,10 @@ test("API defaults use the table's model/effort records, not personal picks or g
 
 test("regular choices remain limited to the confirmed My usage entries", () => {
   const { data } = harness()
-  for (const model of ["Opus 5.5", "GPT-6.1 Sol"]) {
+  for (const model of ["Opus 5.5", "GPT-6.1 Sol", "Gemini 4 Hydrogen"]) {
     assert.equal(data.isDailyChoice(model, "High"), true)
     assert.equal(data.isDailyChoice(model, "Extra High"), false)
   }
-  assert.equal(data.isDailyChoice("Gemini 4 Hydrogen", "High"), false)
 })
 
 test("regular, default and combined markers have distinct shapes on every axis in both languages", () => {
