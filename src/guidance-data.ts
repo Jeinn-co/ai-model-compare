@@ -62,7 +62,7 @@ export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }
       ...catalog.models.map((model): Line => {
         const levels = model.efforts.map((level) => level === model.defaultEffort ? `${level} (default)` : level).join(" / ")
         const zhLevels = model.efforts.map((level) => level === model.defaultEffort ? `${level}（預設）` : level).join(" / ")
-        const plans = model.antigravity?.plans.join(", ")
+        const plans = model.antigravity?.restricted ? model.antigravity.plans.join(", ") : ""
         const access = plans ? ` Antigravity: ${plans}.` : ""
         const zhAccess = plans ? ` Antigravity：${plans}。` : ""
         return [`${model.model}: ${model.useCases[0]} ${levels}.${access}`, `${model.model}：${model.useCases[1]} ${zhLevels}。${zhAccess}`]
