@@ -60,10 +60,12 @@ export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }
         "Antigravity：Google 建議日常開發使用 Orchestrator，由 Carbon 或 Argon 規劃及審查、Hydrogen 實作。獨立模型可自行設定 thinking level。",
       ],
       ...catalog.models.map((model): Line => {
+        const price = model.pricePerMillionTokens
+        const amount = price ? ` $${price.input.toFixed(2)} / $${price.outputIncludingThinking.toFixed(2)}` : ""
         const plans = model.antigravity?.restricted ? model.antigravity.plans.join(", ") : ""
         const access = plans ? `\nSubscription required. Antigravity: ${plans}.` : ""
         const zhAccess = plans ? `\n限定訂閱使用。Antigravity：${plans}。` : ""
-        return [`${model.model}: ${model.useCases[0]}${access}`, `${model.model}：${model.useCases[1]}${zhAccess}`, model.id === "gemini-4-hydrogen"]
+        return [`${model.model}: ${model.useCases[0]}${amount}${access}`, `${model.model}：${model.useCases[1]}${amount}${zhAccess}`, model.id === "gemini-4-hydrogen"]
       }),
     ],
   },
