@@ -70,7 +70,7 @@ test("only default efforts get an outer ring on every axis, including when anoth
       assert.ok(!opusHigh[2].includes('class="point-default"'))
       const hydrogen = points.find(point => point[1].includes("Gemini 4 Hydrogen High:"))
       assert.ok(hydrogen[1].includes(language === "zh" ? "API 預設 effort" : "API default effort"))
-      assert.match(hydrogen[2], /class="point-default" r="9.5" fill="none"/)
+      assert.match(hydrogen[2], /class="point-default" r="7.5" fill="none"/)
       assert.ok(hydrogen[2].includes('aria-hidden="true"'))
     }
   }
@@ -79,6 +79,27 @@ test("only default efforts get an outer ring on every axis, including when anoth
 test("a selected default point retains a separate outer ring beyond its larger center", () => {
   const { render } = harness()
   const html = render([row("Gemini 4 Hydrogen", "High", "gemini")], "score", "Gemini 4 Hydrogen High")
-  assert.match(html, /class="point-default" r="11.5"/)
+  assert.match(html, /class="point-default" r="9.5"/)
   assert.match(html, /class="point" r="7.5"/)
+})
+
+test("regular choices are larger than other points and xhigh remains unmarked", () => {
+  const { data, render } = harness()
+  for (const model of ["Opus 5.5", "GPT-6.1 Sol"]) {
+    assert.equal(data.isDailyChoice(model, "High"), true)
+    assert.equal(data.isDailyChoice(model, "Extra High"), false)
+  }
+  assert.equal(data.isDailyChoice("Gemini 4 Carbon", "High"), false)
+  assert.equal(data.isDailyChoice("Gemini 4 Hydrogen", "High"), false)
+  const html = render([row("Opus 5.5", "High", "claude"), row("Opus 5.5", "Medium", "claude"),
+    row("Gemini 4 Hydrogen", "Extra High", "gemini")], "score")
+  const points = [...html.matchAll(/<g([^>]*class="point-hit"[^>]*)>([\s\S]*?)<\/g>/g)]
+  const regular = points.find(point => point[1].includes("Opus 5.5 High:"))
+  const apiDefault = points.find(point => point[1].includes("Opus 5.5 Medium:"))
+  const xhigh = points.find(point => point[1].includes("Gemini 4 Hydrogen Extra High:"))
+  assert.match(regular[2], /class="point" r="7"/)
+  assert.ok(regular[1].includes("My regular choice"))
+  assert.match(apiDefault[2], /class="point" r="5.5"/)
+  assert.match(apiDefault[2], /class="point-default" r="7.5"/)
+  assert.match(xhigh[2], /class="point" r="5.5"/)
 })

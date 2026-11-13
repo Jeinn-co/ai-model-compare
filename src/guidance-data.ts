@@ -147,6 +147,16 @@ export const PRICES: readonly Price[] = [
   }),
 ]
 
+// Confirmed My usage choices, independent of dispatch options and API defaults.
+export const DAILY_CHOICES: readonly { model: string; effort: string }[] = [
+  { model: "Opus 5.5", effort: "high" },
+  { model: "GPT-6.1 Sol", effort: "high" },
+]
+
+export function isDailyChoice(model: string, effort: string | null): boolean {
+  return DAILY_CHOICES.some((choice) => choice.model === model && choice.effort === effort?.toLowerCase())
+}
+
 // The chart and the price table share these official API defaults.
 export function isApiDefaultEffort(model: string, effort: string | null): boolean {
   const configured = PRICES.find((row) => row.model.replace(/^Claude /, "") === model)?.effort

@@ -1,4 +1,4 @@
-import { isApiDefaultEffort } from "./guidance-data"
+import { isApiDefaultEffort, isDailyChoice } from "./guidance-data"
 import type { Translate } from "./language"
 import { useEffect, useState } from "react"
 import {
@@ -240,6 +240,8 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
             {ordered.map((row) => {
               const on = row.label === active
               const apiDefault = isApiDefaultEffort(row.model, row.effort)
+              const daily = isDailyChoice(row.model, row.effort)
+              const radius = (daily ? 7 : 5.5) + (on ? 2 : 0)
               return (
                 <g
                   key={row.label}
@@ -247,7 +249,7 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
                   tabIndex={0}
                   className="point-hit"
                   aria-pressed={on}
-                  aria-label={`${row.model} ${row.effort ?? ""}: ${formatScore(row.score, unit)}, ${formatCost(row.cost)} ${t("per task", "／次任務")}${apiDefault ? `; ${t("API default effort", "API 預設 effort")}` : ""}`}
+                  aria-label={`${row.model} ${row.effort ?? ""}: ${formatScore(row.score, unit)}, ${formatCost(row.cost)} ${t("per task", "／次任務")}${apiDefault ? `; ${t("API default effort", "API 預設 effort")}` : ""}${daily ? `; ${t("My regular choice", "我的固定常用")}` : ""}`}
                   transform={`translate(${xOf(row.cost).toFixed(1)} ${yOf(yValue(row, yAxis) ?? 0).toFixed(1)})`}
                   onPointerEnter={() => onHover(row.label)}
                   onPointerLeave={() => onHover(null)}
@@ -267,17 +269,17 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
                   {apiDefault ? (
                     <circle
                       className="point-default"
-                      r={on ? 11.5 : 9.5}
+                      r={radius + 2}
                       fill="none"
                       stroke={color}
-                      strokeWidth={1.5}
+                      strokeWidth={1.25}
                       pointerEvents="none"
                       aria-hidden="true"
                     />
                   ) : null}
                   <circle
                     className="point"
-                    r={on ? 7.5 : 5.5}
+                    r={radius}
                     fill={color}
                     fillOpacity={hot || emphasis === null ? 1 : 0.45}
                     stroke="#ffffff"
