@@ -97,7 +97,7 @@ test("regular choices are larger than other points and xhigh remains unmarked", 
   const regular = points.find(point => point[1].includes("Opus 5.5 High:"))
   const apiDefault = points.find(point => point[1].includes("Opus 5.5 Medium:"))
   const xhigh = points.find(point => point[1].includes("Gemini 4 Hydrogen Extra High:"))
-  assert.match(regular[2], /class="point" r="7"/)
+  assert.match(regular[2], /class="point" r="9"/)
   assert.ok(regular[1].includes("My regular choice"))
   assert.match(apiDefault[2], /class="point" r="5.5"/)
   assert.match(apiDefault[2], /class="point-default" r="7.5"/)
@@ -113,8 +113,8 @@ test("a regular choice that matches the API default keeps both its larger dot an
     for (const active of [null, selected.label]) {
       const html = render([selected], axis, active)
       assert.ok(html.includes("API default effort") && html.includes("My regular choice"))
-      assert.match(html, active ? /class="point" r="9"/ : /class="point" r="7"/)
-      assert.match(html, active ? /class="point-default" r="11"/ : /class="point-default" r="9"/)
+      assert.match(html, active ? /class="point" r="11"/ : /class="point" r="9"/)
+      assert.match(html, active ? /class="point-default" r="13"/ : /class="point-default" r="11"/)
     }
   }
 })

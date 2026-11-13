@@ -241,7 +241,7 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
               const on = row.label === active
               const apiDefault = isApiDefaultEffort(row.model, row.effort)
               const daily = isDailyChoice(row.model, row.effort)
-              const radius = (daily ? 7 : 5.5) + (on ? 2 : 0)
+              const radius = (daily ? 9 : 5.5) + (on ? 2 : 0)
               return (
                 <g
                   key={row.label}

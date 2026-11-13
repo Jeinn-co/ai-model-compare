@@ -350,14 +350,14 @@ export default function App() {
         </li>
         <li>
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="7" fill="currentColor" stroke="#fff" strokeWidth="2.5" />
+            <circle cx="12" cy="12" r="9" fill="currentColor" stroke="#fff" strokeWidth="2.5" />
           </svg>
           {t("Larger dot: my regular choice", "大圓點：我的固定常用")}
         </li>
         <li>
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.25" />
-            <circle cx="12" cy="12" r="7" fill="currentColor" stroke="#fff" strokeWidth="2.5" />
+            <circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" strokeWidth="1.25" />
+            <circle cx="12" cy="12" r="9" fill="currentColor" stroke="#fff" strokeWidth="2.5" />
           </svg>
           {t("Larger dot + ring: both", "大圓點＋外圈：同時符合兩者")}
         </li>
