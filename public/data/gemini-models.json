@@ -3,7 +3,8 @@
   "sources": [
     "https://aistudio.google.com/docs/whats-new-gemini-4-hydrogen",
     "https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/",
-    "https://antigravity.google/docs/models"
+    "https://antigravity.google/docs/models",
+    "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/"
   ],
   "models": [
     {
@@ -24,7 +25,7 @@
       "apiFreeTier": "Available with rate limits",
       "antigravity": {"restricted": false, "plans": ["Free", "Google AI Plus", "Google AI Pro", "Google AI Ultra", "Enterprise"], "listedOnModelsPage": true, "source": "https://antigravity.google/docs/models"}
     },
-    {"id": "gemini-4-carbon", "useCases": ["Google's strongest frontier model, for complex architecture, difficult debugging and security audits.", "Google 定位最強的前沿模型，適用複雜架構、疑難除錯與安全稽核。"], "model": "Gemini 4 Carbon", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium", "antigravity": {"restricted": true, "plans": ["Google AI Ultra", "Enterprise"]}},
+    {"id": "gemini-4-carbon", "useCases": ["Google's strongest frontier model; compared with Argon, emphasizes deeper reasoning and extended verification, with improved misuse safeguards and reduced data fabrication. For complex architecture, difficult debugging and security audits.", "Google 定位最強的前沿模型；相較 Argon，更著重深入推理與反覆驗證，並改善防濫用與資料編造問題，適用複雜架構、疑難除錯與安全稽核。"], "model": "Gemini 4 Carbon", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium", "antigravity": {"restricted": true, "plans": ["Google AI Ultra", "Enterprise"]}},
     {"id": "gemini-4-argon", "useCases": ["Advanced long-horizon tasks.", "進階長時程任務。"], "model": "Gemini 4 Argon", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium", "antigravity": {"restricted": true, "plans": ["Google AI Pro (†)", "Google AI Ultra", "Enterprise"]}},
     {"id": "gemini-3.8-flash", "useCases": ["Previous-generation everyday model; Google recommends upgrading to Hydrogen.", "上一代日常模型；Google 建議升級至 Hydrogen。"], "model": "Gemini 3.8 Flash", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium"}
   ],
