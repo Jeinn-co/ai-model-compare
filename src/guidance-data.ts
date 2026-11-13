@@ -147,7 +147,7 @@ export const PRICES: readonly Price[] = [
 
 export const SOURCES: readonly { name: Text; url: string }[] = [
   { name: ["Gemini API pricing", "Gemini API 定價"], url: "https://aistudio.google.com/docs/pricing" },
-  { name: ["Carbon compared with Argon", "Carbon 相較 Argon 的優勢"], url: "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/" },
+  { name: ["Carbon compared with Argon", "Carbon 相較 Argon 的優勢"], url: "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/" },
   { name: ["Gemini 4 Hydrogen", "Gemini 4 Hydrogen"], url: "https://aistudio.google.com/docs/whats-new-gemini-4-hydrogen" },
   { name: ["Hydrogen in Antigravity", "Antigravity 的 Hydrogen"], url: "https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/" },
   { name: ["Anthropic model selection", "Anthropic 模型選擇"], url: "https://www.anthropic.com/claude-fable-and-mythos-5-2" },
