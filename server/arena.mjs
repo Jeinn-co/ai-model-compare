@@ -1,3 +1,4 @@
+import { modelName } from "./gemini.mjs"
 import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -37,7 +38,7 @@ export function arenaRows(arena, items) {
   for (const item of items) {
     // LMArena's own name, with "Claude " dropped as on the chart. The bracket holds an effort,
     // a build date or both ("Opus 5.5 (High)", "Grok 4.20 (Reasoning, 0309)"), so it is kept.
-    const name = item.model_name.replace(/^Claude /, "")
+    const name = modelName(item.model_name.replace(/^Claude /, ""))
     const provider = providerOf(name.replace(/\s*\(.*\)$/, ""))
     if (!provider || !Number.isFinite(item.rating)) continue
     rows.push({

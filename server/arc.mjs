@@ -1,3 +1,4 @@
+import { modelName } from "./gemini.mjs"
 import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -16,7 +17,7 @@ const EFFORTS = { None: "None", Minimal: "Minimal", Low: "Low", Medium: "Medium"
 // "Claude Opus 5.5 (XHigh)" -> Opus 5.5, Extra High. An unknown bracket is kept as the effort.
 export function splitName(name) {
   const match = name.match(/^(.*?)(?:\s*\(([^)]*)\))?$/)
-  const model = match[1].replace(/^Claude /, "")
+  const model = modelName(match[1].replace(/^Claude /, ""))
   const raw = match[2] ?? null
   return { model, effort: raw == null ? null : raw in EFFORTS ? EFFORTS[raw] : raw }
 }

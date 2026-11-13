@@ -1,3 +1,4 @@
+import { modelName } from "./gemini.mjs"
 import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -24,7 +25,8 @@ export function versionFromHtml(text) {
 export function rowsFromHtml(text) {
   const rows = new Map()
   for (const entry of objects(text, '\\{"id":"[0-9a-f-]+","leaderboard_id":"')) {
-    const model = entry.metadata?.model_display?.label
+    const sourceModel = entry.metadata?.model_display?.label
+    const model = sourceModel ? modelName(sourceModel) : null
     const raw = entry.metadata?.reasoning_effort
     const { accuracy, n_trials: trials, total_cost_usd: total, total_tokens: tokens } = entry.metrics ?? {}
     const provider = model ? providerOf(model) : null

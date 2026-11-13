@@ -1,3 +1,4 @@
+import { GEMINI_MODELS, modelName, hydrogenAaCost } from "./gemini.mjs"
 import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -59,7 +60,7 @@ export function objects(text, prefix) {
 }
 
 // AA names Claude models "Claude Opus 5.5"; the chart uses CursorBench's "Opus 5.5".
-const displayName = (name) => name.replace(/^Claude /, "")
+const displayName = (name) => modelName(name.replace(/^Claude /, ""))
 
 // AA lists every release back to 2023; only those from roughly the last eight months are
 // drawn, so the window moves with time instead of pinning a date.
@@ -103,7 +104,8 @@ export function releaseRows(html, release) {
     const score = variant.intelligenceIndex
     // The x axis is cost: a variant AA scored but did not cost (Opus 4.7, Grok 4.20)
     // cannot be placed and is left out rather than given a guessed cost.
-    const cost = variant.intelligenceIndexCostPerTask?.cost?.total
+    const cost = release.model === "Gemini 4 Hydrogen" ? hydrogenAaCost(variant)
+      : variant.intelligenceIndexCostPerTask?.cost?.total
     if (score == null || !(cost > 0)) continue
     // The other three AA model-page cards; missing ones stay off the row.
     const speed = variant.outputSpeed ?? variant.medianOutputSpeed
@@ -140,7 +142,7 @@ function payload(data, changed) {
   // fetching identical figures does not look like a snapshot change.
   rows.sort((a, b) => b.score - a.score || a.label.localeCompare(b.label) || a.cost - b.cost)
   rows.forEach((row, index) => (row.rank = index + 1))
-  return { changed, fetchedAt: data.fetchedAt, source: BASE, rows }
+  return { changed, fetchedAt: data.fetchedAt, source: BASE, models: GEMINI_MODELS, rows }
 }
 
 export async function loadAa() {

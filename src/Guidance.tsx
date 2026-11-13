@@ -4,7 +4,7 @@ import type { Translate } from "./language"
 
 // shortcut: typed in by hand from each vendor's own pages (no feed publishes these);
 // re-check every row against SOURCES and update CHECKED whenever a vendor changes a price.
-const CHECKED = "2026-11-12"
+const CHECKED = "2026-11-13"
 
 type Text = readonly [english: string, chinese: string]
 // A guidance line; `strong` marks the model each vendor points to first.
@@ -57,23 +57,40 @@ const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }[] = [
   {
     provider: "gemini",
     lines: [
-      ["The Antigravity CLI docs name no default model.", "Antigravity CLI 文件沒有指定預設模型。"],
+      ["Gemini 4 Hydrogen is the recommended upgrade from Gemini 3.8 Flash.", "Gemini 4 Hydrogen 是 Gemini 3.8 Flash 的建議升級版。"],
+      [
+        "Gemini 4 Hydrogen: released 2026-11-12. low / medium / high (default) / xhigh; minimal is rejected. $1.50 / $7.50, cached input $0.075 per 1M tokens; output includes thinking. Same rates across the entire context.",
+        "Gemini 4 Hydrogen：2026-11-12 發布。low / medium / high（預設）/ xhigh；minimal 會報錯。每百萬 token 輸入 $1.50、輸出 $7.50、快取輸入 $0.075；輸出含 thinking，整個 context 同費率。",
+        true,
+      ],
+      [
+        "Hydrogen: 1,048,576 shared input/thinking/output context tokens; synchronous output up to 65,536. API free tier available with rate limits. No explicit caching; temperature, top_p and top_k are ignored.",
+        "Hydrogen：input、thinking、output 共用 1,048,576 tokens；同步輸出上限 65,536。API 免費層可用，有 rate limit。不支援 explicit caching；temperature、top_p、top_k 會被忽略。",
+      ],
+      [
+        "Antigravity access (2026-11-13 snapshot): Hydrogen requires paid Google AI Pro or Ultra; the models page does not yet list it. Carbon: Ultra or Enterprise. Argon: paid Pro (†), Ultra or Enterprise. Account access remains unverified.",
+        "Antigravity 資格（2026-11-13 快照）：Hydrogen 限付費 Google AI Pro 或 Ultra，模型頁尚未列出。Carbon：Ultra 或 Enterprise。Argon：付費 Pro（†）、Ultra 或 Enterprise。帳號使用權仍需確認。",
+      ],
+      [
+        "Carbon and Argon: low / medium (default) / high. Antigravity removes Claude Sonnet 4.6, Claude Opus 4.6 and GPT-OSS-120b on 2026-11-18.",
+        "Carbon 與 Argon：low / medium（預設）/ high。Antigravity 將於 2026-11-18 移除 Claude Sonnet 4.6、Claude Opus 4.6、GPT-OSS-120b。",
+      ],
       [
         "Gemini 4 Carbon: strongest reasoning model for agentic coding; over 2× Argon's secure-code success rate, about half the unsupported claims. $4 / $20 (introductory price $2 / $10 through 2026-11-30)",
         "Gemini 4 Carbon：agent 型程式最強的推理模型；安全程式碼成功率是 Argon 的兩倍多，無根據的說法約少一半。$4 / $20（推廣期特惠 $2 / $10，至 2026-11-30）",
         true,
       ],
       [
-        "Carbon access in Antigravity: individual subscribers need Google AI Ultra; Free, Google AI Plus and Google AI Pro do not include it. Enterprise access and the research program have separate eligibility requirements. A paid Gemini API is a separate access route; API pricing does not establish Antigravity access.",
-        "Antigravity 的 Carbon 使用資格：個人訂閱需 Google AI Ultra；Free、Google AI Plus、Google AI Pro 不包含。企業與研究方案另有資格條件。付費 Gemini API 是另一個使用管道；API 價格不代表 Antigravity 使用資格。",
+        "Carbon access in Antigravity: Google AI Ultra or Enterprise required; Free, Google AI Plus and Google AI Pro do not include it. A paid Gemini API is a separate access route; API pricing does not establish Antigravity access.",
+        "Antigravity 的 Carbon 使用資格：需 Google AI Ultra 或 Enterprise；Free、Google AI Plus、Google AI Pro 不包含。付費 Gemini API 是另一個使用管道；API 價格不代表 Antigravity 使用資格。",
       ],
       [
         "Gemini 4 Argon: the efficient one; faster responses and fewer tokens per turn than Carbon. Same prices as Carbon",
         "Gemini 4 Argon：較省的一檔；比 Carbon 回應更快、每一輪用的 token 更少。價格與 Carbon 相同",
       ],
       [
-        "Gemini 3.8 Flash: recommended default for everyday apps and agents; built for long-horizon software engineering and autonomous agents. $1.50 / $7.50 (introductory price $0.75 / $3.75 through 2026-12-31)",
-        "Gemini 3.8 Flash：日常 app 與 agent 的推薦預設；為長時程軟體工程與自主 agent 設計。$1.50 / $7.50（推廣期特惠 $0.75 / $3.75，至 2026-12-31）",
+        "Gemini 3.8 Flash: Hydrogen is now the recommended upgrade; built for long-horizon software engineering and autonomous agents. $1.50 / $7.50 (introductory price $0.75 / $3.75 through 2026-12-31)",
+        "Gemini 3.8 Flash：目前建議升級 Hydrogen；為長時程軟體工程與自主 agent 設計。$1.50 / $7.50（推廣期特惠 $0.75 / $3.75，至 2026-12-31）",
       ],
     ],
   },
@@ -84,8 +101,8 @@ const NAMED: readonly Text[] = [
   ["Anthropic: Opus 5.5 (long-running agentic coding) and Fable 5.2 (long-horizon agentic work)", "Anthropic：Opus 5.5（長時間 agent 型程式）與 Fable 5.2（長時程 agent 工作）"],
   ["OpenAI: none named; Astra and Sol are described for complex code work", "OpenAI：沒有直接點名；Astra 與 Sol 的描述是複雜程式工作"],
   [
-    "Google: Gemini 4 Carbon (strongest for agentic coding) and Gemini 3.8 Flash (long-horizon software engineering, autonomous agents)",
-    "Google：Gemini 4 Carbon（agent 型程式最強）與 Gemini 3.8 Flash（長時程軟體工程、自主 agent）",
+    "Google: Gemini 4 Carbon (strongest for agentic coding) and Gemini 4 Hydrogen (recommended upgrade from 3.8 Flash)",
+    "Google：Gemini 4 Carbon（agent 型程式最強）與 Gemini 4 Hydrogen（3.8 Flash 的建議升級版）",
   ],
 ]
 
@@ -144,12 +161,14 @@ const PRICES: readonly Price[] = [
   { provider: "codex", model: "GPT-6.1 Terra", input: "$1", output: "$5", effort: "medium" },
   { provider: "codex", model: "GPT-6 Luna", input: "$0.10", output: "$0.50", effort: "medium" },
   {
-    provider: "gemini", model: "Gemini 4 Carbon", input: "$4", output: "$20", effort: NOT_STATED,
+    provider: "gemini", model: "Gemini 4 Carbon", input: "$4", output: "$20", effort: "medium",
     note: [
       "Introductory price $2 / $10 through 2026-11-30. Antigravity individual access: Google AI Ultra required; Enterprise and research eligibility are separate.",
       "推廣期特惠 $2 / $10，至 2026-11-30。Antigravity 個人訂閱需 Google AI Ultra；企業與研究方案另有資格條件。",
     ],
   },
+  { provider: "gemini", model: "Gemini 4 Hydrogen", input: "$1.50", output: "$7.50", effort: "high",
+    note: ["Cached input $0.075 / 1M; output includes thinking; uniform context pricing", "快取輸入 $0.075 / 百萬；輸出含 thinking；整個 context 同費率"] },
   { provider: "gemini", model: "Gemini 4 Argon", input: "$4", output: "$20", effort: "medium", note: INTRO_UNTIL_DEC },
   {
     provider: "gemini",
@@ -162,6 +181,8 @@ const PRICES: readonly Price[] = [
 ]
 
 const SOURCES: readonly { name: Text; url: string }[] = [
+  { name: ["Gemini 4 Hydrogen", "Gemini 4 Hydrogen"], url: "https://aistudio.google.com/docs/whats-new-gemini-4-hydrogen" },
+  { name: ["Hydrogen in Antigravity", "Antigravity 的 Hydrogen"], url: "https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/" },
   { name: ["Anthropic model selection", "Anthropic 模型選擇"], url: "https://www.anthropic.com/claude-fable-and-mythos-5-2" },
   { name: ["Claude pricing", "Claude 定價"], url: "https://platform.claude.com/docs/en/about-claude/pricing" },
   { name: ["Claude effort", "Claude effort"], url: "https://platform.claude.com/docs/en/build-with-claude/effort" },

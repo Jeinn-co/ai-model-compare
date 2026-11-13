@@ -30,11 +30,11 @@ async function readSnapshot(file) {
 
 // A newer fetch time alone does not change the chart. Object property order also
 // does not matter, but every row value and the benchmark version do.
-function chartData({ source, version = null, rows }) {
-  return { source, version, rows }
+function chartData({ source, version = null, models = [], rows }) {
+  return { source, version, models, rows }
 }
 
-export async function runSnapshot({ out = OUT, sources = SOURCES, official = loadOfficial } = {}) {
+export async function runSnapshot({ out = OUT, sources = SOURCES, official = loadOfficial, dryRun = false } = {}) {
   await mkdir(out, { recursive: true })
   let failed = 0
   let changed = false
@@ -49,16 +49,16 @@ export async function runSnapshot({ out = OUT, sources = SOURCES, official = loa
     try {
       if (current instanceof Error) throw new Error(`official model check failed (${current.message})`)
       const loaded = await load()
-      const { fetchedAt, source, version } = loaded
+      const { fetchedAt, source, version, models } = loaded
       const rows = Array.isArray(loaded.rows) ? keepOfficial(loaded.rows, current) : loaded.rows
       if (!fetchedAt || !source || !Array.isArray(rows) || !rows.length) throw new Error("invalid or empty snapshot")
-      const next = { fetchedAt, source, ...(version ? { version } : {}), rows }
+      const next = { fetchedAt, source, ...(version ? { version } : {}), ...(models ? { models } : {}), rows }
       if (previous && isDeepStrictEqual(chartData(previous), chartData(next))) {
         results.push({ id, status: "unchanged", updatedAt: previous.fetchedAt })
         console.log(`${id}: unchanged; last updated ${previous.fetchedAt}`)
         continue
       }
-      await writeFile(file, JSON.stringify(next))
+      if (!dryRun) await writeFile(file, JSON.stringify(next))
       changed = true
       results.push({ id, status: "updated", updatedAt: fetchedAt })
       console.log(`${id}: ${rows.length} rows, fetched ${fetchedAt}${version ? `, version ${version}` : ""}`)
@@ -77,7 +77,9 @@ export async function runSnapshot({ out = OUT, sources = SOURCES, official = loa
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === await realpath(resolve(process.argv[1]))) {
-  const { changed, failed, checkedAt, results } = await runSnapshot()
+  const dryRun = process.argv.includes("--dry-run")
+  const { changed, failed, checkedAt, results } = await runSnapshot({ dryRun })
+  if (dryRun) console.log("Dry run: public snapshots were not written; loader caches may be refreshed.")
   if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `changed=${changed}\n`)
   if (process.env.GITHUB_STEP_SUMMARY) {
     const rows = results.map(({ id, status, updatedAt }) => `| ${id} | ${status} | ${updatedAt ?? "—"} |`).join("\n")

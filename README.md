@@ -196,3 +196,23 @@ Product marks on the legend chips come from [LobeHub Icons](https://github.com/l
 - **1.0.2** (2026-10-09): Include Haiku in the Claude model filter for both data sources, so scored Haiku releases appear in the model menu. Invalidate the CursorBench parser cache to apply the updated filter even when its table is unchanged.
 - **1.0.1** (2026-10-07): The CursorBench label reads the benchmark version from the CursorBench page ("CursorBench 4.0" today), so a new CursorBench version shows up with no code change; when no version is found it says plain "CursorBench".
 - **1.0.0** (2026-10-06): First release as AI Model Compare. Inspired by CursorBench, with Artificial Analysis as the default data source and CursorBench available as an alternative.
+
+## Gemini 4 Hydrogen (2026-11-13)
+
+Known model IDs, supported efforts, defaults, pricing and access qualifications are
+published in `public/data/gemini-models.json`; AA snapshots also carry its `models`
+array so consumers can distinguish an unscored model from an unknown model.
+Hydrogen replaces 3.8 Flash as the recommended upgrade. Its four levels are low,
+medium, high (default) and xhigh. API and Antigravity access are distinct; the
+catalog records the supplied 2026-11-13 availability snapshot, not account access.
+
+Every benchmark score still comes from that source's existing loader. Aliases such
+as `gemini-4-hydrogen` and `Google Gemini 4 Hydrogen` normalize to `Gemini 4 Hydrogen`.
+AA's per-task cost is accepted only when its input/output/cache-hit rates match
+$1.50/$7.50/$0.075 per million tokens. Output includes thinking. The shared token
+cost helper uses those rates; total tokens alone cannot establish a per-task cost.
+Other benchmark costs remain source-reported; missing score or cost stays absent.
+
+Run `npm run snapshot -- --dry-run` to check all five sources without writing
+public snapshots. Loader caches may refresh. Tests use synthetic fixtures, not
+hand-entered benchmark results.

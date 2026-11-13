@@ -1,3 +1,4 @@
+import { modelName } from "./gemini.mjs"
 import { createHash } from "node:crypto"
 import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
@@ -10,7 +11,7 @@ import { loadTbench } from "./tbench.mjs"
 const PAGE = "https://cursor.com/cursorbench"
 const CACHE = join(dirname(fileURLToPath(import.meta.url)), "..", "data", "bench-cache.json")
 // Bump when row parsing or model selection changes, so an unchanged table is parsed again.
-const PARSER = "5"
+const PARSER = "6"
 const EFFORTS = ["Extra High", "Minimal", "Medium", "High", "Low", "Max"]
 
 function decode(value) {
@@ -22,6 +23,7 @@ function decode(value) {
 }
 
 function splitLabel(label) {
+  label = modelName(label).replace(/ (?:XHigh|xhigh|Extra High)$/i, " Extra High")
   for (const effort of EFFORTS) {
     const suffix = ` ${effort}`
     if (label.endsWith(suffix)) return { model: label.slice(0, -suffix.length), effort }
@@ -75,7 +77,7 @@ export function rowsFromHtml(html) {
     const steps = Number(cells[7].replace(/,/g, ""))
     rows.push({
       rank,
-      label: cells[1],
+      label: effort ? `${model} ${effort}` : model,
       model,
       effort,
       score,

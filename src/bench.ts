@@ -155,7 +155,7 @@ const LINE_COLOR: Record<string, string> = {
   Astra: "#0a6e56", Sol: "#10a37f", Terra: "#45c39f", Luna: "#93dcc4",
   Grok: "#000000", "Grok Build": "#6b6b6b",
   "Muse Spark": "#9553ff", "Muse Glimmer": "#c3a3ff",
-  "Gemini Carbon": "#0b3a8c", "Gemini Argon": "#1554c7", "Gemini Pro Preview": "#1f6ae6", "Gemini Flash": "#3186ff", "Gemini Flash-Lite": "#8dbcff",
+  "Gemini Carbon": "#0b3a8c", "Gemini Argon": "#1554c7", "Gemini Hydrogen": "#2475e8", "Gemini Pro Preview": "#1f6ae6", "Gemini Flash": "#3186ff", "Gemini Flash-Lite": "#8dbcff",
   Composer: "#475569",
 }
 
@@ -268,7 +268,7 @@ const LINE_ORDER = [
   "Astra", "Sol", "Terra", "Luna",
   "Grok", "Grok Build",
   "Muse Spark", "Muse Glimmer",
-  "Gemini Carbon", "Gemini Argon", "Gemini Flash", "Gemini Flash-Lite", "Gemini Pro Preview",
+  "Gemini Carbon", "Gemini Argon", "Gemini Hydrogen", "Gemini Flash", "Gemini Flash-Lite", "Gemini Pro Preview",
   "Composer",
 ]
 
@@ -283,7 +283,7 @@ export function compareModels(a: string, b: string) {
 // Ticked by default: the newest version of the line each CLI is mostly run with, so
 // Opus 5.6 takes over from Opus 5.5 as soon as the source lists it. A CLI with none of
 // these lines in a source gets the first model of its menu instead.
-export const DEFAULT_LINES = new Set(["Opus", "Sol", "Grok", "Muse Spark", "Gemini Flash", "Composer"])
+export const DEFAULT_LINES = new Set(["Opus", "Sol", "Grok", "Muse Spark", "Gemini Hydrogen", "Gemini Flash", "Composer"])
 
 export function defaultTicked(rows: readonly Row[]) {
   const byProvider = new Map<ProviderId, string[]>()
