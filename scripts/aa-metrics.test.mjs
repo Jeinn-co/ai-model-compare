@@ -29,3 +29,18 @@ test("AA still reads the previous metric format", () => {
   assert.equal(row.speed, 60)
   assert.equal(row.latency, 12)
 })
+
+test("AA headline metrics populate all four axes without borrowing from another effort", () => {
+  const high = { ...variant, headline: { outputSpeed: 65, timeToFirstAnswerToken: 41 },
+    outputSpeed: 1, timeToFirstAnswerToken: 2,
+    canonicalIntelligenceIndexTokenCount: { output: 123456 } }
+  const low = { ...variant, slug: "gpt-6-1-sol-low", effort: { level: 20 } }
+  const rows = releaseRows(JSON.stringify(high) + JSON.stringify(low), release)
+  assert.equal(rows[0].score, 50)
+  assert.equal(rows[0].speed, 65)
+  assert.equal(rows[0].verbosity, 123456)
+  assert.equal(rows[0].latency, 41)
+  assert.equal(rows[1].speed, undefined)
+  assert.equal(rows[1].verbosity, undefined)
+  assert.equal(rows[1].latency, undefined)
+})

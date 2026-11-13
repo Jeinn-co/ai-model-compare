@@ -7,6 +7,7 @@ import { providerOf, shownModels } from "./bench.mjs"
 const BASE = "https://artificialanalysis.ai/models/releases"
 const CACHE = join(dirname(fileURLToPath(import.meta.url)), "..", "data", "aa-cache.json")
 // AA pages are large and slow; reuse a fetch for this long before asking again.
+const PARSER_VERSION = 2
 const TTL_MS = 6 * 60 * 60 * 1000
 const EFFORT_BY_LEVEL = { 10: "Minimal", 20: "Low", 30: "Medium", 40: "High", 50: "Extra High", 60: "Max" }
 
@@ -108,9 +109,10 @@ export function releaseRows(html, release) {
       : variant.intelligenceIndexCostPerTask?.cost?.total
     if (score == null || !(cost > 0)) continue
     // The other three AA model-page cards; missing ones stay off the row.
-    const speed = variant.outputSpeed ?? variant.medianOutputSpeed
+    const speed = variant.headline?.outputSpeed ?? variant.outputSpeed ?? variant.medianOutputSpeed
     const verbosity = variant.canonicalIntelligenceIndexTokenCount?.output
-    const latency = variant.timeToFirstAnswerToken?.total ?? variant.timeToFirstAnswerToken
+    const answerLatency = variant.headline?.timeToFirstAnswerToken ?? variant.timeToFirstAnswerToken
+    const latency = answerLatency?.total ?? answerLatency
     rows.set(variant.slug, {
       rank: 0,
       label: effort ? `${release.model} ${effort}` : release.model,
@@ -147,7 +149,7 @@ function payload(data, changed) {
 
 export async function loadAa() {
   const cached = await readCache()
-  if (cached && Date.now() - Date.parse(cached.fetchedAt) < TTL_MS) return payload(cached, false)
+  if (cached?.parserVersion === PARSER_VERSION && Date.now() - Date.parse(cached.fetchedAt) < TTL_MS) return payload(cached, false)
   try {
     const picked = pickReleases(await page(BASE))
     if (picked.length === 0) throw new Error("no releases")
@@ -167,7 +169,7 @@ export async function loadAa() {
     }
     await Promise.all(Array.from({ length: 4 }, worker))
     if (Object.keys(releases).length === 0) throw new Error("no release page loaded")
-    const data = { fetchedAt: new Date().toISOString(), releases }
+    const data = { parserVersion: PARSER_VERSION, fetchedAt: new Date().toISOString(), releases }
     await mkdir(dirname(CACHE), { recursive: true })
     await writeFile(CACHE, JSON.stringify(data))
     return payload(data, true)
