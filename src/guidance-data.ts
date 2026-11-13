@@ -26,13 +26,13 @@ export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }
     lines: [
       ["Start most coding and knowledge work on Opus 5.5.", "多數程式與知識工作從 Opus 5.5 開始。"],
       [
+        "Fable 5.2: demanding reasoning and long-horizon agentic work; the most ambitious open-ended technical work. $8 / $40",
+        "Fable 5.2：高難度推理與長時程 agent 工作；最有野心的開放式技術工作。$8 / $40",
+      ],
+      [
         "Opus 5.5: strongest daily driver, for long-running agentic coding and knowledge work. $4 / $20",
         "Opus 5.5：最強的日常主力，定位是長時間的 agent 型程式與知識工作。$4 / $20",
         true,
-      ],
-      [
-        "Fable 5.2: demanding reasoning and long-horizon agentic work; the most ambitious open-ended technical work. $8 / $40",
-        "Fable 5.2：高難度推理與長時程 agent 工作；最有野心的開放式技術工作。$8 / $40",
       ],
       [
         "Sonnet 5.5: best combination of speed and intelligence. For agentic coding, medium for well-specified tasks, high for harder or longer ones. $2 / $10",
