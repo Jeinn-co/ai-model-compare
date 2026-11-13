@@ -241,7 +241,7 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
               const on = row.label === active
               const apiDefault = isApiDefaultEffort(row.model, row.effort)
               const daily = isDailyChoice(row.model, row.effort)
-              const radius = (daily ? 7 : 5.5) + (on ? 2 : 0)
+              const radius = (daily ? 7 : 5.5) + (on ? 1 : 0)
               return (
                 <g
                   key={row.label}
@@ -266,23 +266,24 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
                   }}
                 >
                   <circle r={16} fill="transparent" />
-                  {apiDefault ? (
+                  {apiDefault && daily ? (
                     <circle
                       className="point-default"
-                      r={radius + 2}
+                      r={radius - 0.5}
                       fill="none"
                       stroke={color}
-                      strokeWidth={1.25}
+                      strokeWidth={2.5}
                       pointerEvents="none"
                       aria-hidden="true"
                     />
                   ) : null}
                   <circle
                     className="point"
-                    r={radius}
-                    fill={color}
+                    // Both: ring plus a small centre dot inside the regular dot's footprint.
+                    r={apiDefault && daily ? radius - 3.5 : radius}
+                    fill={apiDefault && !daily ? "#ffffff" : color}
                     fillOpacity={hot || emphasis === null ? 1 : 0.45}
-                    stroke="#ffffff"
+                    stroke={apiDefault && !daily ? color : apiDefault ? "none" : "#ffffff"}
                     strokeWidth={2.5}
                   />
                 </g>

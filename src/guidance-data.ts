@@ -151,6 +151,7 @@ export const PRICES: readonly Price[] = [
 export const DAILY_CHOICES: readonly { model: string; effort: string }[] = [
   { model: "Opus 5.5", effort: "high" },
   { model: "GPT-6.1 Sol", effort: "high" },
+  { model: "Gemini 4 Hydrogen", effort: "high" },
 ]
 
 export function isDailyChoice(model: string, effort: string | null): boolean {
