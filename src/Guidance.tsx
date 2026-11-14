@@ -29,7 +29,7 @@ function Rows({ lines, t }: { lines: readonly Line[]; t: Translate }) {
   return (
     <ul className="guidance-rows">
       {lines.map((line) => {
-        const text = <Rich text={t(line[0], line[1])} />
+        const text = <Rich text={line[t.language === "zh" ? 1 : 0]} />
         return (
           <li key={line[0]} className={line[2] ? "guidance-pick" : undefined}>
             {line[2] ? <strong>{text}</strong> : text}
@@ -51,7 +51,7 @@ type Sort = { key: SortKey; dir: 1 | -1 } | null
 const aaName = (model: string) => model.replace(/^Claude /, "")
 
 export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly Row[] }) {
-  const say = (text: Text) => t(text[0], text[1])
+  const say = (text: Text) => text[t.language === "zh" ? 1 : 0]
   const [sort, setSort] = useState<Sort>(null)
   // Third-party score at effort high, the level used day to day; null until AA has loaded.
   const scoreOf = (model: string) =>
@@ -86,11 +86,10 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
     <section className="arena guidance" aria-labelledby="guidance-title">
       <div className="arena-head">
         <div>
-          <p className="eyebrow">{t("Vendor docs", "官方文件")}</p>
-          <h2 id="guidance-title">{t("Official guidance", "官方說法")}</h2>
+          <p className="eyebrow">{t("vendor_docs")}</p>
+          <h2 id="guidance-title">{t("official_guidance")}</h2>
           <p className="arena-note">
-            {t("Official model guidance, thinking levels and API prices per 1M tokens. Missing data is shown as —.",
-              "模型官方定位、思考等級與每百萬 token 的 API 價格。缺少的資料以 — 表示。")}
+            {t("official_model_guidance_thinking_levels_and_api_prices_per_1m")}
           </p>
         </div>
       </div>
@@ -101,11 +100,11 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
 
       <div className="guidance-effort">
         <div className="guidance-card">
-          <h3 className="guidance-label">{t("Anthropic on effort", "Anthropic 對 effort 的說明")}</h3>
+          <h3 className="guidance-label">{t("anthropic_on_effort")}</h3>
           <Rows lines={EFFORT} t={t} />
         </div>
         <div className="guidance-card">
-          <h3 className="guidance-label">{t("Opus 5.5 effort levels", "Opus 5.5 的 effort 等級")}</h3>
+          <h3 className="guidance-label">{t("opus_5_5_effort_levels")}</h3>
           <Rows lines={OPUS_LEVELS} t={t} />
         </div>
       </div>
@@ -115,7 +114,7 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
           <thead>
             <tr>
               <th>CLI</th>
-              <th>{t("Official guidance", "官方說法")}</th>
+              <th>{t("official_guidance")}</th>
             </tr>
           </thead>
           <tbody>
@@ -131,9 +130,9 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
                   <Rows lines={row.lines} t={t} />
                   {row.provider === "gemini" && (
                     <p className="minor">
-                      <a href="https://aistudio.google.com/docs/whats-new-gemini-4-hydrogen#choosing-between-models">{t("Google's model selection guide", "Google 模型選擇指南")}</a>
+                      <a href="https://aistudio.google.com/docs/whats-new-gemini-4-hydrogen#choosing-between-models">{t("google_s_model_selection_guide")}</a>
                       {" · "}
-                      <a href="https://antigravity.google/docs/models">{t("Antigravity selection and access", "Antigravity 選型與資格")}</a>
+                      <a href="https://antigravity.google/docs/models">{t("antigravity_selection_and_access")}</a>
                     </p>
                   )}
                 </td>
@@ -146,11 +145,9 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
       <div className="guidance-sortbar">
         <span>
           {sort
-            ? t(
-                `Sorted by ${{ input: "input price", output: "output price", score: "AA score" }[sort.key]}, ${sort.dir === 1 ? "low to high" : "high to low"}. Click the header again to reverse, a third time for the original order.`,
-                `依${{ input: "輸入價格", output: "輸出價格", score: "AA 分數" }[sort.key]}排序，${sort.dir === 1 ? "由低到高" : "由高到低"}。再點一次欄名可反向，點第三次回到原本順序。`,
-              )
-            : t("Vendor order. Click a price or score header to sort.", "原本的廠商順序。點價格或分數的欄名即可排序。")}
+            ? t("guidance_sorted", { field: t(`sort_${sort.key}`),
+                direction: t(sort.dir === 1 ? "sort_ascending" : "sort_descending") })
+            : t("vendor_order_click_a_price_or_score_header_to_sort")}
         </span>
       </div>
 
@@ -158,12 +155,12 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
         <table>
           <thead>
             <tr>
-              <th>{t("Model", "模型")}</th>
-              {header("input", t("Input / 1M tokens", "輸入／每百萬 token"))}
-              {header("output", t("Output / 1M tokens", "輸出／每百萬 token"))}
-              {header("score", t("AA score (high)", "AA 分數（high）"))}
-              <th>{t("API default effort", "API 預設 effort")}</th>
-              <th>{t("Note", "備註")}</th>
+              <th>{t("model")}</th>
+              {header("input", t("input_1m_tokens"))}
+              {header("output", t("output_1m_tokens"))}
+              {header("score", t("aa_score_high"))}
+              <th>{t("api_default_effort")}</th>
+              <th>{t("note")}</th>
             </tr>
           </thead>
           <tbody>
@@ -187,14 +184,13 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
       </div>
 
       <p className="readout">
-        <span>{t("Standard API prices in US dollars, not subscription quota.", "標準 API 價格（美元），不是訂閱額度。")}</span>
+        <span>{t("standard_api_prices_in_us_dollars_not_subscription_quota")}</span>
         <span>
-          {t("AA score: Artificial Analysis Intelligence Index at high effort.",
-            "AA 分數：Artificial Analysis 智力指數（effort = high）。")}
+          {t("aa_score_artificial_analysis_intelligence_index_at_high_effort")}
         </span>
       </p>
       <details className="guidance-sources">
-        <summary>{t("Sources", "來源")}</summary>
+        <summary>{t("sources")}</summary>
         <div className="readout">
           {SOURCES.map((source) => (
             <a key={source.url} href={source.url}>{say(source.name)}</a>

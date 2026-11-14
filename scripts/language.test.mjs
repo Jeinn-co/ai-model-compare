@@ -1,19 +1,12 @@
 import assert from "node:assert/strict"
-import { readFile } from "node:fs/promises"
 import test from "node:test"
-import { runInNewContext } from "node:vm"
-import ts from "typescript"
-
-const source = await readFile(new URL("../src/language.ts", import.meta.url), "utf8")
-const { outputText } = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } })
+import { languageScope } from "./language-fixture.mjs"
 
 test("language prefers saved choice and falls back safely when storage is blocked", () => {
-  const scope = {
-    exports: {},
+  const scope = languageScope({
     navigator: { language: "zh-TW" },
     localStorage: { getItem: () => "en" },
-  }
-  runInNewContext(outputText, scope)
+  })
   const { initialLanguage } = scope.exports
   assert.equal(initialLanguage(), "en")
   scope.localStorage.getItem = () => "invalid"
@@ -22,4 +15,13 @@ test("language prefers saved choice and falls back safely when storage is blocke
   assert.equal(initialLanguage(), "zh")
   scope.navigator.language = "en-US"
   assert.equal(initialLanguage(), "en")
+})
+
+test("independent translators keep each language and interpolate runtime values", () => {
+  const { createTranslator } = languageScope().exports
+  const english = createTranslator("en"), chinese = createTranslator("zh")
+  assert.equal(english("choose_provider_models", { provider: "Fixture" }), "Choose Fixture models")
+  assert.equal(chinese("choose_provider_models", { provider: "Fixture" }), "選擇 Fixture 模型")
+  assert.equal(english("model"), "Model")
+  assert.equal(chinese.language, "zh")
 })

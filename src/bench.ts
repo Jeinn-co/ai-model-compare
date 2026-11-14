@@ -25,14 +25,7 @@ export type Row = {
 
 export type YAxis = "score" | "speed" | "verbosity" | "latency" | "tokens" | "steps"
 
-export const Y_AXES: readonly { id: YAxis; name: string; label: string }[] = [
-  { id: "score", name: "Score", label: "Score" },
-  { id: "speed", name: "Speed", label: "Speed" },
-  { id: "verbosity", name: "Verbosity", label: "Verbosity" },
-  { id: "latency", name: "Latency", label: "Latency" },
-  { id: "tokens", name: "Tokens", label: "Tokens per task" },
-  { id: "steps", name: "Steps", label: "Steps per task" },
-]
+export const Y_AXES: readonly YAxis[] = ["score", "speed", "verbosity", "latency", "tokens", "steps"]
 
 // The Y axes each source has figures for. AA's Verbosity (output tokens for the whole
 // index) and CursorBench's Tokens (per task) are measured differently, so they stay apart.
@@ -220,11 +213,6 @@ export function formatY(value: number, axis: YAxis, unit = "") {
   if (axis === "tokens") return formatTokens(value) ?? ""
   if (axis === "steps") return formatSteps(value) ?? ""
   return formatLatency(value) ?? ""
-}
-
-export function yAxisLabel(axis: YAxis) {
-  if (axis === "score") return "Score"
-  return Y_AXES.find((item) => item.id === axis)?.label ?? "Score"
 }
 
 export function formatCost(cost: number) {

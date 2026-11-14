@@ -6,6 +6,7 @@ import { runInNewContext } from "node:vm"
 import React from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 import ts from "typescript"
+import { languageScope } from "./language-fixture.mjs"
 
 const require = createRequire(import.meta.url)
 const source = await readFile(new URL("../src/Guidance.tsx", import.meta.url), "utf8")
@@ -15,12 +16,18 @@ const { outputText } = ts.transpileModule(source, {
 
 const dataSource = await readFile(new URL("../src/guidance-data.ts", import.meta.url), "utf8")
 const catalog = JSON.parse(await readFile(new URL("../public/data/gemini-models.json", import.meta.url), "utf8"))
+const personal = JSON.parse(await readFile(new URL("../public/data/personal-choices.json", import.meta.url), "utf8"))
 const dataCode = ts.transpileModule(dataSource, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText
 
 function renderGuidance({ sort = null, models = catalog, aaRows = [], language = "en" } = {}) {
+  const translations = languageScope().exports
   const data = { exports: {} }
-  runInNewContext(dataCode, { exports: data.exports, require: (id) =>
-    id.endsWith("gemini-models.json") ? { default: models } : require(id) })
+  runInNewContext(dataCode, { exports: data.exports, require: (id) => {
+    if (id === "./language") return translations
+    if (id.endsWith("gemini-models.json")) return { default: models }
+    if (id.endsWith("personal-choices.json")) return { default: personal }
+    return require(id)
+  } })
   const module = { exports: {} }
   runInNewContext(outputText, { module, exports: module.exports, require: (id) => {
     if (id === "react") return { useState: () => [sort, () => {}] }
@@ -29,7 +36,7 @@ function renderGuidance({ sort = null, models = catalog, aaRows = [], language =
     return require(id)
   } })
   return renderToStaticMarkup(React.createElement(module.exports.default, {
-    t: (english, chinese) => language === "zh" ? chinese : english, aaRows,
+    t: translations.createTranslator(language), aaRows,
   }))
 }
 

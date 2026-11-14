@@ -1,0 +1,134 @@
+{
+  "daily": [
+    {
+      "provider": "claude",
+      "model": "Opus 5.5",
+      "effort": "high"
+    },
+    {
+      "provider": "codex",
+      "model": "GPT-6.1 Sol",
+      "label": "GPT-6.1-Sol",
+      "effort": "high"
+    },
+    {
+      "provider": "gemini",
+      "model": "Gemini 4 Hydrogen",
+      "effort": "high"
+    }
+  ],
+  "roles": {
+    "planner": {
+      "role": "Planner",
+      "description": "planner_description",
+      "models": {
+        "anth": [
+          "Opus 5.5",
+          "high"
+        ],
+        "oai": [
+          "GPT-6.1-Sol",
+          "high"
+        ],
+        "gemini": [
+          "Gemini 4 Hydrogen",
+          "high ~ xhigh"
+        ]
+      }
+    },
+    "designer": {
+      "role": "Designer",
+      "description": "designer_description",
+      "models": {
+        "anth": [
+          "Opus 5.5",
+          "high"
+        ],
+        "oai": [
+          "GPT-6.1-Terra",
+          "high"
+        ],
+        "gemini": [
+          "Gemini 4 Hydrogen",
+          "high ~ xhigh"
+        ]
+      }
+    },
+    "executor": {
+      "role": "Executor",
+      "description": "executor_description",
+      "models": {
+        "anth": [
+          "Sonnet 5.5",
+          "medium"
+        ],
+        "oai": [
+          "GPT-6.1-Sol",
+          "medium"
+        ],
+        "gemini": [
+          "Gemini 4 Hydrogen",
+          "high"
+        ]
+      }
+    },
+    "reviewer": {
+      "role": "Reviewer",
+      "description": "reviewer_description",
+      "models": {
+        "anth": [
+          "Opus 5.5",
+          "high"
+        ],
+        "oai": [
+          "GPT-6.1-Sol",
+          "high"
+        ],
+        "gemini": [
+          "Gemini 4 Hydrogen",
+          "high ~ xhigh"
+        ]
+      }
+    },
+    "devops": {
+      "role": "DevOps",
+      "description": "devops_description",
+      "models": {
+        "anth": [
+          "Opus 5.5",
+          "high"
+        ],
+        "oai": [
+          "GPT-6.1-Sol",
+          "high"
+        ],
+        "gemini": [
+          "Gemini 4 Hydrogen",
+          "high ~ xhigh"
+        ]
+      }
+    },
+    "security": {
+      "role": "Security",
+      "description": "security_description",
+      "models": {
+        "anth": [
+          "Opus 5.5",
+          "max"
+        ],
+        "oai": [
+          "GPT-6 Astra",
+          "max"
+        ],
+        "gemini": [
+          "Gemini 4 Carbon",
+          "high"
+        ]
+      }
+    }
+  },
+  "excludedGeminiPicks": [
+    "gemini-4-argon"
+  ],
+  "optionalGeminiEffort": "xhigh"
+}

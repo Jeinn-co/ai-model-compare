@@ -76,7 +76,7 @@ export default function Legend({ t, rows, previous, hiddenProviders, hiddenModel
   }, [open])
 
   return (
-    <div className="legend" role="group" aria-label={t("Visible providers", "顯示的供應商")}>
+    <div className="legend" role="group" aria-label={t("visible_providers")}>
       {PROVIDERS.map((provider) => {
         const models = modelsOf(rows, provider.id)
         if (models.length === 0) return null
@@ -97,14 +97,14 @@ export default function Legend({ t, rows, previous, hiddenProviders, hiddenModel
                 <path d={LOGO_PATHS[provider.id]} fill={provider.color} fillRule="evenodd" clipRule="evenodd" />
               </svg>
               {provider.name}
-              <span className="count" title={t(`${shownPoints} of ${total} points shown`, `顯示 ${shownPoints}／${total} 個資料點`)}>
+              <span className="count" title={t("points_shown", { shown: shownPoints, total })}>
                 {shownPoints === total ? total : `${shownPoints}/${total}`}
               </span>
             </button>
             <button
               type="button"
               className="chip-caret"
-              aria-label={t(`Choose ${provider.name} models`, `選擇 ${provider.name} 模型`)}
+              aria-label={t("choose_provider_models", { provider: provider.name })}
               aria-haspopup="true"
               aria-expanded={isOpen}
               aria-controls={`models-${provider.id}`}
@@ -113,7 +113,7 @@ export default function Legend({ t, rows, previous, hiddenProviders, hiddenModel
               ▾
             </button>
             {isOpen ? (
-              <div className="menu" id={`models-${provider.id}`} role="group" aria-label={t(`${provider.name} models`, `${provider.name} 模型`)} ref={menuRef}>
+              <div className="menu" id={`models-${provider.id}`} role="group" aria-label={t("provider_models", { provider: provider.name })} ref={menuRef}>
                 <label className="menu-row menu-all">
                   <input
                     type="checkbox"
@@ -123,7 +123,7 @@ export default function Legend({ t, rows, previous, hiddenProviders, hiddenModel
                     }}
                     onChange={(event) => onSetModels(models.map((item) => item.model), event.target.checked)}
                   />
-                  {t("All models", "全部模型")}
+                  {t("all_models")}
                 </label>
                 {groupsOf(models).map((group) => {
                   const groupShown = group.items.filter((item) => !hiddenModels.has(item.model)).length

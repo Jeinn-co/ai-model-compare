@@ -1,5 +1,7 @@
+import { textPair } from "./language"
 import type { ProviderId } from "./bench"
 import catalog from "../public/data/gemini-models.json"
+import personal from "../public/data/personal-choices.json"
 
 // shortcut: typed in by hand from each vendor's own pages (no feed publishes these);
 // Re-check affected records against SOURCES when a vendor changes its model guidance or prices.
@@ -15,8 +17,7 @@ const promotion = (model: (typeof catalog.models)[number]): Text => {
   const rates = `$${price.input.toFixed(2)} / $${price.outputIncludingThinking.toFixed(2)}`
   const halfPrice = price.input === model.pricePerMillionTokens.input / 2
     && price.outputIncludingThinking === model.pricePerMillionTokens.outputIncludingThinking / 2
-  return [` (introductory ${halfPrice ? "50% off" : rates} through ${price.through})`,
-    `（推廣期 ${halfPrice ? "5 折" : rates}，至 ${price.through}）` ]
+  return textPair(halfPrice ? "promotion_half" : "promotion_rates", { rates, date: price.through })
 }
 
 // One line per model, so each reads on its own.
@@ -24,59 +25,36 @@ export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }
   {
     provider: "claude",
     lines: [
-      ["Start most coding and knowledge work on Opus 5.5.", "多數程式與知識工作從 Opus 5.5 開始。"],
-      [
-        "Fable 5.2: demanding reasoning and long-horizon agentic work; the most ambitious open-ended technical work. $8 / $40",
-        "Fable 5.2：高難度推理與長時程 agent 工作；最有野心的開放式技術工作。$8 / $40",
-      ],
-      [
-        "Opus 5.5: strongest daily driver, for long-running agentic coding and knowledge work. $4 / $20",
-        "Opus 5.5：最強的日常主力，定位是長時間的 agent 型程式與知識工作。$4 / $20",
-        true,
-      ],
-      [
-        "Sonnet 5.5: best combination of speed and intelligence. For agentic coding, medium for well-specified tasks, high for harder or longer ones. $2 / $10",
-        "Sonnet 5.5：速度與智力的最佳組合。agent 型程式：規格明確的用 medium，較難或較長的用 high。$2 / $10",
-      ],
-      [
-        "Haiku 5.5: high-volume, latency-sensitive tasks such as classification, extraction and routing. $0.10 / $0.50",
-        "Haiku 5.5：大量、重視延遲的任務，例如分類、擷取、路由。$0.10 / $0.50",
-      ],
+      textPair("guidance_start_most_coding_and_knowledge_work_on_opus_5_5"),
+      textPair("guidance_fable_5_2_demanding_reasoning_and_long_horizon_agentic_work"),
+      [...textPair("guidance_opus_5_5_strongest_daily_driver_for_long_running_agentic"), true],
+      textPair("guidance_sonnet_5_5_best_combination_of_speed_and_intelligence_for"),
+      textPair("guidance_haiku_5_5_high_volume_latency_sensitive_tasks_such_as"),
     ],
   },
   {
     provider: "codex",
     lines: [
-      [
-        "No default named and no model labelled for agentic coding; without a model set, the client uses a recommended one.",
-        "沒有指定預設，也沒有模型被標為適合 agent 型程式；未設定模型時，客戶端會用推薦模型。",
-      ],
-      ["GPT-6 Astra: most capable, for complex work across code, apps and research. $10 / $50", "GPT-6 Astra：最強，適合跨程式、app、研究的複雜工作。$10 / $50"],
-      ["GPT-6.1 Sol: near Astra at a lower cost. $2 / $10", "GPT-6.1 Sol：接近 Astra，成本較低。$2 / $10", true],
-      [
-        "GPT-6.1 Terra: fast and efficient; visual reasoning, precise computer use and clear writing. $1 / $5",
-        "GPT-6.1 Terra：快速有效率；視覺推理、精準的電腦操作與清楚的寫作。$1 / $5",
-      ],
-      [
-        "GPT-6 Luna: lightweight; high-volume, narrowly scoped tasks such as summaries and extraction. $0.10 / $0.50",
-        "GPT-6 Luna：輕量；大量、範圍窄的任務，例如摘要與擷取。$0.10 / $0.50",
-      ],
+      textPair("guidance_no_default_named_and_no_model_labelled_for_agentic_coding"),
+      textPair("guidance_gpt_6_astra_most_capable_for_complex_work_across_code"),
+      [...textPair("guidance_gpt_6_1_sol_near_astra_at_a_lower_cost"), true],
+      textPair("guidance_gpt_6_1_terra_fast_and_efficient_visual_reasoning_precise"),
+      textPair("guidance_gpt_6_luna_lightweight_high_volume_narrowly_scoped_tasks_such"),
     ],
   },
   {
     provider: "gemini",
     lines: [
-      [
-        "Antigravity: Google recommends Orchestrator for day-to-day development. Carbon or Argon plans and reviews; Hydrogen implements. Standalone models let you set thinking levels.",
-        "Antigravity：Google 建議日常開發使用 Orchestrator，由 Carbon 或 Argon 規劃及審查、Hydrogen 實作。獨立模型可自行設定 thinking level。",
-      ],
+      textPair("guidance_antigravity_google_recommends_orchestrator_for_day_to_day_development_carbon"),
       ...catalog.models.map((model): Line => {
         const price = model.pricePerMillionTokens
         const amount = price ? ` $${price.input.toFixed(2)} / $${price.outputIncludingThinking.toFixed(2)}` : ""
         const plans = model.antigravity?.restricted ? model.antigravity.plans.join(", ") : ""
-        const access = plans ? `\nSubscription required. Antigravity: ${plans}.` : ""
-        const zhAccess = plans ? `\n限定訂閱使用。Antigravity：${plans}。` : ""
-        return [`${model.model}: ${model.useCases[0]}${amount}${access}`, `${model.model}：${model.useCases[1]}${amount}${zhAccess}`, model.id === "gemini-4-hydrogen"]
+        const access = plans ? textPair("gemini_access", { plans }) : ["", ""]
+        const description = textPair("gemini_description",
+          { model: model.model, description: model.useCases[0], amount, access: access[0] },
+          { model: model.model, description: model.useCases[1], amount, access: access[1] })
+        return [...description, model.id === "gemini-4-hydrogen"]
       }),
     ],
   },
@@ -84,37 +62,21 @@ export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }
 
 // Opus 5.5's levels from Anthropic's effort table; `strong` marks high, the level used day to day.
 export const OPUS_LEVELS: readonly Line[] = [
-  [
-    "low: most efficient; significant token savings with some capability reduction. For simpler tasks that need the best speed and lowest cost, such as subagents.",
-    "low：最省；大幅節省 token，能力稍降。適合求速度與低成本的簡單任務，例如子 agent。",
-  ],
-  [
-    "medium (API default, one level below Opus 5's high): balanced, with moderate token savings. For agentic tasks that balance speed, cost and performance.",
-    "medium（API 預設，比 Opus 5 的 high 低一檔）：平衡，適度節省 token。適合兼顧速度、成本與表現的 agent 任務。",
-  ],
-  [
-    "high: spends as many tokens as the task needs for excellent results. For complex reasoning, difficult coding problems and agentic tasks.",
-    "high：任務需要多少 token 就用多少，求最好的結果。適合複雜推理、困難的程式問題、agent 任務。",
-    true,
-  ],
-  [
-    "xhigh: extended capability for long-horizon work. For long-running agentic and coding tasks (over 30 minutes) with token budgets in the millions.",
-    "xhigh：長時程工作的延伸能力。適合超過 30 分鐘、token 預算以百萬計的 agent 與程式任務。",
-  ],
-  [
-    "max: absolute maximum capability with no constraints on token spending. For tasks needing the deepest reasoning and most thorough analysis.",
-    "max：不限 token 花費的最高能力。適合需要最深推理、最徹底分析的任務。",
-  ],
+  textPair("guidance_low_most_efficient_significant_token_savings_with_some_capability_reduction"),
+  textPair("guidance_medium_api_default_one_level_below_opus_5_s_high"),
+  [...textPair("guidance_high_spends_as_many_tokens_as_the_task_needs_for"), true],
+  textPair("guidance_xhigh_extended_capability_for_long_horizon_work_for_long_running"),
+  textPair("guidance_max_absolute_maximum_capability_with_no_constraints_on_token_spending"),
 ]
 
 export const EFFORT: readonly Line[] = [
-  ["Effort sets how much work goes into the whole response, thinking and tool calls included.", "effort 決定整個回應投入多少，包含思考與工具呼叫。"],
-  ["Lower effort: fewer, combined tool calls; acts without preamble; confirms tersely.", "effort 越低：工具呼叫越少、會合併操作；不先說明就動手；完成後簡短確認。"],
-  ["Higher effort: more tool calls; explains the plan first; summarizes changes in detail.", "effort 越高：工具呼叫越多；動手前先說明計畫；詳細總結改動。"],
-  ["Effort names do not mean the same amount of thinking across models.", "同一個 effort 名稱，在不同模型代表的思考量不同。"],
+  textPair("guidance_effort_sets_how_much_work_goes_into_the_whole_response"),
+  textPair("guidance_lower_effort_fewer_combined_tool_calls_acts_without_preamble_confirms"),
+  textPair("guidance_higher_effort_more_tool_calls_explains_the_plan_first_summarizes"),
+  textPair("guidance_effort_names_do_not_mean_the_same_amount_of_thinking"),
 ]
 
-const NOT_STATED: Text = ["Not stated", "未標明"]
+const NOT_STATED: Text = textPair("guidance_not_stated")
 
 // chartEffort: the effort the chart rings when the table shows text instead of an official default.
 export type Price = { provider: ProviderId; model: string; input: string; output: string; effort: string | Text; chartEffort?: string; note?: Text }
@@ -129,11 +91,11 @@ export const PRICES: readonly Price[] = [
     input: "$0.10",
     output: "$0.50",
     effort: "medium",
-    note: ["Prompts up to 100K; $0.50 / $2.50 beyond", "100K 以內的 prompt；超過為 $0.50 / $2.50"],
+    note: textPair("guidance_prompts_up_to_100k_cost_0_50_cost_2_50"),
   },
   {
     provider: "codex", model: "GPT-6 Astra", input: "$10", output: "$50",
-    effort: ["Not given\n(estimated medium)", "未給定\n(推估 medium)"], chartEffort: "medium",
+    effort: textPair("guidance_not_given_estimated_medium"), chartEffort: "medium",
   },
   { provider: "codex", model: "GPT-6.1 Sol", input: "$2", output: "$10", effort: "medium" },
   { provider: "codex", model: "GPT-6.1 Terra", input: "$1", output: "$5", effort: "medium" },
@@ -152,50 +114,53 @@ export const PRICES: readonly Price[] = [
 ]
 
 // Confirmed My usage choices, independent of dispatch options and API defaults.
-export const DAILY_CHOICES: readonly { model: string; effort: string }[] = [
-  { model: "Opus 5.5", effort: "high" },
-  { model: "GPT-6.1 Sol", effort: "high" },
-  { model: "Gemini 4 Hydrogen", effort: "high" },
-]
+export const DAILY_CHOICES: readonly { model: string; effort: string }[] =
+  personal.daily.map(({ model, effort }) => ({ model, effort }))
+
+const normalizeEffort = (effort: string | null) => effort?.toLowerCase().replace(/extra[ -]?high/, "xhigh")
 
 export function isDailyChoice(model: string, effort: string | null): boolean {
-  return DAILY_CHOICES.some((choice) => choice.model === model && choice.effort === effort?.toLowerCase())
+  return DAILY_CHOICES.some((choice) => choice.model === model && normalizeEffort(choice.effort) === normalizeEffort(effort))
 }
 
 // The chart and the price table share these official API defaults.
 export function isApiDefaultEffort(model: string, effort: string | null): boolean {
   const price = PRICES.find((row) => row.model.replace(/^Claude /, "") === model)
   const configured = price?.chartEffort ?? price?.effort
-  return typeof configured === "string" && effort !== null
-    && effort.toLowerCase().replace(/extra[ -]?high/, "xhigh") === configured.toLowerCase()
+  return typeof configured === "string" && normalizeEffort(effort) === normalizeEffort(configured)
 }
 
 export const SOURCES: readonly { name: Text; url: string }[] = [
-  { name: ["Gemini API pricing", "Gemini API 定價"], url: "https://aistudio.google.com/docs/pricing" },
-  { name: ["Carbon compared with Argon", "Carbon 相較 Argon 的優勢"], url: "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/" },
-  { name: ["Gemini 4 Hydrogen", "Gemini 4 Hydrogen"], url: "https://aistudio.google.com/docs/whats-new-gemini-4-hydrogen" },
-  { name: ["Hydrogen in Antigravity", "Antigravity 的 Hydrogen"], url: "https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/" },
-  { name: ["Anthropic model selection", "Anthropic 模型選擇"], url: "https://www.anthropic.com/claude-fable-and-mythos-5-2" },
-  { name: ["Claude pricing", "Claude 定價"], url: "https://platform.claude.com/docs/en/about-claude/pricing" },
-  { name: ["Claude effort", "Claude effort"], url: "https://platform.claude.com/docs/en/build-with-claude/effort" },
-  { name: ["Codex models", "Codex 模型"], url: "https://learn.chatgpt.com/docs/models" },
-  { name: ["GPT-6 Astra", "GPT-6 Astra"], url: "https://developers.openai.com/api/docs/models/gpt-6-astra" },
-  { name: ["GPT-6.1 Sol", "GPT-6.1 Sol"], url: "https://developers.openai.com/api/docs/models/gpt-6.1-sol" },
-  { name: ["GPT-6.1 Terra", "GPT-6.1 Terra"], url: "https://developers.openai.com/api/docs/models/gpt-6.1-terra" },
-  { name: ["GPT-6 Luna", "GPT-6 Luna"], url: "https://developers.openai.com/api/docs/models/gpt-6-luna" },
-  { name: ["Gemini models", "Gemini 模型"], url: "https://aistudio.google.com/docs/latest-model" },
+  { name: textPair("guidance_gemini_api_pricing"), url: "https://aistudio.google.com/docs/pricing" },
+  { name: textPair("guidance_carbon_compared_with_argon"), url: "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/" },
+  { name: textPair("guidance_gemini_4_hydrogen"), url: "https://aistudio.google.com/docs/whats-new-gemini-4-hydrogen" },
+  { name: textPair("guidance_hydrogen_in_antigravity"), url: "https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/" },
+  { name: textPair("guidance_anthropic_model_selection"), url: "https://www.anthropic.com/claude-fable-and-mythos-5-2" },
+  { name: textPair("guidance_claude_pricing"), url: "https://platform.claude.com/docs/en/about-claude/pricing" },
+  { name: textPair("guidance_claude_effort"), url: "https://platform.claude.com/docs/en/build-with-claude/effort" },
+  { name: textPair("guidance_codex_models"), url: "https://learn.chatgpt.com/docs/models" },
+  { name: textPair("guidance_gpt_6_astra"), url: "https://developers.openai.com/api/docs/models/gpt-6-astra" },
+  { name: textPair("guidance_gpt_6_1_sol"), url: "https://developers.openai.com/api/docs/models/gpt-6.1-sol" },
+  { name: textPair("guidance_gpt_6_1_terra"), url: "https://developers.openai.com/api/docs/models/gpt-6.1-terra" },
+  { name: textPair("guidance_gpt_6_luna"), url: "https://developers.openai.com/api/docs/models/gpt-6-luna" },
+  { name: textPair("guidance_gemini_models"), url: "https://aistudio.google.com/docs/latest-model" },
   {
-    name: ["Gemini 4 Carbon available", "Gemini 4 Carbon 開放"],
+    name: textPair("guidance_gemini_4_carbon_available"),
     url: "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/",
   },
-  { name: ["Gemini 3.8 Flash", "Gemini 3.8 Flash"], url: "https://aistudio.google.com/docs/whats-new-gemini-3.8" },
-  { name: ["Antigravity settings", "Antigravity 設定"], url: "https://antigravity.google/docs/settings/" },
-  { name: ["Carbon access in Antigravity", "Antigravity 的 Carbon 使用資格"], url: "https://antigravity.google/blog/gemini-4-carbon-in-google-antigravity/" },
-  { name: ["Antigravity model availability", "Antigravity 模型資格表"], url: "https://antigravity.google/docs/models" },
+  { name: textPair("guidance_gemini_3_8_flash"), url: "https://aistudio.google.com/docs/whats-new-gemini-3.8" },
+  { name: textPair("guidance_antigravity_settings"), url: "https://antigravity.google/docs/settings/" },
+  { name: textPair("guidance_carbon_access_in_antigravity"), url: "https://antigravity.google/blog/gemini-4-carbon-in-google-antigravity/" },
+  { name: textPair("guidance_antigravity_model_availability"), url: "https://antigravity.google/docs/models" },
 ]
 
 
-export const SELECTION_POLICY: Text = [
-  "My Gemini choices: Hydrogen / high for routine work; xhigh when high is insufficient for complex reasoning. Carbon / high for security, prioritizing safety and correctness. Argon is excluded because of cost.",
-  "我的 Gemini 用法：日常工作用 Hydrogen / high；複雜推理在 high 不足時升 xhigh。安全工作用 Carbon / high，以安全性與正確性優先。Argon 因成本不納入選型。",
-]
+const dailyGemini = personal.daily.find((choice) => choice.provider === "gemini")
+if (!dailyGemini) throw new Error("personal-choices.json must define the Gemini daily choice")
+const excludedGemini = catalog.models.filter((model) => personal.excludedGeminiPicks.includes(model.id))
+export const SELECTION_POLICY: Text = textPair("gemini_policy", {
+  daily: `${dailyGemini.model} / ${dailyGemini.effort}`,
+  security: personal.roles.security.models.gemini.join(" / "),
+  optional: personal.optionalGeminiEffort,
+  excluded: excludedGemini.map((model) => model.model).join(", "),
+})

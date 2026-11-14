@@ -13,6 +13,7 @@ public/data
 !public/data/
 public/data/*
 !public/data/gemini-models.json
+!public/data/personal-choices.json
 dist
 dist-ssr
 *.local

@@ -6,6 +6,7 @@ import test from "node:test"
 import React from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 import ts from "typescript"
+import { languageScope } from "./language-fixture.mjs"
 
 const require = createRequire(import.meta.url)
 const sources = Object.fromEntries(await Promise.all(["bench.ts", "guidance-data.ts", "Chart.tsx"].map(async (name) => {
@@ -15,12 +16,19 @@ const sources = Object.fromEntries(await Promise.all(["bench.ts", "guidance-data
   } }).outputText]
 })))
 const catalog = JSON.parse(await readFile(new URL("../public/data/gemini-models.json", import.meta.url), "utf8"))
+const personal = JSON.parse(await readFile(new URL("../public/data/personal-choices.json", import.meta.url), "utf8"))
 const pkg = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"))
 
 function harness() {
+  const translations = languageScope().exports
   const bench = { exports: {} }, data = { exports: {} }, chart = { exports: {} }
   runInNewContext(sources["bench.ts"], { exports: bench.exports, require: () => pkg })
-  runInNewContext(sources["guidance-data.ts"], { exports: data.exports, require: () => ({ default: catalog }) })
+  runInNewContext(sources["guidance-data.ts"], { exports: data.exports, require: (id) => {
+    if (id === "./language") return translations
+    if (id.endsWith("gemini-models.json")) return { default: catalog }
+    if (id.endsWith("personal-choices.json")) return { default: personal }
+    return require(id)
+  } })
   runInNewContext(sources["Chart.tsx"], { module: chart, exports: chart.exports, require: (id) => {
     if (id === "./bench") return bench.exports
     if (id === "./guidance-data") return data.exports
@@ -29,7 +37,7 @@ function harness() {
   } })
   return { data: data.exports, render(rows, axis, active = null, language = "en") {
     return renderToStaticMarkup(React.createElement(chart.exports.default, {
-      t: (en, zh) => language === "zh" ? zh : en, rows, previous: new Map(), unit: "",
+      t: translations.createTranslator(language), rows, previous: new Map(), unit: "",
       scoreName: "AA", scoreLabel: "Score", yAxis: axis, active, onHover: () => {}, onPick: () => {},
     }))
   } }
@@ -61,6 +69,13 @@ test("regular choices remain limited to the confirmed My usage entries", () => {
     assert.equal(data.isDailyChoice(model, "High"), true)
     assert.equal(data.isDailyChoice(model, "Extra High"), false)
   }
+})
+
+test("personal effort identifiers match the benchmark's Extra High label", () => {
+  const { data } = harness()
+  data.DAILY_CHOICES.find(choice => choice.model === "Gemini 4 Hydrogen").effort = "xhigh"
+  assert.equal(data.isDailyChoice("Gemini 4 Hydrogen", "Extra High"), true)
+  assert.equal(data.isDailyChoice("Gemini 4 Hydrogen", "High"), false)
 })
 
 test("regular, default and combined markers have distinct shapes on every axis in both languages", () => {

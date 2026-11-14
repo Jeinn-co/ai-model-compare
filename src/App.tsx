@@ -22,7 +22,7 @@ import {
   type SourceId,
   type YAxis,
 } from "./bench"
-import { initialLanguage, LANGUAGE_KEY, type Language } from "./language"
+import { createTranslator, initialLanguage, LANGUAGE_KEY, type Language } from "./language"
 import Arena from "./Arena"
 import Guidance from "./Guidance"
 import Chart from "./Chart"
@@ -89,7 +89,7 @@ function saveVisibility(providers: ReadonlySet<ProviderId>, perSource: PerSource
 
 export default function App() {
   const [language, setLanguage] = useState<Language>(initialLanguage)
-  const t = (english: string, chinese: string) => language === "zh" ? chinese : english
+  const t = useMemo(() => createTranslator(language), [language])
   useEffect(() => {
     document.documentElement.lang = language === "zh" ? "zh-Hant" : "en"
     try { localStorage.setItem(LANGUAGE_KEY, language) } catch { /* Storage is optional. */ }
@@ -147,7 +147,7 @@ export default function App() {
         })
     }
     return () => controller.abort()
-  }, [source])
+  }, [])
 
   // A model this source has not shown before gets its default tick once. A new default
   // (Opus 5.6 arriving) is ticked and the older versions of its line are unticked.
@@ -241,7 +241,7 @@ export default function App() {
     setPinned(null)
   }
 
-  const scoreLabel = source === "aa" ? t("Intelligence", "智慧指數") : t("Score", "分數")
+  const scoreLabel = source === "aa" ? t("intelligence") : t("score")
 
   return (
     <main className="sheet">
@@ -252,26 +252,25 @@ export default function App() {
           <button
             type="button"
             className="language"
-            aria-label={t("切換成中文", "Switch to English")}
+            aria-label={t("language_aria")}
             onClick={() => setLanguage(language === "zh" ? "en" : "zh")}
           >
             <svg className="toolbar-icon" viewBox="0 0 16 16" aria-hidden="true">
               <circle cx="8" cy="8" r="6.25" />
               <path d="M1.75 8h12.5M8 1.75c1.8 1.9 2.6 3.9 2.6 6.25S9.8 12.35 8 14.25C6.2 12.35 5.4 10.35 5.4 8S6.2 3.65 8 1.75" />
             </svg>
-            <span>{t("中文", "EN")}</span>
+            <span>{t("language_target")}</span>
           </button>
         </div>
         <p className="deck">
-          {t("Each point is a model: score vs. cost per task at API prices. Cheaper is farther right. Click ▾ on a chip to add more versions; older versions are paler. The sources use different test sets, so don't compare their scores.",
-            "每個點代表一個模型：比較分數與按 API 定價計算的每次任務成本。越靠右越便宜。點選標籤上的 ▾ 可加入更多版本；舊版本顏色較淡。各來源使用不同測試集，分數不可跨來源比較。") }
+          {t("each_point_is_a_model_score_vs_cost_per_task") }
         </p>
       </header>
 
       <div className="controls">
         <div className="control">
           <span className="control-label" id="source-label">
-            {t("Source", "資料來源")}
+            {t("source")}
           </span>
           <div className="segmented" role="group" aria-labelledby="source-label">
             {(Object.keys(SOURCES) as SourceId[]).map((id) => (
@@ -290,25 +289,25 @@ export default function App() {
 
         <div className="control">
             <span className="control-label" id="axis-label">
-              {t("Y axis", "Y 軸")}
+              {t("y_axis")}
             </span>
             <div className="segmented" role="group" aria-labelledby="axis-label">
-              {Y_AXES.filter((axis) => SOURCE_AXES[source].includes(axis.id)).map((axis) => (
+              {Y_AXES.filter((axis) => SOURCE_AXES[source].includes(axis)).map((axis) => (
                 <button
-                  key={axis.id}
+                  key={axis}
                   type="button"
-                  className={axis.id === yAxis ? "segment on" : "segment"}
-                  aria-pressed={axis.id === yAxis}
-                  onClick={() => pickYAxis(axis.id)}
+                  className={axis === yAxis ? "segment on" : "segment"}
+                  aria-pressed={axis === yAxis}
+                  onClick={() => pickYAxis(axis)}
                 >
-                  {axis.id === "score" ? scoreLabel : t(axis.name, ({ speed: "速度", verbosity: "輸出長度", latency: "延遲", tokens: "Token 數", steps: "步驟數", score: "分數" })[axis.id])}
+                  {axis === "score" ? scoreLabel : t(`axis_${axis}`)}
                 </button>
               ))}
             </div>
           </div>
 
         <div className="control control-wide">
-          <span className="control-label">{t("Models", "模型")}</span>
+          <span className="control-label">{t("models")}</span>
           <Legend
             t={t}
             rows={rows}
@@ -322,9 +321,9 @@ export default function App() {
       </div>
 
       {error ? (
-        <div className="chart chart-empty">{t("Couldn't load", "無法載入")} {meta.name} ({error}).</div>
+        <div className="chart chart-empty">{t("couldn_t_load")} {meta.name} ({error}).</div>
       ) : rows.length === 0 ? (
-        <div className="chart chart-empty">{t("Loading", "載入中")} {meta.name}…</div>
+        <div className="chart chart-empty">{t("loading")} {meta.name}…</div>
       ) : (
         <Chart
           t={t}
@@ -340,25 +339,25 @@ export default function App() {
         />
       )}
 
-      <ul className="chart-key" aria-label={t("Point symbols", "點位圖例")}>
+      <ul className="chart-key" aria-label={t("point_symbols")}>
         <li>
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="7" fill="currentColor" stroke="#fff" strokeWidth="2.5" />
           </svg>
-          {t("Large filled dot: my regular choice", "實心大圓：常用")}
+          {t("large_filled_dot_my_regular_choice")}
         </li>
         <li>
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="5.5" fill="#fff" stroke="currentColor" strokeWidth="2.5" />
           </svg>
-          {t("Hollow circle: API default", "空心圓：API 預設")}
+          {t("hollow_circle_api_default")}
         </li>
         <li>
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" strokeWidth="2.5" />
             <circle cx="12" cy="12" r="3.5" fill="currentColor" />
           </svg>
-          {t("Large filled dot + ring: regular and default", "實心加外圈：常用＋預設")}
+          {t("large_filled_dot_ring_regular_and_default")}
         </li>
       </ul>
 
@@ -369,26 +368,26 @@ export default function App() {
             <span>
               {scoreLabel} {formatScore(focus.score, meta.unit)}
             </span>
-            <span>{t("Cost", "成本")} {formatCost(focus.cost)}</span>
-            {formatSpeed(focus.speed) ? <span>{t("Speed", "速度")} {formatSpeed(focus.speed)}</span> : null}
-            {formatVerbosity(focus.verbosity) ? <span>{t("Verbosity", "輸出長度")} {formatVerbosity(focus.verbosity)}</span> : null}
-            {formatLatency(focus.latency) ? <span>{t("Latency", "延遲")} {formatLatency(focus.latency)}</span> : null}
-            {formatTokens(focus.tokens) ? <span>{t("Tokens", "Token 數")} {formatTokens(focus.tokens)}</span> : null}
-            {formatSteps(focus.steps) ? <span>{t("Steps", "步驟數")} {formatSteps(focus.steps)}</span> : null}
-            {focus.ci ? <span>±{focus.ci.toFixed(1)} {t("pts (95%)", "分（95% 信賴區間）")}</span> : null}
-            {focus.agent ? <span>{t("Agent", "代理程式")} {focus.agent}</span> : null}
+            <span>{t("cost")} {formatCost(focus.cost)}</span>
+            {formatSpeed(focus.speed) ? <span>{t("speed")} {formatSpeed(focus.speed)}</span> : null}
+            {formatVerbosity(focus.verbosity) ? <span>{t("verbosity")} {formatVerbosity(focus.verbosity)}</span> : null}
+            {formatLatency(focus.latency) ? <span>{t("latency")} {formatLatency(focus.latency)}</span> : null}
+            {formatTokens(focus.tokens) ? <span>{t("tokens")} {formatTokens(focus.tokens)}</span> : null}
+            {formatSteps(focus.steps) ? <span>{t("steps")} {formatSteps(focus.steps)}</span> : null}
+            {focus.ci ? <span>±{focus.ci.toFixed(1)} {t("pts_95")}</span> : null}
+            {focus.agent ? <span>{t("agent")} {focus.agent}</span> : null}
           </>
         ) : source === "aa" ? (
-          t("Hover over a point to see Intelligence, Cost, Speed, Verbosity, and Latency.", "將游標移到資料點上，查看智慧指數、成本、速度、輸出長度與延遲。")
+          t("hover_over_a_point_to_see_intelligence_cost_speed_verbosity")
         ) : source === "arc" ? (
-          t("Hover over a point to see Score and Cost per task. ARC-AGI-2 is abstract reasoning puzzles, not coding.", "將游標移到資料點上，查看分數與每次任務成本。ARC-AGI-2 評測抽象推理題，並非程式開發。")
+          t("hover_over_a_point_to_see_score_and_cost_per")
         ) : source === "tbench" ? (
-          t("Hover over a point to see Score, Cost, and Tokens per task, the 95% margin, and the agent that ran it.", "將游標移到資料點上，查看分數、每次任務成本與 Token 數、95% 誤差範圍及執行評測的代理程式。")
+          t("hover_over_a_point_to_see_score_cost_and_tokens")
         ) : (
           <>
-            {t("Hover over a point to see Score, Cost, Tokens, and Steps per task.", "將游標移到資料點上，查看分數、每次任務成本、Token 數與步驟數。")}
+            {t("hover_over_a_point_to_see_score_cost_tokens_and")}
             {rows.length && !rows.some((row) => row.provider === "codex")
-              ? t(" No Codex: CursorBench has not scored a current GPT model yet, and retired GPT versions are not charted.", " 尚無 Codex：CursorBench 尚未評測現行 GPT 模型，圖表也不顯示已退役的 GPT 版本。")
+              ? t("no_codex_cursorbench_has_not_scored_a_current_gpt_model")
               : null}
           </>
         )}
@@ -400,9 +399,9 @@ export default function App() {
 
       <footer className="foot">
         <span>
-          {t("Data", "資料")}: <a href={meta.url}>{meta.name}</a>
+          {t("data")}: <a href={meta.url}>{meta.name}</a>
         </span>
-        {fetchedAt ? <span>{t("Updated", "更新時間")} {formatFetchedAt(fetchedAt)}</span> : null}
+        {fetchedAt ? <span>{t("updated")} {formatFetchedAt(fetchedAt)}</span> : null}
         <a href={REPO_URL}>{REPO_URL.replace(/^https:\/\//, "")}</a>
       </footer>
     </main>
