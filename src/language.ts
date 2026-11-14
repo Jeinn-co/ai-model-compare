@@ -17,10 +17,10 @@ void messages.init({
 
 export function createTranslator(language: Language): Translate {
   const fixed = messages.getFixedT(language)
-  return Object.assign((key: TranslationKey, values?: Values) => fixed(key, values), { language })
+  return Object.assign((key: TranslationKey, values: Values = {}) => fixed(key, values), { language })
 }
 
-export function textPair(key: TranslationKey, values?: Values, chineseValues = values): readonly [string, string] {
+export function textPair(key: TranslationKey, values: Values = {}, chineseValues = values): readonly [string, string] {
   return [messages.getFixedT("en")(key, values), messages.getFixedT("zh")(key, chineseValues)]
 }
 
