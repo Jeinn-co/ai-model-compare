@@ -243,7 +243,7 @@ export default function TimelineChart({ rows, metric, language, span, selected, 
             event.currentTarget.setPointerCapture(event.pointerId)
             onPan(0, true)
           }}
-          onPointerUp={(event) => {
+          onPointerUp={() => {
             if (drag.current?.moved) dragged.current = true
             drag.current = null
             setPanning(false)
