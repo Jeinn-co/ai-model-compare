@@ -12,13 +12,16 @@ const SPAN = 24 // slider covers the last 24 months; the right end is today
 type Range = [number, number] // months on the slider, 0 = 24 months ago, SPAN = today
 type Filters = { metric: TimelineMetric; range: Range; hidden: string[]; hiddenModels: string[] | null }
 
+// Steps may be fractional (dragging the plot pans continuously); the fraction adds days within the month.
 const dayAt = (step: number) => {
+  const whole = Math.floor(step)
   const day = new Date()
-  day.setUTCMonth(day.getUTCMonth() - (SPAN - step))
+  day.setUTCMonth(day.getUTCMonth() - (SPAN - whole))
+  day.setUTCDate(day.getUTCDate() + Math.round((step - whole) * 30.44))
   return day.toISOString().slice(0, 10)
 }
 const validRange = (value: unknown): value is Range => Array.isArray(value) && value.length === 2
-  && value.every((step) => Number.isInteger(step) && step >= 0 && step <= SPAN) && value[0] < value[1]
+  && value.every((step) => Number.isFinite(step) && step >= 0 && step <= SPAN) && value[0] < value[1]
 
 const strings = (value: unknown) => Array.isArray(value) ? value.filter((item: unknown) => typeof item === "string") : []
 
@@ -87,7 +90,7 @@ const COPY = {
     scoreNote: "橫軸是發布日期，縱軸是 ECI 綜合能力，越高越強。",
     costNote: "縱軸是 API 單價（美元／百萬 tokens）：每條直線上端 Output、下端 Input，中間刻痕是兩者平均。",
     rules: "深色＝已勾選；淡色＝沒勾，或官方 API 已停用（停用的勾了也是淡色，{date} 核對）。",
-    scope: "所有模型都畫出、列在 ▾ 選單，缺資料的列在下方；發布期間只調整顯示範圍。滑到模型上看數值，點一下固定。",
+    scope: "所有模型都畫出、列在 ▾ 選單，缺資料的列在下方；發布期間只調整顯示範圍，也可以在圖上按住左右拖曳平移。滑到模型上看數值，點一下固定。",
     input: "Input", output: "Output", mean: "平均",
     count: "個模型", plotted: "個可繪製", missing: "個尚未有此項資料", missingTitle: "缺少資料的模型",
     missingScore: "尚未評分", missingCost: "尚無完整 Input／Output 單價", empty: "目前的期間與廠商篩選沒有模型。",
@@ -105,7 +108,7 @@ const COPY = {
     scoreNote: "X axis: release date. Y axis: general ECI capability; higher is stronger.",
     costNote: "Y axis: API price (USD per million tokens). Each vertical line runs from Input (bottom) to Output (top); the middle tick is their average.",
     rules: "Dark = ticked; faded = unticked, or retired from the official API (retired models stay faded even when ticked; checked {date}).",
-    scope: "Every model is drawn and listed in the ▾ menus; models missing this metric are listed below. The release period only sets the visible range. Hover a model for its values; click to pin it.",
+    scope: "Every model is drawn and listed in the ▾ menus; models missing this metric are listed below. The release period only sets the visible range; drag the plot left or right to pan it. Hover a model for its values; click to pin it.",
     input: "Input", output: "Output", mean: "Mean",
     count: "models", plotted: "plottable", missing: "without this metric", missingTitle: "Models with missing data",
     missingScore: "Not yet scored", missingCost: "Complete Input/Output prices unavailable", empty: "No models match this release period and creator selection.",
@@ -224,6 +227,14 @@ export default function Timeline({ language, active = true }: { language: Langua
   const inPeriod = useMemo(() => (data?.rows ?? []).filter((row) => row.releasedAt >= since && row.releasedAt <= until),
     [data, since, until])
   const setRange = (range: Range) => setFilters((current) => ({ ...current, range }))
+  // Dragging the plot moves the period like the slider's middle grip: right shows older months.
+  const panFrom = useRef<Range>(filters.range)
+  const panChart = (fraction: number, start: boolean) => {
+    if (start) { panFrom.current = [from, to]; return }
+    const [a, b] = panFrom.current
+    const shift = Math.max(-a, Math.min(SPAN - b, -fraction * (b - a)))
+    setRange([a + shift, b + shift])
+  }
   const trackRef = useRef<HTMLDivElement>(null)
   // Dragging the filled middle slides the whole period, keeping its length, clamped to the 24 months.
   const pan = (event: React.PointerEvent<HTMLSpanElement>) => {
@@ -340,7 +351,7 @@ export default function Timeline({ language, active = true }: { language: Langua
       {error && !data ? <div className="chart chart-empty" role="alert">{text.failed} ({error})</div>
         : !data ? <div className="chart chart-empty" role="status">{text.loading}</div>
           : !data.rows.length ? <div className="chart chart-empty">{text.empty}</div>
-            : <TimelineChart rows={data.rows} metric={filters.metric} language={language} selected={ticked}
+            : <TimelineChart rows={data.rows} metric={filters.metric} language={language} selected={ticked} onPan={panChart}
               span={[Date.parse(`${since}T00:00:00Z`), Date.parse(`${until}T00:00:00Z`)]} />}
         <div className="control timeline-period-control">
           <span className="control-label" id="timeline-period-label">{text.period}</span>

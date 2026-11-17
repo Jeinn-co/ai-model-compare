@@ -5,6 +5,12 @@
 
 .timeline-plot {
   min-width: 640px;
+  cursor: grab;
+}
+
+.timeline-plot.is-panning {
+  cursor: grabbing;
+  user-select: none;
 }
 
 .timeline-grid {

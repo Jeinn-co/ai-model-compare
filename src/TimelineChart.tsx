@@ -9,6 +9,8 @@ import "./timeline-chart.css"
 type Props = {
   rows: TimelineRow[]; metric: TimelineMetric; language: "zh" | "en"; span?: [number, number]
   selected?: ReadonlySet<string>
+  // Mouse drag on the plot: the drag distance as a fraction of the plot width (start = true on press).
+  onPan?: (fraction: number, start: boolean) => void
 }
 
 const RETIRED_OPACITY = 0.3
@@ -41,7 +43,7 @@ function useEased(target: readonly number[], ms = 280) {
   const key = target.join()
   useEffect(() => {
     const goal = key.split(",").map(Number)
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (ms <= 0 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       current.current = goal
       setValue(goal)
       return
@@ -117,7 +119,11 @@ export function timelineColor(provider: string) {
   return COLORS[hash % COLORS.length]
 }
 
-export default function TimelineChart({ rows, metric, language, span, selected }: Props) {
+export default function TimelineChart({ rows, metric, language, span, selected, onPan }: Props) {
+  const drag = useRef<{ x: number; moved: boolean } | null>(null)
+  const dragged = useRef(false)
+  // While dragging, a shorter ease keeps the chart smooth without trailing far behind the pointer.
+  const [panning, setPanning] = useState(false)
   const copy = COPY[language]
   const gradientId = useId()
   const clipId = useId()
@@ -180,7 +186,7 @@ export default function TimelineChart({ rows, metric, language, span, selected }
     metric === "cost" ? 0 : Math.floor((Math.min(...values) - 3) / 5) * 5,
     metric === "cost" ? niceCeil(Math.max(...values) * 1.08) || 1 : Math.ceil((Math.max(...values) + 3) / 5) * 5,
   ]
-  const [xMin, xMax, yMin, yMax] = useEased(target)
+  const [xMin, xMax, yMin, yMax] = useEased(target, panning ? 140 : 280)
 
   if (!plotted.length) return <div className="chart chart-empty timeline-empty">{copy.empty}</div>
   const plotW = W - PAD.left - PAD.right
@@ -229,8 +235,37 @@ export default function TimelineChart({ rows, metric, language, span, selected }
   return (
     <div className="timeline-chart">
       <div className="timeline-plot-scroll"><div className="timeline-plot-area">
-        <svg className="chart timeline-plot" viewBox={`0 0 ${W} ${H}`} role="group" aria-label={`${axis}; ${copy.date}`}
+        <svg className={`chart timeline-plot${panning ? " is-panning" : ""}`} viewBox={`0 0 ${W} ${H}`} role="group" aria-label={`${axis}; ${copy.date}`}
+          onPointerDown={(event) => {
+            // Mouse only: touch keeps the plot's native horizontal scroll on narrow screens.
+            if (!onPan || event.pointerType !== "mouse" || event.button !== 0) return
+            drag.current = { x: event.clientX, moved: false }
+            event.currentTarget.setPointerCapture(event.pointerId)
+            onPan(0, true)
+          }}
+          onPointerUp={(event) => {
+            if (drag.current?.moved) dragged.current = true
+            drag.current = null
+            setPanning(false)
+          }}
+          onPointerCancel={() => { drag.current = null; setPanning(false) }}
+          onClickCapture={(event) => {
+            // A drag is not a click: do not pin or unpin on release.
+            if (dragged.current) { dragged.current = false; event.stopPropagation() }
+          }}
           onPointerMove={(event) => {
+            if (drag.current && onPan) {
+              const dx = event.clientX - drag.current.x
+              if (!drag.current.moved && Math.abs(dx) > 4) {
+                drag.current.moved = true
+                setPanning(true)
+              }
+              if (drag.current.moved) {
+                const plotPixels = event.currentTarget.getBoundingClientRect().width * (W - PAD.left - PAD.right) / W
+                onPan(dx / plotPixels, false)
+                return
+              }
+            }
             const matrix = event.currentTarget.getScreenCTM()
             if (!matrix) return
             const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse())
