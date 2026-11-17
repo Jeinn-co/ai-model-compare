@@ -6,6 +6,12 @@ A small chart of **score vs. cost per task** for coding AI models, from the [Art
 
 The top navigation switches between **Performance & cost** (the existing charts) and **Release trends** (`?view=timeline`). Release trends fixes the X axis to each model's release date. Its Y axis switches between General ECI scores and standard API prices in USD per million tokens (`?view=timeline&metric=cost`). Each price line connects Input and Output; the marked middle point is their arithmetic mean, `(Input + Output) / 2`, using a linear axis. This is an equal-token price comparison, separate from the per-task costs in the existing view.
 
+**Release-trend interaction:** hover anywhere along a model's price line to reveal all three horizontal dashed guides. The nearest Input, Mean or Output tick and its guide/value are black; the other two are grey. Prices appear outside the Y axis and the full release date appears below the X axis. A shaded region runs from the Y axis to the model's line, fading downward from 0.1 opacity at the highest price to 0 at the lowest. ECI mode shows a single score point and its axis guides. Clicking a model pins its details; keyboard focus also exposes its values.
+
+Creator chips and the chart key follow the same order as the first view: Anthropic, OpenAI, Google DeepMind, xAI, Meta. The ▾ menus group models by series, use the shared series tier order even before a new model has an ECI score, and sort scored models within each series from highest ECI to lowest. Unscored models stay selectable and are marked explicitly. Drag either end of the release-period slider to resize the window, or drag its filled middle to move the whole window within the last 24 months.
+
+**Price example:** [GPT-5.4 Pro](https://developers.openai.com/api/docs/models/gpt-5.4-pro) has standard API rates of $30 input and $180 output per million tokens. The chart's $105 middle marker is the calculated `(30 + 180) / 2`, not a separately billed rate. Actual charges use the input and output token counts separately. Its March 5, 2026 release is recorded in [OpenAI's launch announcement](https://openai.com/index/introducing-gpt-5-4/).
+
 Release trends joins Epoch AI's published ECI CSV with exact model-release prices from Artificial Analysis. It shows the five model creators supported by this data join over the last two years, with a default three-month filter. New visitors start with Claude Opus 5.5, GPT-6.1 Sol, Gemini 4 Hydrogen, Grok 4.6, and Muse Wonder checked; saved selections take precedence. A model without ECI or complete prices stays in the visible missing-data list; neither scores nor prices are inferred from another version. Prices reflect the saved snapshot, not historical launch-day prices. Each view keeps its own filters when switching; the view and metric can be shared by URL. Locally, `/api/timeline` uses a six-hour cache and the saved `public/data/timeline.json` as a fallback.
 
 In Release trends, confirmed vendor API retirements appear at half opacity in the plot and model menu, remain selectable, and show their retirement date and a link to the official notice when inspected. `src/model-retirements.ts` records exact releases, sources, effective dates, and the last manual check. Future shutdowns, old releases, missing benchmark data, and missing recommendations alone do not trigger fading. These are vendor API retirements, not ChatGPT/Claude subscription or third-party hosting availability; unconfirmed statuses keep their original color.
@@ -24,7 +30,7 @@ starts with your browser language and remembers your choice.
 
 Every effort level the source lists (None → Max) appears as its own point, and each model's points are connected into one line.
 
-**Current models only (Claude and Codex):** each snapshot reads the [Claude models overview](https://platform.claude.com/docs/en/models/overview) and the [Codex models page](https://learn.chatgpt.com/docs/models) and drops every Claude or Codex model those pages do not list as current, so retired and legacy models (for example Opus 5 or GPT-5.6 Sol) are not charted. If either page cannot be read or parsed, every source keeps its last published snapshot. Other providers are not checked.
+**Current models only in Performance & cost (Claude and Codex):** each benchmark snapshot reads the [Claude models overview](https://platform.claude.com/docs/en/models/overview) and the [Codex models page](https://learn.chatgpt.com/docs/models) and drops every Claude or Codex model those pages do not list as current, so retired and legacy models (for example Opus 5 or GPT-5.6 Sol) are not charted in that view. If either page cannot be read or parsed, these benchmark sources keep their last published snapshots. Other providers are not checked. Release trends keeps historical releases and uses its own retirement markers instead of this filter.
 
 A provider appears only on a source that has scored, costed rows for it.
 
@@ -148,19 +154,19 @@ The site is static and runs on GitHub Pages. React runs in the visitor's browser
 
 [.github/workflows/pages.yml](.github/workflows/pages.yml) runs on every push to `main`, every six hours, and on demand:
 
-1. Downloads the live `data/*.json` for comparison and as a fallback.
-2. Installs production dependencies with `npm ci --omit=dev --ignore-scripts`, then runs `npm run snapshot` to check **Artificial Analysis, CursorBench, Terminal-Bench, ARC-AGI-2 and LMArena**. It compares each source's rows, source URL and benchmark version, ignoring `fetchedAt`. An unchanged source keeps its exact published JSON and update time. A source that cannot be fetched keeps its last valid snapshot; with no valid fallback, the run fails.
+1. Downloads the live `data/*.json` for comparison and as a fallback. Downloads replace files only after success, preserving the tracked initial `timeline.json` when its live copy is unavailable.
+2. Installs production dependencies with `npm ci --omit=dev --ignore-scripts`, then runs `npm run snapshot` to check **Artificial Analysis, CursorBench, Terminal-Bench, ARC-AGI-2, LMArena and Release trends**. It compares each source's rows, source URLs and benchmark version, ignoring `fetchedAt`. An unchanged source keeps its exact published JSON and update time. A source that cannot be fetched keeps its last valid snapshot; with no valid fallback, the run fails. Release trends joins Epoch's ECI scores with AA release prices and can update independently of the current-model check for the existing charts.
 3. On a scheduled or manual run where no source changed, skips build dependencies, build, artifact upload and deployment. A change in any source publishes. A push to `main` always publishes, so code and version changes reach the live site.
 4. Restores the website build cached for this exact commit and reuses its HTML/CSS/JS without installing build dependencies or rebuilding React. On a new commit or a cache miss, runs `npm ci`, builds with `BASE_PATH=/ai-model-compare/` and caches `dist/`.
 5. Copies the current snapshots into `dist/data/` and deploys the whole site to Pages. New data is published as new JSON, usually without rebuilding the frontend; a browser reload then reads the updated files.
 
-The published page reads `data/<source>.json`. Its footer's **Updated** time belongs to the selected source and records the fetch that last changed its published data; it does not advance just because a check ran or the browser reloaded. Each run's UTC check time and each source's result are recorded in the Actions log and job summary, without modifying an unchanged site's files. The dev server keeps answering `/api/bench` live with its existing local cache behavior.
+The published page reads `data/<source>.json`, including `data/timeline.json` for Release trends. Its footer's **Updated** time belongs to the selected source and records the fetch that last changed its published data; it does not advance just because a check ran or the browser reloaded. Each run's UTC check time and each source's result are recorded in the Actions log and job summary, without modifying an unchanged site's files. The dev server answers `/api/bench` and `/api/timeline` with their local cache behavior.
 
 The snapshot scripts use Node.js and `hyparquet` to read LMArena’s official published files directly; they do not depend on the dataset query API. Actions installs production dependencies before checking sources and only installs React/Vite build dependencies when a build is needed. Failed arena fetches retain their prior data timestamp. GitHub Pages serves static files only; there is no application server to restart. React loads the snapshots with `useEffect` and `fetch`.
 
 ### Published data used by ai-usage
 
-The [ai-usage](https://github.com/Jeinn-co/agent-skills/tree/main/skills/ai-usage) skill reads `data/cursorbench.json` and `data/aa.json` from the live site for its benchmark table, instead of scraping CursorBench and Artificial Analysis itself. It relies on the file names and on each row's `label`, `model`, `effort`, `score` and `cost` (plus `tokens` and `steps` on CursorBench, `speed`, `verbosity` and `latency` on AA). **Before renaming these files or fields, update ai-usage first.** The site also publishes `data/arc.json`, `data/tbench.json` and `data/arena.json`; ai-usage does not read them.
+The [ai-usage](https://github.com/Jeinn-co/agent-skills/tree/main/skills/ai-usage) skill reads `data/cursorbench.json` and `data/aa.json` from the live site for its benchmark table, instead of scraping CursorBench and Artificial Analysis itself. It relies on the file names and on each row's `label`, `model`, `effort`, `score` and `cost` (plus `tokens` and `steps` on CursorBench, `speed`, `verbosity` and `latency` on AA). **Before renaming these files or fields, update ai-usage first.** The site also publishes `data/arc.json`, `data/tbench.json`, `data/arena.json` and `data/timeline.json`; ai-usage does not read them.
 
 ## Project layout
 
@@ -170,8 +176,13 @@ server/aa.mjs         Artificial Analysis source (release pages, per-effort rows
 server/tbench.mjs     Terminal-Bench source (embedded leaderboard rows, per-task cost, cache)
 server/arc.mjs        ARC-AGI-2 source (the leaderboard's own JSON file, cache)
 server/arena.mjs      LMArena human-preference list (Hugging Face dataset, cache)
+server/timeline.mjs   Release-date data join (Epoch ECI, AA token prices, cache and snapshot fallback)
 scripts/snapshot.mjs  Writes public/data/<source>.json for the static site
-src/App.tsx           Page layout, source toggle, data loading, visibility state
+src/App.tsx           View navigation, page layout, source toggle, data loading, visibility state
+src/Timeline.tsx      Release trends controls, model selection, date range and missing-data list
+src/TimelineChart.tsx Release-date SVG chart, price ranges, proximity guides and gradient
+src/timeline-data.ts  Timeline row types and the five default model selections
+src/model-retirements.ts Exact API retirement dates, official sources and last manual check
 src/Legend.tsx        Legend chips and the per-CLI model menu, grouped by line
 src/Guidance.tsx      Official guidance, API prices and default effort (hand-maintained)
 src/Arena.tsx         LMArena human-preference table under the chart
