@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
   schedule:
-    # Check every source every six hours; publish only when chart data changes.
-    - cron: "17 */6 * * *"
+    # Check every source every 12 hours; publish only when chart data changes.
+    - cron: "17 */12 * * *"
   workflow_dispatch:
 
 permissions:

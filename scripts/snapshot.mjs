@@ -1,5 +1,5 @@
 // Writes the chart data for the static site: public/data/<source>.json, one per source.
-// The GitHub Pages workflow checks every source every six hours. Unchanged chart data
+// The GitHub Pages workflow checks every source every 12 hours. Unchanged chart data
 // leaves the published snapshot (including its update time) untouched. A failed source
 // keeps its last valid snapshot; without one, the run fails. Claude and Codex rows are
 // limited to the models each vendor currently lists; if that check fails, every source
