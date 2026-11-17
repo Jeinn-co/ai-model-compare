@@ -1,4 +1,8 @@
 {
+  "comparison_views": "Comparison views",
+  "performance_and_cost": "Performance & cost",
+  "release_trends": "Release trends",
+  "release_trends_intro": "Models by release date. Switch the Y axis between general ECI scores and API prices; price lines connect Input and Output with their arithmetic mean marked between them.",
   "intelligence": "Intelligence",
   "score": "Score",
   "language_aria": "切換成中文",

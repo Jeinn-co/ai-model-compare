@@ -14,9 +14,10 @@ import { loadArena } from "../server/arena.mjs"
 import { loadBench } from "../server/bench.mjs"
 import { keepOfficial, loadOfficial } from "../server/official.mjs"
 import { loadTbench } from "../server/tbench.mjs"
+import { loadTimeline } from "../server/timeline.mjs"
 
 const OUT = new URL("../public/data/", import.meta.url)
-const SOURCES = { aa: loadAa, cursorbench: loadBench, tbench: loadTbench, arc: loadArc, arena: loadArena }
+const SOURCES = { aa: loadAa, cursorbench: loadBench, tbench: loadTbench, arc: loadArc, arena: loadArena, timeline: loadTimeline }
 
 async function readSnapshot(file) {
   try {
@@ -30,8 +31,8 @@ async function readSnapshot(file) {
 
 // A newer fetch time alone does not change the chart. Object property order also
 // does not matter, but every row value and the benchmark version do.
-function chartData({ source, version = null, models = [], rows }) {
-  return { source, version, models, rows }
+function chartData({ source, version = null, models = [], scoreSource = null, priceSource = null, rows }) {
+  return { source, version, models, scoreSource, priceSource, rows }
 }
 
 export async function runSnapshot({ out = OUT, sources = SOURCES, official = loadOfficial, dryRun = false } = {}) {
@@ -47,12 +48,13 @@ export async function runSnapshot({ out = OUT, sources = SOURCES, official = loa
     const file = new URL(`${id}.json`, out)
     const previous = await readSnapshot(file)
     try {
-      if (current instanceof Error) throw new Error(`official model check failed (${current.message})`)
+      if (current instanceof Error && id !== "timeline") throw new Error(`official model check failed (${current.message})`)
       const loaded = await load()
-      const { fetchedAt, source, version, models } = loaded
-      const rows = Array.isArray(loaded.rows) ? keepOfficial(loaded.rows, current) : loaded.rows
+      const { fetchedAt, source, version, models, scoreSource, priceSource } = loaded
+      const rows = Array.isArray(loaded.rows) && id !== "timeline" ? keepOfficial(loaded.rows, current) : loaded.rows
       if (!fetchedAt || !source || !Array.isArray(rows) || !rows.length) throw new Error("invalid or empty snapshot")
-      const next = { fetchedAt, source, ...(version ? { version } : {}), ...(models ? { models } : {}), rows }
+      const next = { fetchedAt, source, ...(version ? { version } : {}), ...(models ? { models } : {}),
+        ...(scoreSource ? { scoreSource } : {}), ...(priceSource ? { priceSource } : {}), rows }
       if (previous && isDeepStrictEqual(chartData(previous), chartData(next))) {
         results.push({ id, status: "unchanged", updatedAt: previous.fetchedAt })
         console.log(`${id}: unchanged; last updated ${previous.fetchedAt}`)
