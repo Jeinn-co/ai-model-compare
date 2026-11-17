@@ -1,11 +1,17 @@
-import { useId, useMemo, useRef, useState } from "react"
+import { useEffect, useId, useMemo, useRef, useState } from "react"
 import { compareCreators, niceCeil, tickValues } from "./bench"
 import type { TimelineMetric, TimelineRow } from "./timeline-data"
 import { modelRetirement } from "./model-retirements"
 import "./timeline-chart.css"
 
 // span: the X axis range in ms (the page's period slider); without it the axis fits the data.
-type Props = { rows: TimelineRow[]; metric: TimelineMetric; language: "zh" | "en"; span?: [number, number] }
+// selected: given, every row is drawn and only these ids are at full opacity.
+type Props = {
+  rows: TimelineRow[]; metric: TimelineMetric; language: "zh" | "en"; span?: [number, number]
+  selected?: ReadonlySet<string>
+}
+
+const RETIRED_OPACITY = 0.3
 
 const W = 960
 const H = 500
@@ -15,21 +21,46 @@ const COLORS = ["#d97757", "#10a37f", "#3186ff", "#9553ff", "#18181b", "#dc2626"
 const COPY = {
   en: {
     date: "Model release date", score: "General ECI · higher is better", cost: "API price · USD / 1M tokens",
-    input: "Input", output: "Output", mean: "Mean", overlap: "overlapping models", empty: "No models have data for this view.",
-    hint: "Hover or focus a model to inspect it; click to keep its details. Use ▾ next to each creator to tick models.",
-    missing: "Models without a valid release date or this metric are omitted from the plot.", shown: "plotted", omitted: "without data",
+    input: "Input", output: "Output", mean: "Mean", overlap: "overlapping models", empty: "No models have data for this view.", shown: "plotted", omitted: "without data",
     retired: "Official API retired", officialSource: "Official notice",
   },
   zh: {
     date: "模型發布日期", score: "綜合 ECI · 越高越好", cost: "API 單價 · 美元／100 萬 tokens",
-    input: "Input", output: "Output", mean: "算術平均", overlap: "個重疊的模型", empty: "目前選取的模型沒有可顯示的資料。",
-    hint: "移到模型上或用鍵盤聚焦查看資料，點選可保留；廠商旁的 ▾ 可勾選要顯示的模型。",
-    missing: "缺少有效發布日期或此項數據的模型不畫在圖上。", shown: "個模型已繪製", omitted: "個缺少資料",
+    input: "Input", output: "Output", mean: "算術平均", overlap: "個重疊的模型", empty: "目前選取的模型沒有可顯示的資料。", shown: "個模型已繪製", omitted: "個缺少資料",
     retired: "官方 API 已停用", officialSource: "官方公告",
   },
 }
 
 const finite = (value: number | null): value is number => value !== null && Number.isFinite(value)
+
+// Eases the axis domain to its new target, so moving the period slider slides the chart instead of jumping.
+// A new target mid-way starts from wherever the chart is now.
+function useEased(target: readonly number[], ms = 280) {
+  const [value, setValue] = useState(target)
+  const current = useRef(target)
+  const key = target.join()
+  useEffect(() => {
+    const goal = key.split(",").map(Number)
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      current.current = goal
+      setValue(goal)
+      return
+    }
+    const origin = current.current
+    const start = performance.now()
+    let frame = 0
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / ms)
+      const ease = 1 - (1 - t) ** 3
+      current.current = goal.map((end, i) => (origin[i] ?? end) + (end - (origin[i] ?? end)) * ease)
+      setValue(current.current)
+      if (t < 1) frame = requestAnimationFrame(step)
+    }
+    frame = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(frame)
+  }, [key, ms])
+  return value
+}
 
 export function timelineValue(row: TimelineRow, metric: TimelineMetric) {
   if (metric === "score") return finite(row.eci) ? row.eci : null
@@ -86,9 +117,10 @@ export function timelineColor(provider: string) {
   return COLORS[hash % COLORS.length]
 }
 
-export default function TimelineChart({ rows, metric, language, span }: Props) {
+export default function TimelineChart({ rows, metric, language, span, selected }: Props) {
   const copy = COPY[language]
   const gradientId = useId()
+  const clipId = useId()
   const [hovered, setHovered] = useState<string | null>(null) // the mark under the pointer; anchors the popover
   const [nearby, setNearby] = useState<TimelinePoint | null>(null)
   const [item, setItem] = useState<string | null>(null) // a row hovered inside the popover
@@ -105,19 +137,27 @@ export default function TimelineChart({ rows, metric, language, span }: Props) {
     return Number.isFinite(time) && new Date(time).toISOString().slice(0, 10) === row.releasedAt
       ? [{ row, time }] : []
   }).sort((a, b) => a.time - b.time || a.row.name.localeCompare(b.row.name)), [rows])
-  const plotted = useMemo(() => dated.flatMap(({ row, time }) => {
+  const drawable = useMemo(() => dated.flatMap(({ row, time }) => {
     const value = timelineValue(row, metric)
     return value !== null ? [{ row, time, value }] : []
   }), [dated, metric])
+  // The slider zooms: every model stays drawn (clipped to the plot); labels, hover and counts use the span.
+  const within = (time: number) => !span || (time >= span[0] && time <= span[1])
+  const inView = dated.filter(({ time }) => within(time))
+  const plotted = useMemo(() => drawable.filter(({ time }) => !span || (time >= span[0] && time <= span[1])),
+    [drawable, span])
+  const isSelected = (row: TimelineRow) => !selected || selected.has(row.id)
   // Few models: name them all. Many: name each provider's top one (highest ECI, or highest mean price).
+  // Only ticked models are named.
   const labeled = useMemo(() => {
-    if (plotted.length <= 12) return new Set(plotted.map(({ row }) => row.id))
+    const named = plotted.filter(({ row }) => !selected || selected.has(row.id))
+    if (named.length <= 12) return new Set(named.map(({ row }) => row.id))
     const top = new Map<string, { id: string; value: number }>()
-    for (const { row, value } of plotted) { // oldest-first, so >= lets the newest win a tie
+    for (const { row, value } of named) { // oldest-first, so >= lets the newest win a tie
       if (value >= (top.get(row.provider)?.value ?? -Infinity)) top.set(row.provider, { id: row.id, value })
     }
     return new Set([...top.values()].map(({ id }) => id))
-  }, [plotted])
+  }, [plotted, selected])
   const providers = useMemo(() => [...new Set(plotted.map(({ row }) => row.provider))].sort(compareCreators), [plotted])
   const focus = plotted.find(({ row }) => row.id === (item ?? hovered ?? pinned)) ?? null
   const focusRetirement = focus ? modelRetirement(focus.row) : null
@@ -132,14 +172,17 @@ export default function TimelineChart({ rows, metric, language, span }: Props) {
   }
   const pick = (id: string) => setPinned((current) => current === id ? null : id)
 
-  if (!plotted.length) return <div className="chart chart-empty timeline-empty">{copy.empty}</div>
-
-  const xMin = span ? span[0] : dated[0].time - DAY * 15
-  const xMax = span ? span[1] : dated[dated.length - 1].time + DAY * 15
   const values = plotted.flatMap(({ row, value }) => metric === "cost"
     ? [row.inputPrice!, row.outputPrice!] : [value])
-  const yMin = metric === "cost" ? 0 : Math.floor((Math.min(...values) - 3) / 5) * 5
-  const yMax = metric === "cost" ? niceCeil(Math.max(...values) * 1.08) || 1 : Math.ceil((Math.max(...values) + 3) / 5) * 5
+  const target = !plotted.length ? [0, 1, 0, 1] : [
+    span ? span[0] : dated[0].time - DAY * 15,
+    span ? span[1] : dated[dated.length - 1].time + DAY * 15,
+    metric === "cost" ? 0 : Math.floor((Math.min(...values) - 3) / 5) * 5,
+    metric === "cost" ? niceCeil(Math.max(...values) * 1.08) || 1 : Math.ceil((Math.max(...values) + 3) / 5) * 5,
+  ]
+  const [xMin, xMax, yMin, yMax] = useEased(target)
+
+  if (!plotted.length) return <div className="chart chart-empty timeline-empty">{copy.empty}</div>
   const plotW = W - PAD.left - PAD.right
   const plotH = H - PAD.top - PAD.bottom
   const x = (time: number) => PAD.left + (time - xMin) / (xMax - xMin) * plotW
@@ -199,6 +242,7 @@ export default function TimelineChart({ rows, metric, language, span }: Props) {
           onClick={() => setPinned(null)} onKeyDown={(event) => { if (event.key === "Escape") setPinned(null) }}>
           <title>{axis} — {copy.date}</title>
           <defs>
+            <clipPath id={clipId}><rect x={PAD.left} y={PAD.top - 14} width={W - PAD.left - PAD.right} height={H - PAD.top - PAD.bottom + 28} /></clipPath>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={focus ? timelineColor(focus.row.provider) : "#000"} stopOpacity={0.1} />
               <stop offset="100%" stopColor={focus ? timelineColor(focus.row.provider) : "#000"} stopOpacity={0} />
@@ -217,15 +261,6 @@ export default function TimelineChart({ rows, metric, language, span }: Props) {
             <text x={x(tick)} y={H - PAD.bottom + 24} textAnchor="middle" className="tick">{dateFormat.format(tick)}</text>
           </g>)}
           <text x={PAD.left} y={20} className="axis-name">{axis}</text>
-          {metric === "cost" ? <g className="timeline-key" aria-hidden="true"
-            transform={`translate(${W - PAD.right - 92}, ${PAD.top + 8})`}>
-            <rect x={-8} y={-10} width={92} height={68} rx={4} className="timeline-key-bg" />
-            <line x1={6} x2={6} y1={0} y2={48} className="timeline-key-line" />
-            {([[0, copy.output], [24, copy.mean], [48, copy.input]] as const).map(([dy, label]) => <g key={label}>
-              <line x1={2} x2={10} y1={dy} y2={dy} className="timeline-key-tick" />
-              <text x={18} y={dy + 4} className="timeline-key-text">{label}</text>
-            </g>)}
-          </g> : null}
           <text x={PAD.left + plotW / 2} y={H - 15} textAnchor="middle" className="axis-name">{copy.date}</text>
           {activePoint ? <g className="timeline-crosshair" pointerEvents="none">
             <line x1={activePoint.x} x2={activePoint.x} y1={Math.min(...guides.map((guide) => guide.y))}
@@ -233,13 +268,16 @@ export default function TimelineChart({ rows, metric, language, span }: Props) {
             {guides.map((guide) => <line key={guide.value} x1={PAD.left} x2={guide.x} y1={guide.y} y2={guide.y}
               className={guide.active ? "timeline-guide-active" : "timeline-guide-muted"} />)}
           </g> : null}
-          {plotted.map(({ row, time, value }) => {
+          {/* Unticked models first, so ticked ones draw on top. */}
+          <g clipPath={`url(#${clipId})`}>
+          {(selected ? [...drawable].sort((a, b) => Number(isSelected(a.row)) - Number(isSelected(b.row))) : drawable).map(({ row, time, value }) => {
             const color = timelineColor(row.provider)
+            const base = modelRetirement(row) || !isSelected(row) ? RETIRED_OPACITY : 1
             const on = focus?.row.id === row.id
             const pointX = x(time)
             const pointY = y(value)
             return <g key={row.id} role="button" tabIndex={0} className="timeline-model"
-              style={{ color }} opacity={(focus && !on ? 0.2 : 1) * (modelRetirement(row) ? 0.5 : 1)} aria-pressed={pinned === row.id}
+              style={{ color }} opacity={(focus && !on ? 0.2 : 1) * base} aria-pressed={pinned === row.id}
               aria-label={`${row.name}; ${row.releasedAt}; ${describe(row, value)}`}
               onFocus={() => { enter(row.id); setNearby((current) => current?.id === row.id && current.metric === metric
                 ? current : points.find((point) => point.id === row.id
@@ -269,6 +307,7 @@ export default function TimelineChart({ rows, metric, language, span }: Props) {
                 textAnchor={pointX > W - 180 ? "end" : "start"} className="timeline-model-label">{row.name}</text> : null}
             </g>
           })}
+          </g>
           {focus ? <g pointerEvents="none">
             {activePoint ? <>
               {guides.map((guide) => <g key={guide.value} className={guide.active ? "timeline-guide-active" : "timeline-guide-muted"}>
@@ -312,13 +351,12 @@ export default function TimelineChart({ rows, metric, language, span }: Props) {
       <div className="timeline-chart-meta">
         <span className="timeline-provider-key">{providers.map((provider) =>
           <span key={provider}><i style={{ background: timelineColor(provider) }} />{provider}</span>)}</span>
-        <span>{plotted.length} {copy.shown}{rows.length > plotted.length ? ` · ${rows.length - plotted.length} ${copy.omitted}` : ""}</span>
+        <span>{plotted.length} {copy.shown}{inView.length > plotted.length ? ` · ${inView.length - plotted.length} ${copy.omitted}` : ""}</span>
       </div>
       <div className="readout timeline-readout" aria-live="polite">
-        {focus ? <><strong>{focus.row.name}</strong><span>{focus.row.releasedAt}</span><span>{describe(focus.row, focus.value)}</span></> : copy.hint}
+        {focus ? <><strong>{focus.row.name}</strong><span>{focus.row.releasedAt}</span><span>{describe(focus.row, focus.value)}</span></> : null}
         {focusRetirement ? <a href={focusRetirement.source}>{copy.officialSource}</a> : null}
       </div>
-      {rows.length > plotted.length ? <p className="timeline-missing-note">{copy.missing}</p> : null}
     </div>
   )
 }

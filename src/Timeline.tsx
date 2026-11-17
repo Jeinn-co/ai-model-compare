@@ -83,29 +83,37 @@ const COPY = {
     axis: "左側縱軸", score: "分數 · ECI", cost: "API 單價", period: "發布期間（近 24 個月內拖拉）",
     from: "起始月份", to: "結束月份", providers: "模型廠商",
     loading: "正在載入模型發布日期、ECI 與 API 單價…", failed: "無法載入發布趨勢資料",
-    scoreNote: "下方固定為模型發布日期；越右越新，越高代表 ECI 綜合評測能力越高。",
-    costNote: "每條垂直線連接 Input 與 Output 單價；中間刻痕為 (Input + Output) ÷ 2。單位：美元／百萬 tokens，輸入輸出各占 50%。",
+    notes: "圖表說明",
+    scoreNote: "橫軸是發布日期，縱軸是 ECI 綜合能力，越高越強。",
+    costNote: "縱軸是 API 單價（美元／百萬 tokens）：每條直線上端 Output、下端 Input，中間刻痕是兩者平均。",
+    rules: "深色＝已勾選；淡色＝沒勾，或官方 API 已停用（停用的勾了也是淡色，{date} 核對）。",
+    scope: "所有模型都畫出、列在 ▾ 選單，缺資料的列在下方；發布期間只調整顯示範圍。滑到模型上看數值，點一下固定。",
+    input: "Input", output: "Output", mean: "平均",
     count: "個模型", plotted: "個可繪製", missing: "個尚未有此項資料", missingTitle: "缺少資料的模型",
     missingScore: "尚未評分", missingCost: "尚無完整 Input／Output 單價", empty: "目前的期間與廠商篩選沒有模型。",
     updated: "資料更新", source: "資料來源", scoreSource: "ECI 分數", priceSource: "API 單價",
-    snapshot: "目前使用已儲存的資料快照。", scoreLimit: "ECI 會隨新增評測重新估計；發布日期不是評分日期。",
-    priceLimit: "API 單價為資料更新時的標準價格，不是發布當天價格；實際費用另受用量比例、快取與折扣影響。",
+    snapshot: "目前使用已儲存的資料快照。", scoreLimit: "ECI 會隨新增評測重新估計，發布日期不是評分日期。",
+    priceLimit: "單價是資料更新時的標準價，不是發布當天價格；實際費用另受用量比例、快取與折扣影響。",
     unavailable: "未提供", selectAll: "顯示全部廠商", allModels: "全部模型", chooseModels: "選擇模型：",
-    retired: "官方 API 已停用", retirementNote: "半透明＝官方 API 已停用，仍可勾選比較；未確認停用者維持原色。停用狀態核對：",
+    retired: "官方 API 已停用",
   },
   en: {
     axis: "Y axis", score: "Score · ECI", cost: "API price", period: "Release period (drag within 24 months)",
     from: "Start month", to: "End month", providers: "Model creators",
     loading: "Loading model release dates, ECI scores and API prices…", failed: "Could not load release trends",
-    scoreNote: "The X axis is always the model release date: newer to the right, higher general ECI above.",
-    costNote: "Each vertical line connects Input and Output prices; its middle tick is (Input + Output) ÷ 2. USD per million tokens, with an equal 50/50 input/output mix.",
+    notes: "About this chart",
+    scoreNote: "X axis: release date. Y axis: general ECI capability; higher is stronger.",
+    costNote: "Y axis: API price (USD per million tokens). Each vertical line runs from Input (bottom) to Output (top); the middle tick is their average.",
+    rules: "Dark = ticked; faded = unticked, or retired from the official API (retired models stay faded even when ticked; checked {date}).",
+    scope: "Every model is drawn and listed in the ▾ menus; models missing this metric are listed below. The release period only sets the visible range. Hover a model for its values; click to pin it.",
+    input: "Input", output: "Output", mean: "Mean",
     count: "models", plotted: "plottable", missing: "without this metric", missingTitle: "Models with missing data",
     missingScore: "Not yet scored", missingCost: "Complete Input/Output prices unavailable", empty: "No models match this release period and creator selection.",
     updated: "Data updated", source: "Sources", scoreSource: "ECI scores", priceSource: "API prices",
     snapshot: "Showing the saved data snapshot.", scoreLimit: "ECI is re-estimated as benchmark data grows; a release date is not an evaluation date.",
     priceLimit: "API prices are standard rates at the data update, not historical launch prices; actual costs depend on token mix, caching and discounts.",
     unavailable: "Unavailable", selectAll: "Show all creators", allModels: "All models", chooseModels: "Choose models: ",
-    retired: "Official API retired", retirementNote: "Half opacity = officially retired from the vendor API; still selectable. Unconfirmed retirements keep their color. Status checked: ",
+    retired: "Official API retired",
   },
 }
 
@@ -243,6 +251,10 @@ export default function Timeline({ language, active = true }: { language: Langua
   const selected = useMemo(() => inPeriod.filter((row) => !filters.hidden.includes(row.provider)
     && !hiddenModels.includes(row.id)), [inPeriod, filters.hidden, hiddenModels])
   const missing = selected.filter((row) => !hasMetric(row, filters.metric))
+  // Every model is loaded, listed and drawn; ticks only set opacity, the slider only zooms.
+  const allRows = data?.rows ?? []
+  const ticked = useMemo(() => new Set((data?.rows ?? []).filter((row) => !filters.hidden.includes(row.provider)
+    && !hiddenModels.includes(row.id)).map((row) => row.id)), [data, filters.hidden, hiddenModels])
   const toggleCreator = (provider: string) => setFilters((current) => ({
     ...current,
     hidden: current.hidden.includes(provider) ? current.hidden.filter((value) => value !== provider) : [...current.hidden, provider],
@@ -282,7 +294,7 @@ export default function Timeline({ language, active = true }: { language: Langua
             <span className="control-label" id="timeline-creators-label">{text.providers}</span>
             <div className="legend timeline-creators" role="group" aria-labelledby="timeline-creators-label">
               {creators.map((provider) => {
-                const models = inPeriod.filter((row) => row.provider === provider)
+                const models = allRows.filter((row) => row.provider === provider)
                 const ids = models.map((row) => row.id)
                 const shown = ids.filter((id) => !hiddenModels.includes(id)).length
                 const groups = groupsOf(models)
@@ -325,12 +337,10 @@ export default function Timeline({ language, active = true }: { language: Langua
         ) : null}
       </div>
 
-      <p className="timeline-explanation">{filters.metric === "score" ? text.scoreNote : text.costNote}</p>
-      <p className="timeline-limit">{text.retirementNote}{RETIREMENTS_CHECKED_AT}</p>
       {error && !data ? <div className="chart chart-empty" role="alert">{text.failed} ({error})</div>
         : !data ? <div className="chart chart-empty" role="status">{text.loading}</div>
-          : !selected.length ? <div className="chart chart-empty">{text.empty}</div>
-            : <TimelineChart rows={selected} metric={filters.metric} language={language}
+          : !data.rows.length ? <div className="chart chart-empty">{text.empty}</div>
+            : <TimelineChart rows={data.rows} metric={filters.metric} language={language} selected={ticked}
               span={[Date.parse(`${since}T00:00:00Z`), Date.parse(`${until}T00:00:00Z`)]} />}
         <div className="control timeline-period-control">
           <span className="control-label" id="timeline-period-label">{text.period}</span>
@@ -348,6 +358,22 @@ export default function Timeline({ language, active = true }: { language: Langua
           </div>
         </div>
 
+      <section className="timeline-notes" aria-label={text.notes}>
+        {filters.metric === "cost" ? <svg className="timeline-notes-key" viewBox="0 0 84 60" aria-hidden="true">
+          <line x1={8} x2={8} y1={6} y2={54} className="timeline-key-line" />
+          {([[6, text.output], [30, text.mean], [54, text.input]] as const).map(([y, label]) => <g key={label}>
+            <line x1={4} x2={12} y1={y} y2={y} className="timeline-key-tick" />
+            <text x={20} y={y + 4} className="timeline-key-text">{label}</text>
+          </g>)}
+        </svg> : null}
+        <ul>
+          <li>{filters.metric === "score" ? text.scoreNote : text.costNote}</li>
+          <li>{text.rules.replace("{date}", RETIREMENTS_CHECKED_AT)}</li>
+          <li>{text.scope}</li>
+          <li>{filters.metric === "score" ? text.scoreLimit : text.priceLimit}</li>
+        </ul>
+      </section>
+
       {data ? (
         <>
           <p className="timeline-count" aria-live="polite">{selected.length} {text.count} · {selected.length - missing.length} {text.plotted} · {missing.length} {text.missing}</p>
@@ -358,7 +384,6 @@ export default function Timeline({ language, active = true }: { language: Langua
               <ul>{missing.map((row) => <li key={row.id}><span>{row.name}</span><time dateTime={row.releasedAt}>{row.releasedAt}</time></li>)}</ul>
             </section>
           ) : null}
-          <p className="timeline-limit">{filters.metric === "score" ? text.scoreLimit : text.priceLimit}</p>
           <footer className="foot timeline-foot">
             <span>{text.source}: <a href={data.scoreSource}>{text.scoreSource}</a> · <a href={data.priceSource}>{text.priceSource}</a></span>
             <span>{text.updated}: {updated}</span>

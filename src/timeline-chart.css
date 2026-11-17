@@ -17,15 +17,17 @@
 
 .timeline-crosshair line {
   stroke: currentColor;
+  stroke-width: 1;
   stroke-dasharray: 3 5;
 }
 
+/* Hover guides stay quiet: light slate lines, the nearest value one step darker. */
 .timeline-guide-active {
-  color: #000;
+  color: #94a3b8;
 }
 
 .timeline-guide-muted {
-  color: #9ca3af;
+  color: #cbd5e1;
 }
 
 .timeline-tick.timeline-guide-active,
@@ -36,7 +38,12 @@
 .timeline-value-label {
   fill: currentColor;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
+}
+
+/* Hover labels: regular weight, dark slate rather than pure black. */
+.timeline-guide-active .timeline-value-label {
+  fill: #334155;
 }
 
 .timeline-axis-value-bg {
@@ -65,12 +72,6 @@
   stroke: currentColor;
   stroke-width: 1.5;
   stroke-opacity: 0.65;
-}
-
-.timeline-key-bg {
-  fill: var(--paper);
-  fill-opacity: 0.92;
-  stroke: var(--line);
 }
 
 .timeline-key-line {
@@ -108,12 +109,12 @@
 }
 
 .timeline-focus-label {
-  fill: var(--ink);
+  fill: #334155;
   stroke: var(--paper);
   stroke-width: 4;
   paint-order: stroke fill;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .timeline-model-label {
@@ -159,12 +160,6 @@
 .timeline-readout {
   align-items: baseline;
   margin-bottom: 12px;
-}
-
-.timeline-missing-note {
-  margin: 8px 4px 0;
-  color: var(--muted);
-  font-size: 12px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -236,7 +231,7 @@
 }
 
 .timeline-popover .timeline-retired i {
-  opacity: 0.5;
+  opacity: 0.3;
 }
 
 .timeline-popover small {

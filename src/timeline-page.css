@@ -107,20 +107,34 @@
 
 .timeline-retired .swatch,
 .timeline-retired .menu-model-name {
-  opacity: 0.5;
+  opacity: 0.3;
 }
 
-.timeline-explanation,
-.timeline-limit,
+.timeline-notes,
 .timeline-count {
   color: var(--muted);
   font-size: 13px;
   line-height: 1.6;
 }
 
-.timeline-explanation {
-  margin: 0 0 14px;
+/* One place for every note about the chart, under the period slider. */
+.timeline-notes {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
   max-width: 65rem;
+  margin: 16px 0 0;
+}
+
+.timeline-notes ul {
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+.timeline-notes-key {
+  flex: none;
+  width: 84px;
+  height: 60px;
 }
 
 .timeline-count {
