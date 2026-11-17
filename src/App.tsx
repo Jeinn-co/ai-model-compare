@@ -27,6 +27,14 @@ import Arena from "./Arena"
 import Guidance from "./Guidance"
 import Chart from "./Chart"
 import Legend from "./Legend"
+import Timeline from "./Timeline"
+import "./views.css"
+
+type View = "compare" | "timeline"
+
+function initialView(): View {
+  return new URLSearchParams(window.location.search).get("view") === "timeline" ? "timeline" : "compare"
+}
 
 function formatFetchedAt(value: string) {
   const at = new Date(value)
@@ -88,12 +96,15 @@ function saveVisibility(providers: ReadonlySet<ProviderId>, perSource: PerSource
 }
 
 export default function App() {
+  const [view, setView] = useState<View>(initialView)
+  const [compareStarted, setCompareStarted] = useState(() => initialView() === "compare")
   const [language, setLanguage] = useState<Language>(initialLanguage)
   const t = useMemo(() => createTranslator(language), [language])
   useEffect(() => {
     document.documentElement.lang = language === "zh" ? "zh-Hant" : "en"
+    document.title = view === "timeline" ? "AI Model Compare — Release trends" : "AI Model Compare — Score vs. Cost"
     try { localStorage.setItem(LANGUAGE_KEY, language) } catch { /* Storage is optional. */ }
-  }, [language])
+  }, [language, view])
   const [source, setSource] = useState<SourceId>(initialSource)
   const [yAxis, setYAxis] = useState<YAxis>(initialYAxis)
   const [hidden, setHidden] = useState<ReadonlySet<ProviderId>>(() => new Set(loadVisibility().providers))
@@ -113,6 +124,32 @@ export default function App() {
   const [pinned, setPinned] = useState<string | null>(null)
 
   useEffect(() => {
+    const sync = () => {
+      const next = initialView()
+      setView(next)
+      if (next === "compare") setCompareStarted(true)
+      setSource(initialSource())
+      setYAxis(initialYAxis())
+    }
+    window.addEventListener("popstate", sync)
+    return () => window.removeEventListener("popstate", sync)
+  }, [])
+
+  const viewUrl = (next: View) => {
+    const url = new URL(window.location.href)
+    if (next === "timeline") url.searchParams.set("view", "timeline")
+    else url.searchParams.delete("view")
+    return `${url.pathname}${url.search}${url.hash}`
+  }
+
+  const pickView = (next: View) => {
+    if (next === view) return
+    window.history.pushState(null, "", viewUrl(next))
+    setView(next)
+    if (next === "compare") setCompareStarted(true)
+  }
+
+  useEffect(() => {
     if (!pinned) return
     const clear = (event: KeyboardEvent) => {
       if (event.key === "Escape") setPinned(null)
@@ -122,6 +159,7 @@ export default function App() {
   }, [pinned])
 
   useEffect(() => {
+    if (!compareStarted) return
     const controller = new AbortController()
     for (const id of Object.keys(SOURCES) as SourceId[]) {
       // The dev server answers live; the published site reads the snapshot the GitHub Pages
@@ -147,7 +185,7 @@ export default function App() {
         })
     }
     return () => controller.abort()
-  }, [])
+  }, [compareStarted])
 
   // A model this source has not shown before gets its default tick once. A new default
   // (Opus 5.6 arriving) is ticked and the older versions of its line are unticked.
@@ -246,7 +284,7 @@ export default function App() {
   return (
     <main className="sheet">
       <header className="head">
-        <p className="eyebrow">{meta.eyebrow}</p>
+        <p className="eyebrow">{view === "timeline" ? t("release_trends") : meta.eyebrow}</p>
         <div className="title-row">
           <h1>AI Model Compare <span className="version">v{APP_VERSION}</span></h1>
           <button
@@ -263,10 +301,29 @@ export default function App() {
           </button>
         </div>
         <p className="deck">
-          {t("each_point_is_a_model_score_vs_cost_per_task") }
+          {view === "timeline" ? t("release_trends_intro") : t("each_point_is_a_model_score_vs_cost_per_task")}
         </p>
       </header>
 
+      <nav className="view-tabs" aria-label={t("comparison_views")}>
+        {(["compare", "timeline"] as const).map((item) => (
+          <a key={item} href={viewUrl(item)} className={view === item ? "view-tab on" : "view-tab"}
+            aria-current={view === item ? "page" : undefined}
+            onClick={(event) => {
+              if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return
+              event.preventDefault()
+              pickView(item)
+            }}>
+            {t(item === "compare" ? "performance_and_cost" : "release_trends")}
+          </a>
+        ))}
+      </nav>
+
+      <div hidden={view !== "timeline"}>
+        <Timeline language={language} active={view === "timeline"} />
+      </div>
+
+      {compareStarted ? <div hidden={view !== "compare"}>
       <div className="controls">
         <div className="control">
           <span className="control-label" id="source-label">
@@ -404,6 +461,7 @@ export default function App() {
         {fetchedAt ? <span>{t("updated")} {formatFetchedAt(fetchedAt)}</span> : null}
         <a href={REPO_URL}>{REPO_URL.replace(/^https:\/\//, "")}</a>
       </footer>
+      </div> : null}
     </main>
   )
 }

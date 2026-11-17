@@ -125,7 +125,7 @@ for (const changed of [false, true]) {
     await mkdir(join(dir, "public", "data"), { recursive: true })
     await copyFile(new URL("./snapshot.mjs", import.meta.url), join(dir, "scripts", "snapshot.mjs"))
     const loaders = [["aa", "aa", "loadAa"], ["cursorbench", "bench", "loadBench"], ["tbench", "tbench", "loadTbench"],
-      ["arc", "arc", "loadArc"], ["arena", "arena", "loadArena"]]
+      ["arc", "arc", "loadArc"], ["arena", "arena", "loadArena"], ["timeline", "timeline", "loadTimeline"]]
     for (const [id, file, exported] of loaders) {
       const next = changed && id === "cursorbench" ? { ...fresh, rows: [{ ...row, score: 81 }] } : fresh
       await writeFile(join(dir, "public", "data", `${id}.json`), JSON.stringify(old))

@@ -1,0 +1,171 @@
+.timeline-page .controls {
+  margin-bottom: 16px;
+}
+
+.timeline-range {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.timeline-range-grab {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  cursor: grab;
+  touch-action: none;
+}
+
+.timeline-range-grab:active {
+  cursor: grabbing;
+}
+
+/* Two stacked range inputs make one dual-handle slider; only the thumbs take pointer input. */
+.timeline-range-track {
+  position: relative;
+  width: 100%;
+  height: 28px;
+}
+
+.timeline-range-track::before,
+.timeline-range-fill {
+  position: absolute;
+  top: 12px;
+  height: 4px;
+  border-radius: 2px;
+  content: "";
+}
+
+.timeline-range-track::before {
+  left: 0;
+  right: 0;
+  background: var(--line);
+}
+
+.timeline-range-fill {
+  background: var(--accent);
+}
+
+.timeline-range-track input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: none;
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.timeline-range-track input::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.timeline-range-track input::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  margin-top: 6px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--paper);
+  cursor: grab;
+  pointer-events: auto;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.timeline-range-track input::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--paper);
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.timeline-range-track input:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.timeline-range-value {
+  align-self: flex-end;
+  color: var(--ink);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.timeline-menu-missing {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.timeline-retired .swatch,
+.timeline-retired .menu-model-name {
+  opacity: 0.5;
+}
+
+.timeline-explanation,
+.timeline-limit,
+.timeline-count {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.timeline-explanation {
+  margin: 0 0 14px;
+  max-width: 65rem;
+}
+
+.timeline-count {
+  margin: 14px 0;
+}
+
+.timeline-missing {
+  margin: 14px 0;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.timeline-missing p {
+  color: var(--muted);
+}
+
+.timeline-missing ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 10px 24px;
+  max-height: 240px;
+  margin: 12px 0 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.timeline-missing li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.timeline-missing time {
+  flex: none;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline-foot {
+  margin-top: 24px;
+}
+
+.timeline-period-control {
+  margin: 16px 0 8px;
+}

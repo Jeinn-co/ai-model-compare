@@ -1,4 +1,8 @@
 {
+  "comparison_views": "比較圖表",
+  "performance_and_cost": "效能與成本",
+  "release_trends": "發布趨勢",
+  "release_trends_intro": "下方為模型發布日期。左側可切換 ECI 分數與 API 單價；成本連線兩端為 Input、Output，中間點為算術平均值。",
   "intelligence": "智慧指數",
   "score": "分數",
   "language_aria": "Switch to English",

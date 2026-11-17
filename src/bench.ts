@@ -39,19 +39,28 @@ export const SOURCE_AXES: Record<SourceId, readonly YAxis[]> = {
 export const PROVIDERS: readonly {
   id: ProviderId
   name: string
+  creator: string
   color: string
 }[] = [
   // Official colours that do not clash with each other: Claude #D97757 (product and
   // company), OpenAI green #10A37F (Codex's own mark is blue-violet, which would clash),
   // xAI black, Meta AI violet #9553FF (Meta's corporate blue would clash with Gemini),
   // Gemini blue #3186FF (from the Gemini mark).
-  { id: "claude", name: "Claude Code", color: "#d97757" },
-  { id: "codex", name: "Codex", color: "#10a37f" },
-  { id: "gemini", name: "Gemini", color: "#3186ff" },
-  { id: "grok", name: "Grok", color: "#000000" },
-  { id: "muse", name: "Muse", color: "#9553ff" },
-  { id: "cursor", name: "Cursor", color: "#475569" },
+  { id: "claude", name: "Claude Code", creator: "Anthropic", color: "#d97757" },
+  { id: "codex", name: "Codex", creator: "OpenAI", color: "#10a37f" },
+  { id: "gemini", name: "Gemini", creator: "Google DeepMind", color: "#3186ff" },
+  { id: "grok", name: "Grok", creator: "xAI", color: "#000000" },
+  { id: "muse", name: "Muse", creator: "Meta", color: "#9553ff" },
+  { id: "cursor", name: "Cursor", creator: "Cursor", color: "#475569" },
 ]
+
+export function compareCreators(a: string, b: string) {
+  const position = (name: string) => {
+    const index = PROVIDERS.findIndex((provider) => provider.creator === name)
+    return index < 0 ? PROVIDERS.length : index
+  }
+  return position(a) - position(b) || a.localeCompare(b)
+}
 
 export type SourceId = "cursorbench" | "aa" | "tbench" | "arc"
 
@@ -254,20 +263,20 @@ export function tickValues(min: number, max: number, count: number) {
 // first within a line. Pro comes last for Gemini so both Gemini 3.1 models sit at the
 // bottom. The order does not reshuffle when scores move.
 const LINE_ORDER = [
-  "Fable", "Opus", "Sonnet",
+  "Fable", "Opus", "Sonnet", "Haiku",
   "Astra", "Sol", "Terra", "Luna",
   "Grok", "Grok Build",
-  "Muse Spark", "Muse Glimmer",
+  "Muse Wonder", "Muse Spark", "Muse Spark Open", "Muse Glimmer", "Muse Ember",
   "Gemini Carbon", "Gemini Argon", "Gemini Hydrogen", "Gemini Flash", "Gemini Flash-Lite", "Gemini Pro Preview",
   "Composer",
 ]
 
-const rank = (line: string) => (LINE_ORDER.includes(line) ? LINE_ORDER.indexOf(line) : LINE_ORDER.length)
+export const modelLineRank = (line: string) => (LINE_ORDER.includes(line) ? LINE_ORDER.indexOf(line) : LINE_ORDER.length)
 
 export function compareModels(a: string, b: string) {
   const x = modelLine(a)
   const y = modelLine(b)
-  return rank(x.line) - rank(y.line) || x.line.localeCompare(y.line) || y.version - x.version || b.localeCompare(a)
+  return modelLineRank(x.line) - modelLineRank(y.line) || x.line.localeCompare(y.line) || y.version - x.version || b.localeCompare(a)
 }
 
 // Ticked by default: the newest version of the line each CLI is mostly run with, so

@@ -4,6 +4,12 @@ A small chart of **score vs. cost per task** for coding AI models, from the [Art
 
 **Live:** https://jeinn-co.github.io/ai-model-compare/ (every source checked every six hours; data published only when it changes)
 
+The top navigation switches between **Performance & cost** (the existing charts) and **Release trends** (`?view=timeline`). Release trends fixes the X axis to each model's release date. Its Y axis switches between General ECI scores and standard API prices in USD per million tokens (`?view=timeline&metric=cost`). Each price line connects Input and Output; the marked middle point is their arithmetic mean, `(Input + Output) / 2`, using a linear axis. This is an equal-token price comparison, separate from the per-task costs in the existing view.
+
+Release trends joins Epoch AI's published ECI CSV with exact model-release prices from Artificial Analysis. It shows the five model creators supported by this data join over the last two years, with a default three-month filter. New visitors start with Claude Opus 5.5, GPT-6.1 Sol, Gemini 4 Hydrogen, Grok 4.6, and Muse Wonder checked; saved selections take precedence. A model without ECI or complete prices stays in the visible missing-data list; neither scores nor prices are inferred from another version. Prices reflect the saved snapshot, not historical launch-day prices. Each view keeps its own filters when switching; the view and metric can be shared by URL. Locally, `/api/timeline` uses a six-hour cache and the saved `public/data/timeline.json` as a fallback.
+
+In Release trends, confirmed vendor API retirements appear at half opacity in the plot and model menu, remain selectable, and show their retirement date and a link to the official notice when inspected. `src/model-retirements.ts` records exact releases, sources, effective dates, and the last manual check. Future shutdowns, old releases, missing benchmark data, and missing recommendations alone do not trigger fading. These are vendor API retirements, not ChatGPT/Claude subscription or third-party hosting availability; unconfirmed statuses keep their original color.
+
 Use the globe button to switch between English and Traditional Chinese. The page
 starts with your browser language and remembers your choice.
 
