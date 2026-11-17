@@ -2,7 +2,7 @@
 
 A small chart of **score vs. cost per task** for coding AI models, from the [Artificial Analysis](https://artificialanalysis.ai/models/releases) Intelligence Index (the default), the [CursorBench](https://cursor.com/cursorbench) leaderboard, the [Terminal-Bench](https://www.tbench.ai/leaderboard) leaderboard or the [ARC-AGI-2](https://arcprize.org/leaderboard) leaderboard, so you can see at a glance which model and effort level gives the most score per dollar. Cost is per task at API prices, not a subscription. Under the chart, a ranked list shows human preference from [LMArena](https://lmarena.ai/leaderboard) (formerly Chatbot Arena).
 
-**Live:** https://jeinn-co.github.io/ai-model-compare/ (every source checked every 12 hours; data published only when it changes)
+**Live:** https://jeinn-co.github.io/ai-model-compare/ (every source checked every 8 hours; data published only when it changes)
 
 The top navigation switches between **Performance & cost** (the existing charts) and **Release trends** (`?view=timeline`). Release trends fixes the X axis to each model's release date. Its Y axis switches between General ECI scores and standard API prices in USD per million tokens (`?view=timeline&metric=cost`). Each price line connects Input and Output; the marked middle point is their arithmetic mean, `(Input + Output) / 2`, using a linear axis. This is an equal-token price comparison, separate from the per-task costs in the existing view.
 
@@ -152,7 +152,7 @@ The LMArena list (`/api/bench?source=arena`, in [server/arena.mjs](server/arena.
 
 The site is static and runs on GitHub Pages. React runs in the visitor's browser, so Pages only serves files; the one part that needs a server, fetching the sources, happens ahead of time in GitHub Actions.
 
-[.github/workflows/pages.yml](.github/workflows/pages.yml) runs on every push to `main`, every 12 hours, and on demand:
+[.github/workflows/pages.yml](.github/workflows/pages.yml) runs on every push to `main`, every 8 hours, and on demand:
 
 1. Downloads the live `data/*.json` for comparison and as a fallback. Downloads replace files only after success, preserving the tracked initial `timeline.json` when its live copy is unavailable.
 2. Installs production dependencies with `npm ci --omit=dev --ignore-scripts`, then runs `npm run snapshot` to check **Artificial Analysis, CursorBench, Terminal-Bench, ARC-AGI-2, LMArena and Release trends**. It compares each source's rows, source URLs and benchmark version, ignoring `fetchedAt`. An unchanged source keeps its exact published JSON and update time. A source that cannot be fetched keeps its last valid snapshot; with no valid fallback, the run fails. Release trends joins Epoch's ECI scores with AA release prices and can update independently of the current-model check for the existing charts.

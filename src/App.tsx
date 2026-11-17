@@ -163,7 +163,7 @@ export default function App() {
     const controller = new AbortController()
     for (const id of Object.keys(SOURCES) as SourceId[]) {
       // The dev server answers live; the published site reads the snapshot the GitHub Pages
-      // workflow writes every 12 hours.
+      // workflow writes every 8 hours.
       const url = import.meta.env.DEV ? `/api/bench?source=${id}` : `${import.meta.env.BASE_URL}data/${id}.json`
       fetch(url, { signal: controller.signal })
         .then(async (response) => {
