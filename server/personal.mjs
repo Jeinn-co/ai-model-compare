@@ -1,27 +1,47 @@
-// My usage choices, read from the owner's Notion config page through the official API
-// (NOTION_TOKEN, an integration the page is shared with). The page's My usage JSON block
-// holds exactly what the page and the ai-usage report display; it is validated and
-// published as is. Role names and description keys stay from the published file.
+// My usage choices and the role table, read from the owner's Notion config page through the
+// official API (NOTION_TOKEN, an integration the page is shared with). The S-Agent block is
+// the only source of role models, the same one s-agent dispatches from; the My usage block
+// holds the daily choices and Gemini pick settings. Role names and description keys stay
+// from the published file.
+import { readFile } from "node:fs/promises"
+
 const PAGE = "4118e936085b810891bdc1a77dd59b63"
 const API = "https://api.notion.com/v1"
 const BRANDS = { claude: "anth", codex: "oai", gemini: "gemini" }
 
 const isText = (value) => typeof value === "string" && value.trim() !== ""
-const isPair = (value) => Array.isArray(value) && value.length === 2 && value.every(isText)
+const title = (word) => word[0].toUpperCase() + word.slice(1)
 
-// Every field is validated before anything is returned, so a half-edited block changes nothing.
-export function buildPersonal(blocks, previous) {
+// claude-opus-5-5 -> "Opus 5.5", gpt-6.2-sol -> "GPT-6.2-Sol", gemini-4-argon -> "Gemini 4 Argon"
+export function displayModel(id) {
+  const claude = id.match(/^claude-([a-z]+)-(\d+)-(\d+)$/)
+  if (claude) return `${title(claude[1])} ${claude[2]}.${claude[3]}`
+  const gpt = id.match(/^gpt-(\d+(?:\.\d+)?)-([a-z]+)$/)
+  if (gpt) return `GPT-${gpt[1]}-${title(gpt[2])}`
+  const gemini = id.match(/^gemini-(\d+(?:\.\d+)?)-([a-z-]+)$/)
+  if (gemini) return `Gemini ${gemini[1]} ${gemini[2].split("-").map(title).join("-")}`
+  return id
+}
+
+// Every field is validated before anything is returned, so a half-edited page changes nothing.
+// `catalog` is gemini-models.json: a Gemini role at high whose model also supports the optional
+// effort is shown as "high ~ xhigh" (display only; s-agent still dispatches at high).
+export function buildPersonal(blocks, previous, catalog = { models: [] }) {
+  const agent = blocks.find((block) => block?.roles)
   const usage = blocks.find((block) => block?.daily)
-  if (!usage) throw new Error("Notion page has no My usage JSON block")
+  if (!agent || !usage) throw new Error("Notion page needs both the S-Agent and My usage JSON blocks")
   if (!Array.isArray(usage.daily) || !usage.daily.every((c) => isText(c?.provider) && isText(c.model) && isText(c.effort))) {
     throw new Error("every daily entry needs provider, model and effort")
   }
   if (!usage.daily.some((choice) => choice.provider === "gemini")) throw new Error("daily must include gemini")
   const roles = Object.fromEntries(Object.entries(previous.roles).map(([id, meta]) => {
     const models = Object.fromEntries(Object.entries(BRANDS).map(([provider, brand]) => {
-      const pair = usage.roles?.[id]?.[provider]
-      if (!isPair(pair)) throw new Error(`roles.${id}.${provider} must be [model, effort]`)
-      return [brand, pair]
+      const choice = agent.roles[id]?.[provider]
+      if (!isText(choice?.model) || !isText(choice.effort)) throw new Error(`role ${id} lacks ${provider} model or effort`)
+      const optional = usage.optionalGeminiEffort
+      const widen = provider === "gemini" && choice.effort === "high"
+        && catalog.models.some((model) => model.id === choice.model && model.efforts.includes(optional))
+      return [brand, [displayModel(choice.model), widen ? `high ~ ${optional}` : choice.effort]]
     }))
     return [id, { ...meta, models }]
   }))
@@ -57,5 +77,6 @@ export async function notionBlocks(token, fetchImpl = fetch) {
 }
 
 export async function loadPersonal(previous, token, fetchImpl = fetch) {
-  return buildPersonal(await notionBlocks(token, fetchImpl), previous)
+  const catalog = JSON.parse(await readFile(new URL("../public/data/gemini-models.json", import.meta.url), "utf8"))
+  return buildPersonal(await notionBlocks(token, fetchImpl), previous, catalog)
 }
