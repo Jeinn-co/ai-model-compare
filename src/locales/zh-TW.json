@@ -139,5 +139,6 @@
   "sort_score": "AA 分數",
   "sort_ascending": "由低到高",
   "sort_descending": "由高到低",
+  "cli_defaults": "CLI 預設：{{list}}。",
   "gemini_policy": "我的 Gemini 用法：日常工作用 {{daily}}；high 不足時可明確指定單次派工使用 {{optional}}。安全工作用 {{security}}，以安全性與正確性優先。因成本排除 {{excluded}}。"
 }

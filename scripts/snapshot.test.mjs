@@ -13,7 +13,7 @@ const old = { fetchedAt: "2026-10-10T00:00:00.000Z", source: "https://example.co
 const fresh = { ...old, fetchedAt: "2026-10-11T00:00:00.000Z" }
 const execFileAsync = promisify(execFile)
 // No official-model check unless a test asks for one: {} filters nothing.
-const runSnapshot = (options) => snapshot({ official: async () => ({}), ...options })
+const runSnapshot = (options) => snapshot({ official: async () => ({}), personal: null, ...options })
 
 async function setup(t, previous = { aa: old, cursorbench: old }) {
   const dir = await mkdtemp(join(tmpdir(), "ai-model-compare-snapshot-"))

@@ -29,9 +29,14 @@ jobs:
           node-version: 22
           cache: npm
       - name: Keep the live data as a fallback
+        env:
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           mkdir -p public/data
-          for source in aa cursorbench tbench arc arena timeline; do
+          # A push keeps its committed personal choices; scheduled runs compare Notion with the live copy.
+          personal=""
+          if [ "$EVENT_NAME" != "push" ]; then personal="personal-choices"; fi
+          for source in aa cursorbench tbench arc arena timeline $personal; do
             if curl -fsSL "https://jeinn-co.github.io/ai-model-compare/data/$source.json" -o "public/data/$source.json.tmp"; then
               mv "public/data/$source.json.tmp" "public/data/$source.json"
             else
@@ -43,6 +48,8 @@ jobs:
       - name: Check all sources for changes
         id: snapshot
         run: npm run snapshot
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
       - name: Decide whether to publish
         id: publish
         env:
@@ -61,7 +68,8 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: dist
-          key: pages-site-${{ runner.os }}-${{ github.sha }}
+          # Personal choices are bundled into the page, so new ones need a new build.
+          key: pages-site-${{ runner.os }}-${{ github.sha }}-${{ hashFiles('public/data/personal-choices.json') }}
       - name: Install build dependencies
         if: steps.publish.outputs.publish == 'true' && steps.site.outputs.cache-hit != 'true'
         run: npm ci
@@ -75,12 +83,12 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: dist
-          key: pages-site-${{ runner.os }}-${{ github.sha }}
+          key: pages-site-${{ runner.os }}-${{ github.sha }}-${{ hashFiles('public/data/personal-choices.json') }}
       - name: Copy the current snapshots into the website
         if: steps.publish.outputs.publish == 'true'
         run: |
           mkdir -p dist/data
-          cp public/data/aa.json public/data/cursorbench.json public/data/tbench.json public/data/arc.json public/data/arena.json public/data/timeline.json dist/data/
+          cp public/data/aa.json public/data/cursorbench.json public/data/tbench.json public/data/arc.json public/data/arena.json public/data/timeline.json public/data/personal-choices.json dist/data/
       - uses: actions/configure-pages@v5
         if: steps.publish.outputs.publish == 'true'
       - uses: actions/upload-pages-artifact@v3

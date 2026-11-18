@@ -2,7 +2,7 @@ import { useState } from "react"
 import { providerById, type ProviderId, type Row } from "./bench"
 import type { Translate } from "./language"
 
-import { GUIDANCE, OPUS_LEVELS, EFFORT, PRICES, SOURCES, SELECTION_POLICY, type Text, type Line, type Price } from "./guidance-data"
+import { GUIDANCE, OPUS_LEVELS, EFFORT, PRICES, SOURCES, SELECTION_POLICY, CLI_DEFAULTS, type Text, type Line, type Price } from "./guidance-data"
 
 function Swatch({ provider }: { provider: ProviderId }) {
   return <span className="swatch" style={{ background: providerById(provider).color }} />
@@ -97,6 +97,7 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
       <p className="arena-note">
         {say(SELECTION_POLICY)}
       </p>
+      {CLI_DEFAULTS && <p className="arena-note">{say(CLI_DEFAULTS)}</p>}
 
       <div className="guidance-effort">
         <div className="guidance-card">

@@ -7,13 +7,25 @@
     },
     {
       "provider": "codex",
-      "model": "GPT-6.1 Sol",
-      "label": "GPT-6.1-Sol",
+      "model": "GPT-6.2 Sol",
+      "label": "GPT-6.2-Sol",
       "effort": "high"
     },
     {
       "provider": "gemini",
       "model": "Gemini 4 Hydrogen",
+      "effort": "high"
+    }
+  ],
+  "cliDefaults": [
+    {
+      "provider": "claude",
+      "model": "opus[1m]",
+      "effort": "high"
+    },
+    {
+      "provider": "codex",
+      "model": "gpt-6.2-sol",
       "effort": "high"
     }
   ],
@@ -27,12 +39,12 @@
           "high"
         ],
         "oai": [
-          "GPT-6.1-Sol",
+          "GPT-6.2-Sol",
           "high"
         ],
         "gemini": [
-          "Gemini 4 Hydrogen",
-          "high ~ xhigh"
+          "Gemini 4 Argon",
+          "high"
         ]
       }
     },
@@ -49,8 +61,8 @@
           "high"
         ],
         "gemini": [
-          "Gemini 4 Hydrogen",
-          "high ~ xhigh"
+          "Gemini 4 Argon",
+          "high"
         ]
       }
     },
@@ -63,7 +75,7 @@
           "medium"
         ],
         "oai": [
-          "GPT-6.1-Sol",
+          "GPT-6.2-Sol",
           "medium"
         ],
         "gemini": [
@@ -81,12 +93,12 @@
           "high"
         ],
         "oai": [
-          "GPT-6.1-Sol",
+          "GPT-6.2-Sol",
           "high"
         ],
         "gemini": [
-          "Gemini 4 Hydrogen",
-          "high ~ xhigh"
+          "Gemini 4 Argon",
+          "high"
         ]
       }
     },
@@ -99,12 +111,12 @@
           "high"
         ],
         "oai": [
-          "GPT-6.1-Sol",
+          "GPT-6.2-Sol",
           "high"
         ],
         "gemini": [
-          "Gemini 4 Hydrogen",
-          "high ~ xhigh"
+          "Gemini 4 Argon",
+          "high"
         ]
       }
     },
@@ -117,7 +129,7 @@
           "max"
         ],
         "oai": [
-          "GPT-6 Astra",
+          "GPT-6-Astra",
           "max"
         ],
         "gemini": [

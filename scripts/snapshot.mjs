@@ -13,11 +13,14 @@ import { loadArc } from "../server/arc.mjs"
 import { loadArena } from "../server/arena.mjs"
 import { loadBench } from "../server/bench.mjs"
 import { keepOfficial, loadOfficial } from "../server/official.mjs"
+import { loadPersonal } from "../server/personal.mjs"
 import { loadTbench } from "../server/tbench.mjs"
 import { loadTimeline } from "../server/timeline.mjs"
 
 const OUT = new URL("../public/data/", import.meta.url)
 const SOURCES = { aa: loadAa, cursorbench: loadBench, tbench: loadTbench, arc: loadArc, arena: loadArena, timeline: loadTimeline }
+// My usage and role choices come from Notion only when the workflow provides a token.
+const PERSONAL = process.env.NOTION_TOKEN ? (previous) => loadPersonal(previous, process.env.NOTION_TOKEN) : null
 
 async function readSnapshot(file) {
   try {
@@ -35,7 +38,7 @@ function chartData({ source, version = null, models = [], scoreSource = null, pr
   return { source, version, models, scoreSource, priceSource, rows }
 }
 
-export async function runSnapshot({ out = OUT, sources = SOURCES, official = loadOfficial, dryRun = false } = {}) {
+export async function runSnapshot({ out = OUT, sources = SOURCES, official = loadOfficial, personal = PERSONAL, dryRun = false } = {}) {
   await mkdir(out, { recursive: true })
   let failed = 0
   let changed = false
@@ -73,6 +76,25 @@ export async function runSnapshot({ out = OUT, sources = SOURCES, official = loa
         console.error(`${id}: ${error.message}; no previous snapshot to keep`)
         failed++
       }
+    }
+  }
+  if (personal) {
+    // The committed file is the fallback and supplies role names; a Notion failure keeps it.
+    const file = new URL("personal-choices.json", out)
+    try {
+      const previous = JSON.parse(await readFile(file, "utf8"))
+      const next = await personal(previous)
+      if (isDeepStrictEqual(previous, next)) {
+        results.push({ id: "personal", status: "unchanged", updatedAt: null })
+      } else {
+        if (!dryRun) await writeFile(file, `${JSON.stringify(next, null, 2)}\n`)
+        changed = true
+        results.push({ id: "personal", status: "updated", updatedAt: checkedAt })
+      }
+      console.log(`personal: ${results.at(-1).status}`)
+    } catch (error) {
+      results.push({ id: "personal", status: "fetch failed; keeping previous data", updatedAt: null })
+      console.warn(`personal: ${error.message}; keeping the previous choices`)
     }
   }
   return { changed, failed, checkedAt, results }

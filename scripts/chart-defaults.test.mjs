@@ -65,7 +65,7 @@ test("API defaults use the table's model/effort records, not personal picks or g
 
 test("regular choices remain limited to the confirmed My usage entries", () => {
   const { data } = harness()
-  for (const model of ["Opus 5.5", "GPT-6.1 Sol", "Gemini 4 Hydrogen"]) {
+  for (const model of ["Opus 5.5", "GPT-6.2 Sol", "Gemini 4 Hydrogen"]) {
     assert.equal(data.isDailyChoice(model, "High"), true)
     assert.equal(data.isDailyChoice(model, "Extra High"), false)
   }
@@ -80,7 +80,8 @@ test("personal effort identifiers match the benchmark's Extra High label", () =>
 
 test("regular, default and combined markers have distinct shapes on every axis in both languages", () => {
   const { data, render } = harness()
-  data.DAILY_CHOICES.find(choice => choice.model === "GPT-6.1 Sol").effort = "medium"
+  // GPT-6.1 Sol has a listed API default effort (medium), so it can be both markers at once.
+  Object.assign(data.DAILY_CHOICES.find(choice => choice.model === "GPT-6.2 Sol"), { model: "GPT-6.1 Sol", effort: "medium" })
   const rows = [row("Opus 5.5", "High", "claude"), row("Opus 5.5", "Medium", "claude"),
     row("GPT-6.1 Sol", "Medium", "codex"), row("GPT-6 Astra", "High", "codex")]
   for (const axis of ["score", "speed", "verbosity", "latency", "tokens", "steps"]) {

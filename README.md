@@ -252,8 +252,12 @@ Model facts and personal choices are distributed from the companion
 `public/data/gemini-models.json` and `public/data/personal-choices.json` are the
 standalone copies this app imports and publishes. The full model catalog retains
 pricing, promotional rates, supported efforts and subscription qualifications.
-The personal profile owns daily choices and display preferences for delegated
-roles. It does not change the actual s-agent defaults in Notion.
+The personal profile (daily choices, each CLI's default and the delegated-role models)
+comes from the owner's s-agent Notion config page: when the `NOTION_TOKEN` secret is set
+(a Notion integration with read access to that page), each scheduled snapshot reads the
+page's S-Agent and My usage JSON blocks through the official API and publishes the result
+as `data/personal-choices.json`, which the ai-usage skill also reads. A failed or
+incomplete read keeps the current file. Without the secret, the committed copy is used.
 
 After editing the canonical data, run this from the agent-skills checkout:
 
