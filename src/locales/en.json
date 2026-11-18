@@ -139,6 +139,5 @@
   "sort_score": "AA score",
   "sort_ascending": "low to high",
   "sort_descending": "high to low",
-  "cli_defaults": "CLI defaults: {{list}}.",
   "gemini_policy": "My Gemini choices: {{daily}} for routine work; explicitly request {{optional}} for one handoff when high is insufficient. {{security}} for security, prioritizing safety and correctness. {{excluded}} is excluded because of cost."
 }

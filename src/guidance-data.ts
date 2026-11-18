@@ -155,14 +155,6 @@ export const SOURCES: readonly { name: Text; url: string }[] = [
 ]
 
 
-// Each CLI's new-conversation default, as written in its settings (from the Notion config page).
-const CLI_NAMES: Record<string, string> = { claude: "Claude Code", codex: "Codex", gemini: "Antigravity" }
-export const CLI_DEFAULTS: Text | null = personal.cliDefaults.length
-  ? textPair("cli_defaults", {
-    list: personal.cliDefaults.map((choice) => `${CLI_NAMES[choice.provider] ?? choice.provider} ${choice.model} / ${choice.effort}`).join(" · "),
-  })
-  : null
-
 const dailyGemini = personal.daily.find((choice) => choice.provider === "gemini")
 if (!dailyGemini) throw new Error("personal-choices.json must define the Gemini daily choice")
 const excludedGemini = catalog.models.filter((model) => personal.excludedGeminiPicks.includes(model.id))
