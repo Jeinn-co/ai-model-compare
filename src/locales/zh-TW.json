@@ -73,7 +73,7 @@
   "guidance_no_default_named_and_no_model_labelled_for_agentic_coding": "沒有指定預設，也沒有模型被標為適合 agent 型程式；未設定模型時，客戶端會用推薦模型。",
   "guidance_gpt_6_2_astra_most_capable_for_demanding_projects": "GPT-6.2 Astra：能力最強，適合高難度專案，例如跨服務診斷 bug。$8 / $40",
   "guidance_gpt_6_2_sol_everyday_work_from_coding_to_agents": "GPT-6.2 Sol：日常工作的首選，從寫程式到大規模驅動 agent。$2 / $10",
-  "guidance_gpt_6_astra_most_capable_for_complex_work_across_code": "GPT-6 Astra：最強，適合跨程式、app、研究的複雜工作。$10 / $50",
+  "guidance_gpt_6_astra_reasoning_and_computer_use_for_complex_work": "GPT-6 Astra：結合推理與電腦操作，處理跨程式、app、研究的複雜工作。$10 / $50",
   "guidance_gpt_6_1_sol_near_astra_at_a_lower_cost": "GPT-6.1 Sol：接近 Astra，成本較低。$2 / $10",
   "guidance_gpt_6_1_terra_fast_and_efficient_visual_reasoning_precise": "GPT-6.1 Terra：快速有效率；視覺推理、精準的電腦操作與清楚的寫作。$1 / $5",
   "guidance_gpt_6_luna_lightweight_high_volume_narrowly_scoped_tasks_such": "GPT-6 Luna：輕量；大量、範圍窄的任務，例如摘要與擷取。$0.10 / $0.50",

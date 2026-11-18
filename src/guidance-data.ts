@@ -37,7 +37,7 @@ export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }
     lines: [
       textPair("guidance_no_default_named_and_no_model_labelled_for_agentic_coding"),
       textPair("guidance_gpt_6_2_astra_most_capable_for_demanding_projects"),
-      textPair("guidance_gpt_6_astra_most_capable_for_complex_work_across_code"),
+      textPair("guidance_gpt_6_astra_reasoning_and_computer_use_for_complex_work"),
       [...textPair("guidance_gpt_6_2_sol_everyday_work_from_coding_to_agents"), true],
       textPair("guidance_gpt_6_1_sol_near_astra_at_a_lower_cost"),
       textPair("guidance_gpt_6_1_terra_fast_and_efficient_visual_reasoning_precise"),

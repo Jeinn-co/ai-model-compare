@@ -73,7 +73,7 @@
   "guidance_no_default_named_and_no_model_labelled_for_agentic_coding": "No default named and no model labelled for agentic coding; without a model set, the client uses a recommended one.",
   "guidance_gpt_6_2_astra_most_capable_for_demanding_projects": "GPT-6.2 Astra: most capable, for demanding projects such as diagnosing a bug across services. $8 / $40",
   "guidance_gpt_6_2_sol_everyday_work_from_coding_to_agents": "GPT-6.2 Sol: the go-to for everyday work, from coding to powering agents at scale. $2 / $10",
-  "guidance_gpt_6_astra_most_capable_for_complex_work_across_code": "GPT-6 Astra: most capable, for complex work across code, apps and research. $10 / $50",
+  "guidance_gpt_6_astra_reasoning_and_computer_use_for_complex_work": "GPT-6 Astra: combines reasoning and computer use for complex work across code, apps and research. $10 / $50",
   "guidance_gpt_6_1_sol_near_astra_at_a_lower_cost": "GPT-6.1 Sol: near Astra at a lower cost. $2 / $10",
   "guidance_gpt_6_1_terra_fast_and_efficient_visual_reasoning_precise": "GPT-6.1 Terra: fast and efficient; visual reasoning, precise computer use and clear writing. $1 / $5",
   "guidance_gpt_6_luna_lightweight_high_volume_narrowly_scoped_tasks_such": "GPT-6 Luna: lightweight; high-volume, narrowly scoped tasks such as summaries and extraction. $0.10 / $0.50",
