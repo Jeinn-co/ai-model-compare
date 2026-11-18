@@ -51,16 +51,26 @@ test("every creator keeps its known series in tier order, including unscored new
   }
 })
 
-test("models within a series descend by ECI and unscored models do not borrow a score", () => {
+test("models within a series run newest first, even before the newest is scored", () => {
   const row = { provider: "Google DeepMind", releasedAt: "2026-11-12", eci: null }
   const groups = scope.groupsOf([
-    { ...row, name: "Gemini 3.7 Flash", eci: 158 },
+    { ...row, name: "Gemini 3.7 Flash", releasedAt: "2026-06-01", eci: 158 },
     { ...row, name: "Gemini 4 Hydrogen" },
-    { ...row, name: "Gemini 3.8 Flash", eci: 159 },
+    { ...row, name: "Gemini 3.9 Flash" },
+    { ...row, name: "Gemini 3.8 Flash", releasedAt: "2026-09-01", eci: 159 },
   ])
   assert.equal(groups[0].line, "Gemini Hydrogen")
   assert.equal(groups[0].items[0].eci, null)
-  assert.deepEqual(Array.from(groups[1].items, (item) => item.name), ["Gemini 3.8 Flash", "Gemini 3.7 Flash"])
+  assert.deepEqual(Array.from(groups[1].items, (item) => item.name), ["Gemini 3.9 Flash", "Gemini 3.8 Flash", "Gemini 3.7 Flash"])
+})
+
+test("GPT-6.2 Sol, released after GPT-6.1 Sol, heads the Sol series", () => {
+  const groups = scope.groupsOf([
+    { provider: "OpenAI", name: "GPT-6.1 Sol", releasedAt: "2026-09-29", eci: 160 },
+    { provider: "OpenAI", name: "GPT-6 Sol", releasedAt: "2026-09-22", eci: 155 },
+    { provider: "OpenAI", name: "GPT-6.2 Sol", releasedAt: "2026-11-17", eci: null },
+  ])
+  assert.deepEqual(Array.from(groups[0].items, (item) => item.name), ["GPT-6.2 Sol", "GPT-6.1 Sol", "GPT-6 Sol"])
 })
 
 test("missing models are listed visibly and marked in the model menu", () => {

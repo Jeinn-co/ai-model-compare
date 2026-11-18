@@ -25,11 +25,13 @@ const validRange = (value: unknown): value is Range => Array.isArray(value) && v
 
 const strings = (value: unknown) => Array.isArray(value) ? value.filter((item: unknown) => typeof item === "string") : []
 
-// Keep known series in the shared tier order even before ECI is available; rank other series by best ECI.
+// Series run strongest to weakest: known ones in the shared tier order, others by best ECI.
+// Within a series the newest release comes first, so an unscored new model leads its line.
 function groupsOf(rows: TimelineRow[]) {
+  const bestEci = (items: TimelineRow[]) => Math.max(...items.map((row) => row.eci ?? -Infinity))
   const groups = new Map<string, TimelineRow[]>()
-  for (const row of [...rows].sort((a, b) => (b.eci ?? -Infinity) - (a.eci ?? -Infinity)
-    || b.releasedAt.localeCompare(a.releasedAt) || a.name.localeCompare(b.name))) {
+  for (const row of [...rows].sort((a, b) => b.releasedAt.localeCompare(a.releasedAt)
+    || modelLine(b.name).version - modelLine(a.name).version || a.name.localeCompare(b.name))) {
     const line = modelLine(row.name.replace(/\s*\(.*\)$/, "")).line
       .replace(/\bmini\b/gi, "Mini").replace(/\bnano\b/gi, "Nano")
     groups.set(line, [...(groups.get(line) ?? []), row])
@@ -37,7 +39,7 @@ function groupsOf(rows: TimelineRow[]) {
   return [...groups].map(([line, items]) => ({
     line, title: items[0].name.startsWith("GPT-") && !line.startsWith("GPT") ? `GPT ${line}` : line, items,
   })).sort((a, b) => modelLineRank(a.line.replace(/^Claude /, "")) - modelLineRank(b.line.replace(/^Claude /, ""))
-    || (b.items[0].eci ?? -Infinity) - (a.items[0].eci ?? -Infinity) || a.title.localeCompare(b.title))
+    || bestEci(b.items) - bestEci(a.items) || a.title.localeCompare(b.title))
 }
 
 function initialFilters(): Filters {

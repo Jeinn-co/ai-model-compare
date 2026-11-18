@@ -57,39 +57,37 @@ function initialYAxis(): YAxis {
   return SOURCE_AXES[initialSource()].includes(y as YAxis) ? (y as YAxis) : "score"
 }
 
-// Chip switches and menu ticks are remembered in this browser only. Ticks are kept per
-// source, since each lists different models; `seen` marks the models already given a
-// default, so a model that shows up later starts unticked. Storage can be missing or
-// blocked (private window, preview), so every access is guarded.
-const STORAGE_KEY = "ai-model-compare:visibility:v2"
+// Chip switches and menu ticks are remembered in this browser only. One set of ticks is
+// shared by every source, so switching source keeps the same models checked; `seen` marks
+// the models already given a default, so a model that shows up later starts unticked.
+// Storage can be missing or blocked (private window, preview), so every access is guarded.
+const STORAGE_KEY = "ai-model-compare:visibility:v3"
+// v2 kept ticks per source; its Artificial Analysis ticks (the default source) carry over.
+const LEGACY_KEY = "ai-model-compare:visibility:v2"
 
 type Ticks = { hidden: ReadonlySet<string>; seen: ReadonlySet<string> }
-type PerSource = Record<SourceId, Ticks>
 
-const EMPTY: Ticks = { hidden: new Set(), seen: new Set() }
-
-function loadVisibility(): { providers: ProviderId[]; perSource: PerSource } {
-  const perSource: PerSource = { aa: EMPTY, cursorbench: EMPTY, tbench: EMPTY, arc: EMPTY }
+function loadVisibility(): { providers: ProviderId[]; ticks: Ticks } {
+  const empty: Ticks = { hidden: new Set(), seen: new Set() }
   try {
-    const data = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "{}")
-    for (const id of Object.keys(perSource) as SourceId[]) {
-      const saved = data.sources?.[id]
-      if (Array.isArray(saved?.hidden) && Array.isArray(saved?.seen)) {
-        perSource[id] = { hidden: new Set(saved.hidden), seen: new Set(saved.seen) }
-      }
-    }
-    return { providers: Array.isArray(data.providers) ? data.providers : [], perSource }
+    const current = window.localStorage.getItem(STORAGE_KEY)
+    const data = JSON.parse(current ?? window.localStorage.getItem(LEGACY_KEY) ?? "{}")
+    const saved = current ? data : data.sources?.aa
+    const ticks = Array.isArray(saved?.hidden) && Array.isArray(saved?.seen)
+      ? { hidden: new Set<string>(saved.hidden), seen: new Set<string>(saved.seen) }
+      : empty
+    return { providers: Array.isArray(data.providers) ? data.providers : [], ticks }
   } catch {
-    return { providers: [], perSource }
+    return { providers: [], ticks: empty }
   }
 }
 
-function saveVisibility(providers: ReadonlySet<ProviderId>, perSource: PerSource) {
+function saveVisibility(providers: ReadonlySet<ProviderId>, ticks: Ticks) {
   try {
-    const sources = Object.fromEntries(
-      Object.entries(perSource).map(([id, ticks]) => [id, { hidden: [...ticks.hidden], seen: [...ticks.seen] }]),
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ providers: [...providers], hidden: [...ticks.hidden], seen: [...ticks.seen] }),
     )
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ providers: [...providers], sources }))
   } catch {
     // Not remembered this time; the page still works.
   }
@@ -108,10 +106,10 @@ export default function App() {
   const [source, setSource] = useState<SourceId>(initialSource)
   const [yAxis, setYAxis] = useState<YAxis>(initialYAxis)
   const [hidden, setHidden] = useState<ReadonlySet<ProviderId>>(() => new Set(loadVisibility().providers))
-  const [perSource, setPerSource] = useState<PerSource>(() => loadVisibility().perSource)
-  const hiddenModels = perSource[source].hidden
+  const [ticks, setTicks] = useState<Ticks>(() => loadVisibility().ticks)
+  const hiddenModels = ticks.hidden
 
-  useEffect(() => saveVisibility(hidden, perSource), [hidden, perSource])
+  useEffect(() => saveVisibility(hidden, ticks), [hidden, ticks])
   // Every source is fetched up front and kept, so switching shows the other one at once
   // instead of dropping the chart for a loading line.
   const [loaded, setLoaded] = useState<Partial<Record<SourceId, Loaded>>>({})
@@ -187,29 +185,25 @@ export default function App() {
     return () => controller.abort()
   }, [compareStarted])
 
-  // A model this source has not shown before gets its default tick once. A new default
+  // A model no source has shown before gets its default tick once. A new default
   // (Opus 5.6 arriving) is ticked and the older versions of its line are unticked.
   useEffect(() => {
     if (rows.length === 0) return
-    setPerSource((current) => {
-      const ticks = current[source]
+    setTicks((current) => {
       const models = [...new Set(rows.map((row) => row.model))]
-      const unseen = models.filter((model) => !ticks.seen.has(model))
+      const unseen = models.filter((model) => !current.seen.has(model))
       if (unseen.length === 0) return current
       const ticked = defaultTicked(rows)
       const newLines = new Set(unseen.filter((model) => ticked.has(model)).map((model) => modelLine(model).line))
       const replaced = models.filter(
-        (model) => ticks.seen.has(model) && !ticked.has(model) && newLines.has(modelLine(model).line),
+        (model) => current.seen.has(model) && !ticked.has(model) && newLines.has(modelLine(model).line),
       )
       return {
-        ...current,
-        [source]: {
-          hidden: new Set([...ticks.hidden, ...replaced, ...unseen.filter((model) => !ticked.has(model))]),
-          seen: new Set([...ticks.seen, ...unseen]),
-        },
+        hidden: new Set([...current.hidden, ...replaced, ...unseen.filter((model) => !ticked.has(model))]),
+        seen: new Set([...current.seen, ...unseen]),
       }
     })
-  }, [rows, source])
+  }, [rows])
 
   const writeUrl = (nextSource: SourceId, nextY: YAxis) => {
     const url = new URL(window.location.href)
@@ -264,13 +258,13 @@ export default function App() {
   }
 
   const setModels = (models: readonly string[], show: boolean) => {
-    setPerSource((current) => {
-      const next = new Set(current[source].hidden)
+    setTicks((current) => {
+      const next = new Set(current.hidden)
       for (const model of models) {
         if (show) next.delete(model)
         else next.add(model)
       }
-      return { ...current, [source]: { ...current[source], hidden: next } }
+      return { ...current, hidden: next }
     })
     if (show) {
       const providers = new Set(rows.filter((row) => models.includes(row.model)).map((row) => row.provider))
