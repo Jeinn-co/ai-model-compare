@@ -36,8 +36,10 @@ export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }
     provider: "codex",
     lines: [
       textPair("guidance_no_default_named_and_no_model_labelled_for_agentic_coding"),
+      textPair("guidance_gpt_6_2_astra_most_capable_for_demanding_projects"),
+      [...textPair("guidance_gpt_6_2_sol_everyday_work_from_coding_to_agents"), true],
       textPair("guidance_gpt_6_astra_most_capable_for_complex_work_across_code"),
-      [...textPair("guidance_gpt_6_1_sol_near_astra_at_a_lower_cost"), true],
+      textPair("guidance_gpt_6_1_sol_near_astra_at_a_lower_cost"),
       textPair("guidance_gpt_6_1_terra_fast_and_efficient_visual_reasoning_precise"),
       textPair("guidance_gpt_6_luna_lightweight_high_volume_narrowly_scoped_tasks_such"),
     ],
@@ -77,6 +79,8 @@ export const EFFORT: readonly Line[] = [
 ]
 
 const NOT_STATED: Text = textPair("guidance_not_stated")
+// OpenAI gives no default for these; GPT-6.1 Sol, GPT-6 Sol and GPT-6 Luna default to medium.
+const ESTIMATED_MEDIUM: Text = textPair("guidance_not_given_estimated_medium")
 
 // chartEffort: the effort the chart rings when the table shows text instead of an official default.
 export type Price = { provider: ProviderId; model: string; input: string; output: string; effort: string | Text; chartEffort?: string; note?: Text }
@@ -93,9 +97,11 @@ export const PRICES: readonly Price[] = [
     effort: "medium",
     note: textPair("guidance_prompts_up_to_100k_cost_0_50_cost_2_50"),
   },
+  { provider: "codex", model: "GPT-6.2 Astra", input: "$8", output: "$40", effort: ESTIMATED_MEDIUM, chartEffort: "medium" },
+  { provider: "codex", model: "GPT-6.2 Sol", input: "$2", output: "$10", effort: ESTIMATED_MEDIUM, chartEffort: "medium" },
   {
     provider: "codex", model: "GPT-6 Astra", input: "$10", output: "$50",
-    effort: textPair("guidance_not_given_estimated_medium"), chartEffort: "medium",
+    effort: ESTIMATED_MEDIUM, chartEffort: "medium",
   },
   { provider: "codex", model: "GPT-6.1 Sol", input: "$2", output: "$10", effort: "medium" },
   { provider: "codex", model: "GPT-6.1 Terra", input: "$1", output: "$5", effort: "medium" },
@@ -139,6 +145,8 @@ export const SOURCES: readonly { name: Text; url: string }[] = [
   { name: textPair("guidance_claude_pricing"), url: "https://platform.claude.com/docs/en/about-claude/pricing" },
   { name: textPair("guidance_claude_effort"), url: "https://platform.claude.com/docs/en/build-with-claude/effort" },
   { name: textPair("guidance_codex_models"), url: "https://learn.chatgpt.com/docs/models" },
+  { name: textPair("guidance_gpt_6_2_astra"), url: "https://developers.openai.com/api/docs/models/gpt-6.2-astra" },
+  { name: textPair("guidance_gpt_6_2_sol"), url: "https://developers.openai.com/api/docs/models/gpt-6.2-sol" },
   { name: textPair("guidance_gpt_6_astra"), url: "https://developers.openai.com/api/docs/models/gpt-6-astra" },
   { name: textPair("guidance_gpt_6_1_sol"), url: "https://developers.openai.com/api/docs/models/gpt-6.1-sol" },
   { name: textPair("guidance_gpt_6_1_terra"), url: "https://developers.openai.com/api/docs/models/gpt-6.1-terra" },
