@@ -1,4 +1,4 @@
-import { GEMINI_MODELS, modelName, hydrogenAaCost } from "./gemini.mjs"
+import { GEMINI_MODELS, modelName, listPriceAaCost } from "./gemini.mjs"
 import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -105,8 +105,7 @@ export function releaseRows(html, release) {
     const score = variant.intelligenceIndex
     // The x axis is cost: a variant AA scored but did not cost (Opus 4.7, Grok 4.20)
     // cannot be placed and is left out rather than given a guessed cost.
-    const cost = release.model === "Gemini 4 Hydrogen" ? hydrogenAaCost(variant)
-      : variant.intelligenceIndexCostPerTask?.cost?.total
+    const cost = listPriceAaCost(variant, release.model)
     if (score == null || !(cost > 0)) continue
     // The other three AA model-page cards; missing ones stay off the row.
     const speed = variant.headline?.outputSpeed ?? variant.outputSpeed ?? variant.medianOutputSpeed

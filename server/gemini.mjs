@@ -19,10 +19,18 @@ export function hydrogenCostPerTask({ input, cachedInput = 0, output, tasks = 1 
     + output * price.outputIncludingThinking) / 1e6 / tasks
 }
 
-export function hydrogenAaCost(variant) {
-  const price = GEMINI_MODELS.find((model) => model.id === "gemini-4-hydrogen").pricePerMillionTokens
-  // AA already computes per-task costs. Accept them only at the supplied API rates.
-  if (variant.price1mInputTokens !== price.input || variant.price1mOutputTokens !== price.outputIncludingThinking
-      || variant.cacheHitPrice !== price.cachedInput) return null
-  return variant.intelligenceIndexCostPerTask?.cost?.total ?? null
+// AA prices each task at the tariff it lists, which may be introductory. Charts use list
+// prices, so each billed part is rescaled to the catalog rate; promotions stay in the notes.
+export function listPriceAaCost(variant, modelName) {
+  const cost = variant.intelligenceIndexCostPerTask?.cost
+  const list = GEMINI_MODELS.find((model) => model.model === modelName)?.pricePerMillionTokens
+  if (!list) return cost?.total ?? null
+  if (!cost) return null
+  const ratio = (part, listed, rate) => (part > 0 ? (listed > 0 ? part * rate / listed : NaN) : 0)
+  // Cache writes are billed at the input rate.
+  const total = ratio(cost.nonCacheInput, variant.price1mInputTokens, list.input)
+    + ratio(cost.cacheWrite, variant.price1mInputTokens, list.input)
+    + ratio(cost.cacheRead, variant.cacheHitPrice, list.cachedInput)
+    + ratio(cost.output, variant.price1mOutputTokens, list.outputIncludingThinking)
+  return Number.isFinite(total) ? total : null
 }

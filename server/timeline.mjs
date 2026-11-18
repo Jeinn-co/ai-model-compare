@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import { objects, page } from "./aa.mjs"
+import { GEMINI_MODELS } from "./gemini.mjs"
 
 const SCORES = "https://epoch.ai/data/eci_scores.csv"
 const PRICES = "https://artificialanalysis.ai/models"
@@ -120,6 +121,9 @@ export async function loadTimeline({ force = false } = {}) {
         } catch { /* An unverified price stays missing. */ }
       }
     }))
+    // AA lists introductory tariffs while they run; charts use the catalog's list prices.
+    for (const model of GEMINI_MODELS) if (model.pricePerMillionTokens) prices.set(keyOf(model.model),
+      { inputPrice: model.pricePerMillionTokens.input, outputPrice: model.pricePerMillionTokens.outputIncludingThinking })
     const rows = timelineRows(scores, [...releases.values()], prices)
     if (!rows.some((row) => row.eci != null) || !rows.some((row) => row.inputPrice != null)) throw new Error("Timeline lacks scores or prices")
     const data = { fetchedAt: new Date().toISOString(), source: SCORES, scoreSource: SCORES, priceSource: PRICES, rows }
