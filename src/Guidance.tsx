@@ -2,7 +2,7 @@ import { useState } from "react"
 import { providerById, type ProviderId, type Row } from "./bench"
 import type { Translate } from "./language"
 
-import { GUIDANCE, OPUS_LEVELS, EFFORT, PRICES, SOURCES, SELECTION_POLICY, type Text, type Line, type Price } from "./guidance-data"
+import { GUIDANCE, OPUS_LEVELS, EFFORT, ESTIMATED_MEDIUM, PRICES, SOURCES, SELECTION_POLICY, type Text, type Line, type Price } from "./guidance-data"
 
 function Swatch({ provider }: { provider: ProviderId }) {
   return <span className="swatch" style={{ background: providerById(provider).color }} />
@@ -168,7 +168,7 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
                 <td className="num">{row.input}</td>
                 <td className="num">{row.output}</td>
                 <td className={(scoreOf(row.model) ?? 0) >= 50 ? "num score-pass" : "num"}>{scoreOf(row.model)?.toFixed(1) ?? "—"}</td>
-                <td style={{ whiteSpace: "pre-line" }}>{typeof row.effort === "string" ? row.effort : say(row.effort)}</td>
+                <td className={row.effort === ESTIMATED_MEDIUM ? "minor" : undefined} style={{ whiteSpace: "pre-line" }}>{typeof row.effort === "string" ? row.effort : say(row.effort)}</td>
                 <td className="minor">{row.note ? say(row.note) : null}</td>
               </tr>
             ))}
@@ -181,6 +181,7 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
         <span>
           {t("aa_score_artificial_analysis_intelligence_index_at_high_effort")}
         </span>
+        <span>{t("guidance_estimated_effort_footnote")}</span>
       </p>
       <details className="guidance-sources">
         <summary>{t("sources")}</summary>

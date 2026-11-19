@@ -80,7 +80,7 @@ export const EFFORT: readonly Line[] = [
 
 const NOT_STATED: Text = textPair("guidance_not_stated")
 // OpenAI gives no default for these; GPT-6.1 Sol, GPT-6 Sol and GPT-6 Luna default to medium.
-const ESTIMATED_MEDIUM: Text = textPair("guidance_not_given_estimated_medium")
+export const ESTIMATED_MEDIUM: Text = textPair("guidance_not_given_estimated_medium")
 
 // chartEffort: the effort the chart rings when the table shows text instead of an official default.
 export type Price = { provider: ProviderId; model: string; input: string; output: string; effort: string | Text; chartEffort?: string; note?: Text }
