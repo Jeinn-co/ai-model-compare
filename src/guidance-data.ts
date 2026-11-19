@@ -66,12 +66,10 @@ export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }
     lines: [
       textPair("guidance_antigravity_google_recommends_orchestrator_for_day_to_day_development_carbon"),
       ...catalog.models.map((model): Line => {
-        const price = model.pricePerMillionTokens
-        const amount = price ? ` ${usd(price.input)} / ${usd(price.outputIncludingThinking)}` : ""
         const access = model.antigravity?.restricted ? antigravityExclusions(model.antigravity.plans) : ["", ""]
         const description = textPair("gemini_description",
-          { model: model.model, description: model.useCases[0], amount, access: access[0] },
-          { model: model.model, description: model.useCases[1], amount, access: access[1] })
+          { model: model.model, description: model.useCases[0], access: access[0] },
+          { model: model.model, description: model.useCases[1], access: access[1] })
         // Highlight the model My usage names as the daily Gemini choice.
         return [...description, model.model === personal.daily.find((choice) => choice.provider === "gemini")?.model]
       }),

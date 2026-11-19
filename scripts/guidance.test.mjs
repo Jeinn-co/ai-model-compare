@@ -94,17 +94,18 @@ test("Gemini guidance shows regular rates and keeps introductory offers in the p
     const rows = [...gemini.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)].map(match => match[1])
     for (const model of ["Gemini 4 Hydrogen", "Gemini 4 Carbon", "Gemini 4 Argon", "Gemini 3.8 Flash"]) {
       const row = rows.find(row => row.includes(model + (language === "zh" ? "：" : ":")))
-      assert.ok(row && row.includes("guidance-money"), model)
+      // Prices live only in the price table below, not in the guidance description.
+      assert.ok(row && !row.includes("guidance-money") && !row.includes("$"), model)
       assert.ok(!row.includes("introductory") && !row.includes("推廣期"))
       const priceRow = [...priceTable.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map(match => match[1]).find(row => row.includes(model))
       if (model.includes("Carbon") || model.includes("Argon")) {
-        assert.ok(row.includes("$4 / $20"))
+        for (const value of [">$4<", ">$20<"]) assert.ok(priceRow.includes(value))
         for (const value of [language === "zh" ? "5 折" : "50% off", "2026-11-30"]) assert.ok(priceRow.includes(value))
       } else if (model.includes("Flash")) {
-        for (const value of ["$1.50", "$7.50"]) assert.ok(row.includes(value))
+        for (const value of [">$1.50<", ">$7.50<"]) assert.ok(priceRow.includes(value))
         for (const value of [language === "zh" ? "5 折" : "50% off", "2026-12-31"]) assert.ok(priceRow.includes(value))
       } else {
-        for (const value of ["$1.50", "$7.50"]) assert.ok(row.includes(value))
+        for (const value of [">$1.50<", ">$7.50<"]) assert.ok(priceRow.includes(value))
       }
     }
   }
