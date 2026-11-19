@@ -1,4 +1,5 @@
 import { version } from "../package.json"
+import { models as geminiModels } from "../public/data/gemini-models.json"
 
 export type ProviderId = "claude" | "codex" | "grok" | "muse" | "gemini" | "cursor"
 
@@ -159,7 +160,7 @@ const LINE_COLOR: Record<string, string> = {
   Astra: "#0a6e56", Sol: "#10a37f", Terra: "#45c39f", Luna: "#93dcc4",
   Grok: "#000000", "Grok Build": "#6b6b6b",
   "Muse Spark": "#9553ff", "Muse Glimmer": "#c3a3ff",
-  "Gemini Carbon": "#0b3a8c", "Gemini Argon": "#1554c7", "Gemini Hydrogen": "#2475e8", "Gemini Pro Preview": "#1f6ae6", "Gemini Flash": "#3186ff", "Gemini Flash-Lite": "#8dbcff",
+  "Gemini Carbon": "#0b3a8c", "Gemini Argon": "#1554c7", "Gemini Neon": "#1c65d8", "Gemini Hydrogen": "#2475e8", "Gemini Pro Preview": "#1f6ae6", "Gemini Flash": "#3186ff", "Gemini Flash-Lite": "#8dbcff",
   Composer: "#475569",
 }
 
@@ -258,16 +259,21 @@ export function tickValues(min: number, max: number, count: number) {
   return ticks
 }
 
+// Gemini lines follow gemini-models.json, which lists Google's tiers strongest first, so a new
+// Gemini model sorts itself once the catalog has it. Lines the catalog no longer carries follow.
+const GEMINI_LINES = [...new Set([...geminiModels.map((model) => modelLine(model.model).line),
+  "Gemini Flash-Lite", "Gemini Pro Preview"])]
+
 // Menu order: by line first (Fable, Opus, Sonnet; GPT Astra, Sol, Terra, Luna; Grok, Grok
-// Build; Muse Spark, Glimmer; Gemini Carbon, Argon, Flash, Flash-Lite, Pro), then newest version
-// first within a line. Pro comes last for Gemini so both Gemini 3.1 models sit at the
-// bottom. The order does not reshuffle when scores move.
+// Build; Muse Spark, Glimmer; Gemini as above), then newest version first within a line.
+// Pro comes last for Gemini so both Gemini 3.1 models sit at the bottom. The order does
+// not reshuffle when scores move.
 const LINE_ORDER = [
   "Fable", "Opus", "Sonnet", "Haiku",
   "Astra", "Sol", "Terra", "Luna",
   "Grok", "Grok Build",
   "Muse Wonder", "Muse Spark", "Muse Spark Open", "Muse Glimmer", "Muse Ember",
-  "Gemini Carbon", "Gemini Argon", "Gemini Hydrogen", "Gemini Flash", "Gemini Flash-Lite", "Gemini Pro Preview",
+  ...GEMINI_LINES,
   "Composer",
 ]
 
