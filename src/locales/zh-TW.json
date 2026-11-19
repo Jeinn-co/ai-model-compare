@@ -135,7 +135,7 @@
   "provider_models": "{{provider}} 模型",
   "promotion_half": "（推廣期 5 折，至 {{date}}）",
   "promotion_rates": "（推廣期 {{rates}}，至 {{date}}）",
-  "gemini_access": "\n限定訂閱使用。Antigravity：{{plans}}。",
+  "gemini_access": "\nAntigravity 不含 {{plans}}。",
   "gemini_description": "{{model}}：{{description}}{{amount}}{{access}}",
   "guidance_sorted": "依{{field}}排序，{{direction}}。再點一次欄名可反向，點第三次回到原本順序。",
   "sort_input": "輸入價格",

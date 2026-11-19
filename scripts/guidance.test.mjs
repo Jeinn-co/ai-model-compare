@@ -42,7 +42,7 @@ function renderGuidance({ sort = null, models = catalog, aaRows = [], language =
 
 test("unverified Gemini prices render blank and sort last in both directions", () => {
   const models = structuredClone(catalog)
-  for (const model of models.models.filter(model => model.id !== "gemini-4-hydrogen")) {
+  for (const model of models.models.filter(model => !["gemini-4-hydrogen", "gemini-4-neon"].includes(model.id))) {
     delete model.pricePerMillionTokens
     delete model.introductoryPricePerMillionTokens
   }
@@ -51,7 +51,7 @@ test("unverified Gemini prices render blank and sort last in both directions", (
       const markup = renderGuidance({ sort: { key, dir }, models })
       const body = [...markup.matchAll(/<tbody>([\s\S]*?)<\/tbody>/g)].at(-1)[1]
       const rows = [...body.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map((m) => m[1])
-      assert.equal(rows.length, 12)
+      assert.equal(rows.length, 13)
       const missing = rows.slice(-3)
       for (const [i, model] of ["Gemini 4 Carbon", "Gemini 4 Argon", "Gemini 3.8 Flash"].entries()) {
         assert.ok(missing[i].includes(model))

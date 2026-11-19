@@ -135,7 +135,7 @@
   "provider_models": "{{provider}} models",
   "promotion_half": " (introductory 50% off through {{date}})",
   "promotion_rates": " (introductory {{rates}} through {{date}})",
-  "gemini_access": "\nSubscription required. Antigravity: {{plans}}.",
+  "gemini_access": "\nAntigravity: not on {{plans}}.",
   "gemini_description": "{{model}}: {{description}}{{amount}}{{access}}",
   "guidance_sorted": "Sorted by {{field}}, {{direction}}. Click the header again to reverse, a third time for the original order.",
   "sort_input": "input price",
