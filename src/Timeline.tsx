@@ -20,7 +20,10 @@ const dayAt = (step: number) => {
   day.setUTCDate(day.getUTCDate() + Math.round((step - whole) * 30.44))
   return day.toISOString().slice(0, 10)
 }
-const validRange = (value: unknown): value is Range => Array.isArray(value) && value.length === 2
+// Thumb centres travel over (track − 16px thumb), so the fill uses the same span to sit under them.
+const thumbAt = (step: number) => `calc(8px + ${step / SPAN} * (100% - 16px))`
+const fillAt = (from: number, to: number) => ({ left: thumbAt(from), right: thumbAt(SPAN - to) })
+const validRange =(value: unknown): value is Range => Array.isArray(value) && value.length === 2
   && value.every((step) => Number.isFinite(step) && step >= 0 && step <= SPAN) && value[0] < value[1]
 
 const strings = (value: unknown) => Array.isArray(value) ? value.filter((item: unknown) => typeof item === "string") : []
@@ -359,12 +362,12 @@ export default function Timeline({ language, active = true }: { language: Langua
           <span className="control-label" id="timeline-period-label">{text.period}</span>
           <div className="timeline-range" role="group" aria-labelledby="timeline-period-label">
             <div className="timeline-range-track" ref={trackRef}>
-              <span className="timeline-range-fill" style={{ left: `${from / SPAN * 100}%`, right: `${100 - to / SPAN * 100}%` }} />
-              <span className="timeline-range-grab" onPointerDown={pan}
-                style={{ left: `${from / SPAN * 100}%`, right: `${100 - to / SPAN * 100}%` }} />
-              <input type="range" min={0} max={SPAN} step={1} value={from} aria-label={text.from} aria-valuetext={since}
+              <span className="timeline-range-fill" style={fillAt(from, to)} />
+              <span className="timeline-range-grab" onPointerDown={pan} style={fillAt(from, to)} />
+              {/* step="any": panning the plot leaves fractional months, which step={1} would snap away from the fill */}
+              <input type="range" min={0} max={SPAN} step="any" value={from} aria-label={text.from} aria-valuetext={since}
                 onChange={(event) => setRange([Math.min(Number(event.target.value), to - 1), to])} />
-              <input type="range" min={0} max={SPAN} step={1} value={to} aria-label={text.to} aria-valuetext={until}
+              <input type="range" min={0} max={SPAN} step="any" value={to} aria-label={text.to} aria-valuetext={until}
                 onChange={(event) => setRange([from, Math.max(Number(event.target.value), from + 1)])} />
             </div>
             <output className="timeline-range-value">{since} – {until}</output>
