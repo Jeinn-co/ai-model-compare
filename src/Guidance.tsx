@@ -176,7 +176,7 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
                 <td className="num">{row.output}</td>
                 <td className="num">{scoreOf(row.model)?.toFixed(1) ?? "—"}</td>
                 <td style={{ whiteSpace: "pre-line" }}>{typeof row.effort === "string" ? row.effort : say(row.effort)}</td>
-                <td className="minor">{row.note ? say(row.note) : "—"}</td>
+                <td className="minor">{row.note ? say(row.note) : null}</td>
               </tr>
             ))}
           </tbody>

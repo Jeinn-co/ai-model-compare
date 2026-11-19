@@ -10,11 +10,14 @@ export type Text = readonly [english: string, chinese: string]
 // A guidance line; `strong` marks the model each vendor points to first.
 export type Line = readonly [english: string, chinese: string, strong?: boolean]
 
+// Whole-dollar prices drop the cents ($4), others keep two places ($1.50), like the Claude rows.
+const usd = (amount: number) => `$${Number.isInteger(amount) ? amount : amount.toFixed(2)}`
+
 // Promotional rates share the same catalog as regular API prices.
 const promotion = (model: (typeof catalog.models)[number]): Text => {
   const price = model.introductoryPricePerMillionTokens
   if (!price) return ["", ""]
-  const rates = `$${price.input.toFixed(2)} / $${price.outputIncludingThinking.toFixed(2)}`
+  const rates = `${usd(price.input)} / ${usd(price.outputIncludingThinking)}`
   const halfPrice = price.input === model.pricePerMillionTokens.input / 2
     && price.outputIncludingThinking === model.pricePerMillionTokens.outputIncludingThinking / 2
   return textPair(halfPrice ? "promotion_half" : "promotion_rates", { rates, date: price.through })
@@ -64,7 +67,7 @@ export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }
       textPair("guidance_antigravity_google_recommends_orchestrator_for_day_to_day_development_carbon"),
       ...catalog.models.map((model): Line => {
         const price = model.pricePerMillionTokens
-        const amount = price ? ` $${price.input.toFixed(2)} / $${price.outputIncludingThinking.toFixed(2)}` : ""
+        const amount = price ? ` ${usd(price.input)} / ${usd(price.outputIncludingThinking)}` : ""
         const access = model.antigravity?.restricted ? antigravityExclusions(model.antigravity.plans) : ["", ""]
         const description = textPair("gemini_description",
           { model: model.model, description: model.useCases[0], amount, access: access[0] },
@@ -125,8 +128,8 @@ export const PRICES: readonly Price[] = [
     const promo = promotion(model)
     return {
       provider: "gemini", model: model.model,
-      input: price ? `$${price.input.toFixed(2)}` : "—",
-      output: price ? `$${price.outputIncludingThinking.toFixed(2)}` : "—",
+      input: price ? usd(price.input) : "—",
+      output: price ? usd(price.outputIncludingThinking) : "—",
       effort: model.defaultEffort ?? NOT_STATED,
       note: promo[0] ? [promo[0].trim(), promo[1].trim()] : undefined,
     }
