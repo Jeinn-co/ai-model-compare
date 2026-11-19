@@ -128,13 +128,6 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
                 </td>
                 <td className="guidance-cell">
                   <Rows lines={row.lines} t={t} />
-                  {row.provider === "gemini" && (
-                    <p className="minor">
-                      <a href="https://aistudio.google.com/docs/whats-new-gemini-4-hydrogen#choosing-between-models">{t("google_s_model_selection_guide")}</a>
-                      {" · "}
-                      <a href="https://antigravity.google/docs/models">{t("antigravity_selection_and_access")}</a>
-                    </p>
-                  )}
                 </td>
               </tr>
             ))}

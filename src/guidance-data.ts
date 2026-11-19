@@ -23,20 +23,6 @@ const promotion = (model: (typeof catalog.models)[number]): Text => {
   return textPair(halfPrice ? "promotion_half" : "promotion_rates", { rates, date: price.through })
 }
 
-// Antigravity plans by catalog name and short label. A catalog entry lists the plans that
-// include the model; "Google AI Pro (**)" means paid Pro only, so Pro trials are excluded.
-const ANTIGRAVITY_PLANS = [["Free", "Free"], ["Google AI Plus", "Plus"], ["Google AI Pro", "Pro"]] as const
-
-// Who cannot use the model in Antigravity, or ["", ""] when the catalog sets no restriction.
-function antigravityExclusions(plans: readonly string[]): readonly [string, string] {
-  const missing = ANTIGRAVITY_PLANS.filter(([plan]) => !plans.some((entry) => entry === plan || entry.startsWith(`${plan} (`)))
-    .map(([, label]) => label)
-  const trial = plans.includes("Google AI Pro (**)")
-  const en = [...missing, ...(trial ? ["Pro trial"] : [])]
-  const zh = [...missing, ...(trial ? ["Pro 試用"] : [])]
-  return en.length ? textPair("gemini_access", { plans: en.join(", ") }, { plans: zh.join("、") }) : ["", ""]
-}
-
 // One line per model, so each reads on its own.
 export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }[] = [
   {
@@ -66,10 +52,9 @@ export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }
     lines: [
       textPair("guidance_antigravity_google_recommends_orchestrator_for_day_to_day_development_carbon"),
       ...catalog.models.map((model): Line => {
-        const access = model.antigravity?.restricted ? antigravityExclusions(model.antigravity.plans) : ["", ""]
         const description = textPair("gemini_description",
-          { model: model.model, description: model.useCases[0], access: access[0] },
-          { model: model.model, description: model.useCases[1], access: access[1] })
+          { model: model.model, description: model.useCases[0] },
+          { model: model.model, description: model.useCases[1] })
         // Highlight the model My usage names as the daily Gemini choice.
         return [...description, model.model === personal.daily.find((choice) => choice.provider === "gemini")?.model]
       }),
