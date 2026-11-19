@@ -1,5 +1,4 @@
 import assert from "node:assert/strict"
-import { readFileSync } from "node:fs"
 import { readFile } from "node:fs/promises"
 import test from "node:test"
 import { buildPersonal, displayModel, loadPersonal } from "../server/personal.mjs"
@@ -14,7 +13,6 @@ const usage = {
   daily: [{ provider: "codex", model: "GPT-6.2 Sol", label: "GPT-6.2-Sol", effort: "high" },
     { provider: "gemini", model: "Gemini 4 Hydrogen", effort: "high" }],
   excludedGeminiPicks: ["gemini-4-argon"],
-  optionalGeminiEffort: "xhigh",
 }
 
 test("Notion model IDs become the names the report and page already use", () => {
@@ -33,16 +31,15 @@ test("roles come only from the s-agent block and keep their names", () => {
     models: { anth: ["Opus 5.5", "high"], oai: ["GPT-6.2-Sol", "high"], gemini: ["Gemini 4 Argon", "high"] } })
   assert.deepEqual(next.roles.security.models.gemini, ["Gemini 4 Carbon", "high"])
   assert.deepEqual(next.daily, usage.daily)
-  assert.deepEqual(Object.keys(next), ["daily", "roles", "excludedGeminiPicks", "optionalGeminiEffort"])
+  assert.deepEqual(Object.keys(next), ["daily", "roles", "excludedGeminiPicks"])
 })
 
-test("a Gemini role at high shows the optional effort only when its model supports it", () => {
-  const catalog = JSON.parse(readFileSync(new URL("../public/data/gemini-models.json", import.meta.url), "utf8"))
+test("a Gemini role shows its configured effort with no optional range", () => {
   const hydrogen = structuredClone(agent)
   hydrogen.roles.planner.gemini = pick("gemini-4-hydrogen")
   hydrogen.roles.executor.gemini = pick("gemini-4-hydrogen", "medium")
-  const next = buildPersonal([hydrogen, usage], previous, catalog)
-  assert.deepEqual(next.roles.planner.models.gemini, ["Gemini 4 Hydrogen", "high ~ xhigh"])
+  const next = buildPersonal([hydrogen, usage], previous)
+  assert.deepEqual(next.roles.planner.models.gemini, ["Gemini 4 Hydrogen", "high"])
   assert.deepEqual(next.roles.executor.models.gemini, ["Gemini 4 Hydrogen", "medium"])
   assert.deepEqual(next.roles.security.models.gemini, ["Gemini 4 Carbon", "high"])
   assert.deepEqual(next.roles.planner.models.oai, ["GPT-6.2-Sol", "high"])

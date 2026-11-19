@@ -169,6 +169,5 @@ const excludedGemini = catalog.models.filter((model) => personal.excludedGeminiP
 export const SELECTION_POLICY: Text = textPair("gemini_policy", {
   daily: `${dailyGemini.model} / ${dailyGemini.effort}`,
   security: personal.roles.security.models.gemini.join(" / "),
-  optional: personal.optionalGeminiEffort,
   excluded: excludedGemini.map((model) => model.model).join(", "),
 })

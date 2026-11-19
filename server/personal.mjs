@@ -3,8 +3,6 @@
 // the only source of role models, the same one s-agent dispatches from; the My usage block
 // holds the daily choices and Gemini pick settings. Role names and description keys stay
 // from the published file.
-import { readFile } from "node:fs/promises"
-
 const PAGE = "4118e936085b810891bdc1a77dd59b63"
 const API = "https://api.notion.com/v1"
 const BRANDS = { claude: "anth", codex: "oai", gemini: "gemini" }
@@ -24,9 +22,7 @@ export function displayModel(id) {
 }
 
 // Every field is validated before anything is returned, so a half-edited page changes nothing.
-// `catalog` is gemini-models.json: a Gemini role at high whose model also supports the optional
-// effort is shown as "high ~ xhigh" (display only; s-agent still dispatches at high).
-export function buildPersonal(blocks, previous, catalog = { models: [] }) {
+export function buildPersonal(blocks, previous) {
   const agent = blocks.find((block) => block?.roles)
   const usage = blocks.find((block) => block?.daily)
   if (!agent || !usage) throw new Error("Notion page needs both the S-Agent and My usage JSON blocks")
@@ -38,22 +34,17 @@ export function buildPersonal(blocks, previous, catalog = { models: [] }) {
     const models = Object.fromEntries(Object.entries(BRANDS).map(([provider, brand]) => {
       const choice = agent.roles[id]?.[provider]
       if (!isText(choice?.model) || !isText(choice.effort)) throw new Error(`role ${id} lacks ${provider} model or effort`)
-      const optional = usage.optionalGeminiEffort
-      const widen = provider === "gemini" && choice.effort === "high"
-        && catalog.models.some((model) => model.id === choice.model && model.efforts.includes(optional))
-      return [brand, [displayModel(choice.model), widen ? `high ~ ${optional}` : choice.effort]]
+      return [brand, [displayModel(choice.model), choice.effort]]
     }))
     return [id, { ...meta, models }]
   }))
   if (!Array.isArray(usage.excludedGeminiPicks) || !usage.excludedGeminiPicks.every(isText)) {
     throw new Error("excludedGeminiPicks must be a list of model IDs")
   }
-  if (!isText(usage.optionalGeminiEffort)) throw new Error("optionalGeminiEffort is required")
   return {
     daily: usage.daily.map(({ provider, model, label, effort }) => ({ provider, model, ...(isText(label) ? { label } : {}), effort })),
     roles,
     excludedGeminiPicks: usage.excludedGeminiPicks,
-    optionalGeminiEffort: usage.optionalGeminiEffort,
   }
 }
 
@@ -77,6 +68,5 @@ export async function notionBlocks(token, fetchImpl = fetch) {
 }
 
 export async function loadPersonal(previous, token, fetchImpl = fetch) {
-  const catalog = JSON.parse(await readFile(new URL("../public/data/gemini-models.json", import.meta.url), "utf8"))
-  return buildPersonal(await notionBlocks(token, fetchImpl), previous, catalog)
+  return buildPersonal(await notionBlocks(token, fetchImpl), previous)
 }

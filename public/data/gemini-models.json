@@ -1,16 +1,20 @@
 {
-  "checkedAt": "2026-11-13",
+  "checkedAt": "2026-11-20",
   "sources": [
     "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/",
     "https://aistudio.google.com/docs/whats-new-gemini-4-hydrogen",
     "https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/",
     "https://aistudio.google.com/docs/pricing",
     "https://antigravity.google/docs/models",
-    "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/"
+    "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/",
+    "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-neon/",
+    "https://antigravity.google/blog/gemini-4-neon-in-google-antigravity/",
+    "https://antigravity.google/pricing/"
   ],
   "models": [
     {"id": "gemini-4-carbon", "useCases": ["Google's strongest frontier model;\nin Google's internal tests, secure-code generation success was more than twice Argon's, with about half as many unsupported claims. For complex architecture, difficult debugging and security audits.", "Google 定位最強的前沿模型；\n相較 Argon，Google 內部測試的安全程式碼生成成功率逾兩倍，無根據的說法約減半，適用複雜架構、疑難除錯與安全稽核。"], "model": "Gemini 4 Carbon", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium", "pricePerMillionTokens": {"input": 4, "cachedInput": 0.2, "outputIncludingThinking": 20}, "introductoryPricePerMillionTokens": {"input": 2, "cachedInput": 0.1, "outputIncludingThinking": 10, "through": "2026-11-30"}, "antigravity": {"restricted": true, "plans": ["Google AI Ultra", "Enterprise"]}},
     {"id": "gemini-4-argon", "useCases": ["Advanced long-horizon tasks; compared with Carbon, responds faster and uses fewer tokens per turn, at the same API price per token.", "進階長時程任務；相較 Carbon，回應更快、每輪使用較少 token，API 單價相同。"], "model": "Gemini 4 Argon", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium", "pricePerMillionTokens": {"input": 4, "cachedInput": 0.2, "outputIncludingThinking": 20}, "introductoryPricePerMillionTokens": {"input": 2, "cachedInput": 0.1, "outputIncludingThinking": 10, "through": "2026-11-30"}, "antigravity": {"restricted": true, "plans": ["Google AI Pro (†)", "Google AI Ultra", "Enterprise"]}},
+    {"id": "gemini-4-neon", "useCases": ["Balances depth and speed between Carbon and Hydrogen; for complex coding, analytical reasoning and production workflows. Google reports 32% lower cost per task than Carbon at the default high level.", "介於 Carbon 與 Hydrogen 之間，兼顧深度與速度；適用複雜程式、分析推理與正式環境工作流程。Google 表示預設 high 時每個任務成本比 Carbon 低 32%。"], "model": "Gemini 4 Neon", "provider": "gemini", "releasedAt": "2026-11-18", "efforts": ["low", "medium", "high", "xhigh"], "defaultEffort": "high", "pricePerMillionTokens": {"input": 3, "cachedInput": 0.15, "outputIncludingThinking": 15}, "antigravity": {"restricted": true, "plans": ["Google AI Pro (†)", "Google AI Ultra", "Enterprise"], "listedOnModelsPage": true, "source": "https://antigravity.google/docs/models"}},
     {
       "id": "gemini-4-hydrogen", "useCases": ["Everyday coding and agent execution; recommended upgrade from 3.8 Flash.", "日常程式與 agent 實作；3.8 Flash 的建議升級版。"],
       "model": "Gemini 4 Hydrogen",
@@ -27,7 +31,7 @@
       "explicitCaching": false,
       "ignoredParameters": ["temperature", "top_p", "top_k"],
       "apiFreeTier": "Available with rate limits",
-      "antigravity": {"restricted": false, "plans": ["Free", "Google AI Plus", "Google AI Pro", "Google AI Ultra", "Enterprise"], "listedOnModelsPage": true, "source": "https://antigravity.google/docs/models"}
+      "antigravity": {"restricted": true, "plans": ["Google AI Pro (**)", "Google AI Ultra", "Enterprise"], "listedOnModelsPage": true, "source": "https://antigravity.google/docs/models"}
     },
     {"id": "gemini-3.8-flash", "useCases": ["Previous-generation everyday model; Google recommends upgrading to Hydrogen.", "上一代日常模型；Google 建議升級至 Hydrogen。"], "model": "Gemini 3.8 Flash", "provider": "gemini", "efforts": ["low", "medium", "high"], "defaultEffort": "medium", "pricePerMillionTokens": {"input": 1.5, "cachedInput": 0.15, "outputIncludingThinking": 7.5}, "introductoryPricePerMillionTokens": {"input": 0.75, "cachedInput": 0.075, "outputIncludingThinking": 3.75, "through": "2026-12-31"}}
   ],
