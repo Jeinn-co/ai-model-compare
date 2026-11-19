@@ -63,7 +63,7 @@
   "aa_score_high": "AA score (high)",
   "note": "Note",
   "standard_api_prices_in_us_dollars_not_subscription_quota": "Standard API prices in US dollars, not subscription quota.",
-  "aa_score_artificial_analysis_intelligence_index_at_high_effort": "AA score: Artificial Analysis Intelligence Index at high effort.",
+  "aa_score_artificial_analysis_intelligence_index_at_high_effort": "AA score: Artificial Analysis Intelligence Index at high effort; 50 or more in blue.",
   "sources": "Sources",
   "guidance_start_most_coding_and_knowledge_work_on_opus_5_5": "Start most coding and knowledge work on Opus 5.5.",
   "guidance_fable_5_2_demanding_reasoning_and_long_horizon_agentic_work": "Fable 5.2: demanding reasoning and long-horizon agentic work; the most ambitious open-ended technical work.",

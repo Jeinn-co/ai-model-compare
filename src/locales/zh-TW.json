@@ -63,7 +63,7 @@
   "aa_score_high": "AA 分數（high）",
   "note": "備註",
   "standard_api_prices_in_us_dollars_not_subscription_quota": "標準 API 價格（美元），不是訂閱額度。",
-  "aa_score_artificial_analysis_intelligence_index_at_high_effort": "AA 分數：Artificial Analysis 智力指數（effort = high）。",
+  "aa_score_artificial_analysis_intelligence_index_at_high_effort": "AA 分數：Artificial Analysis 智力指數（effort = high）；50 以上標藍色。",
   "sources": "來源",
   "guidance_start_most_coding_and_knowledge_work_on_opus_5_5": "多數程式與知識工作從 Opus 5.5 開始。",
   "guidance_fable_5_2_demanding_reasoning_and_long_horizon_agentic_work": "Fable 5.2：高難度推理與長時程 agent 工作；最有野心的開放式技術工作。",

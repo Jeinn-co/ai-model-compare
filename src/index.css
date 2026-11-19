@@ -598,6 +598,12 @@ h2 {
   color: var(--ink);
 }
 
+/* AA score of 50 or more, the bar ai-usage picks against. */
+.score-pass {
+  color: var(--accent);
+  font-weight: 600;
+}
+
 .guidance-money {
   color: var(--ink);
   font-family: "IBM Plex Mono", ui-monospace, monospace;
