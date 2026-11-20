@@ -13,7 +13,7 @@
     },
     {
       "provider": "gemini",
-      "model": "Gemini 4 Neon",
+      "model": "Gemini 4 Hydrogen",
       "effort": "high"
     }
   ],
@@ -49,7 +49,7 @@
           "high"
         ],
         "gemini": [
-          "Gemini 4 Neon",
+          "Gemini 4 Hydrogen",
           "high"
         ]
       }
@@ -103,7 +103,7 @@
           "high"
         ],
         "gemini": [
-          "Gemini 4 Neon",
+          "Gemini 4 Hydrogen",
           "high"
         ]
       }
@@ -121,8 +121,8 @@
           "max"
         ],
         "gemini": [
-          "Gemini 4 Carbon",
-          "high"
+          "Gemini 4 Neon",
+          "xhigh"
         ]
       }
     }
