@@ -29,7 +29,7 @@
   "hover_over_a_point_to_see_score_and_cost_per": "Hover over a point to see Score and Cost per task. ARC-AGI-2 is abstract reasoning puzzles, not coding.",
   "hover_over_a_point_to_see_score_cost_and_tokens": "Hover over a point to see Score, Cost, and Tokens per task, the 95% margin, and the agent that ran it.",
   "hover_over_a_point_to_see_score_cost_tokens_and": "Hover over a point to see Score, Cost, Tokens, and Steps per task.",
-  "no_codex_cursorbench_has_not_scored_a_current_gpt_model": " No Codex: OpenAI ended native model access in Cursor after SpaceX (xAI) acquired Anysphere, so CursorBench does not score current GPT models; retired versions are not charted.",
+  "no_codex_cursorbench_has_not_scored_a_current_gpt_model": "No Codex: OpenAI ended native model access in Cursor after SpaceX (xAI) acquired Anysphere, so CursorBench does not score current GPT models; retired versions are not charted.",
   "data": "Data",
   "updated": "Updated",
   "human_preference": "Human preference",

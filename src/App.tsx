@@ -358,7 +358,12 @@ export default function App() {
           </div>
 
         <div className="control control-wide">
-          <span className="control-label">{t("models")}</span>
+          <div className="control-header">
+            <span className="control-label">{t("models")}</span>
+            {source === "cursorbench" && rows.length > 0 && !rows.some((row) => row.provider === "codex") ? (
+              <span className="control-note">{t("no_codex_cursorbench_has_not_scored_a_current_gpt_model")}</span>
+            ) : null}
+          </div>
           <Legend
             t={t}
             rows={rows}
@@ -435,12 +440,7 @@ export default function App() {
         ) : source === "tbench" ? (
           t("hover_over_a_point_to_see_score_cost_and_tokens")
         ) : (
-          <>
-            {t("hover_over_a_point_to_see_score_cost_tokens_and")}
-            {rows.length && !rows.some((row) => row.provider === "codex")
-              ? t("no_codex_cursorbench_has_not_scored_a_current_gpt_model")
-              : null}
-          </>
+          t("hover_over_a_point_to_see_score_cost_tokens_and")
         )}
       </p>
 

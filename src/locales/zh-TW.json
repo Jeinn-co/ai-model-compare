@@ -29,7 +29,7 @@
   "hover_over_a_point_to_see_score_and_cost_per": "將游標移到資料點上，查看分數與每次任務成本。ARC-AGI-2 評測抽象推理題，並非程式開發。",
   "hover_over_a_point_to_see_score_cost_and_tokens": "將游標移到資料點上，查看分數、每次任務成本與 Token 數、95% 誤差範圍及執行評測的代理程式。",
   "hover_over_a_point_to_see_score_cost_tokens_and": "將游標移到資料點上，查看分數、每次任務成本、Token 數與步驟數。",
-  "no_codex_cursorbench_has_not_scored_a_current_gpt_model": " 尚無 Codex：SpaceX（xAI）收購 Cursor 後，OpenAI 終止對 Cursor 的原生模型合約，因此 CursorBench 未收錄現行 GPT 模型；圖表也不顯示已退役版本。",
+  "no_codex_cursorbench_has_not_scored_a_current_gpt_model": "尚無 Codex：SpaceX（xAI）收購 Cursor 後，OpenAI 終止對 Cursor 的原生模型合約，因此 CursorBench 未收錄現行 GPT 模型；圖表也不顯示已退役版本。",
   "data": "資料",
   "updated": "更新時間",
   "human_preference": "使用者偏好",
