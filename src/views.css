@@ -6,22 +6,38 @@
 }
 
 .view-tab {
-  padding: 0 2px 12px;
+  margin-bottom: -1px;
+  padding: 4px 2px 12px;
   border-bottom: 2px solid transparent;
+  border-radius: 4px 4px 0 0;
   color: var(--muted);
   font-size: 15px;
   font-weight: 500;
   text-decoration: none;
+  touch-action: manipulation;
+  transition: color 140ms ease, border-bottom-color 140ms ease;
+}
+
+.view-tab:not(.on):hover {
+  border-bottom-color: var(--line-strong);
+  color: var(--ink);
 }
 
 .view-tab.on {
   border-bottom-color: var(--accent);
   color: var(--ink);
+  font-weight: 600;
 }
 
 .view-tab:focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 4px;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-tab {
+    transition: none;
+  }
 }
 
 [hidden] {
