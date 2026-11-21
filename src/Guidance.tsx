@@ -94,7 +94,7 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
         </div>
       </div>
 
-      <p className="arena-note">
+      <p className="arena-note guidance-policy">
         {say(SELECTION_POLICY)}
       </p>
 

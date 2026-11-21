@@ -540,10 +540,24 @@ h2 {
   --guidance-pick: #e7f0f6;
 }
 
+.guidance .arena-head {
+  margin-bottom: 14px;
+}
+
+.guidance-policy {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--guidance-body);
+}
+
 .guidance-effort {
   display: grid;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .guidance-card {
