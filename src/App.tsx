@@ -23,6 +23,7 @@ import {
   type YAxis,
 } from "./bench"
 import { createTranslator, initialLanguage, LANGUAGE_KEY, type Language } from "./language"
+import { applyTheme, initialTheme, THEME_KEY, THEMES, type Theme } from "./theme"
 import Arena from "./Arena"
 import Guidance from "./Guidance"
 import Chart from "./Chart"
@@ -97,12 +98,27 @@ export default function App() {
   const [view, setView] = useState<View>(initialView)
   const [compareStarted, setCompareStarted] = useState(() => initialView() === "compare")
   const [language, setLanguage] = useState<Language>(initialLanguage)
+  const [theme, setTheme] = useState<Theme>(initialTheme)
   const t = useMemo(() => createTranslator(language), [language])
   useEffect(() => {
     document.documentElement.lang = language === "zh" ? "zh-Hant" : "en"
     document.title = view === "timeline" ? "AI Model Compare — Release trends" : "AI Model Compare — Score vs. Cost"
     try { localStorage.setItem(LANGUAGE_KEY, language) } catch { /* Storage is optional. */ }
   }, [language, view])
+  useEffect(() => {
+    applyTheme(theme)
+    try { localStorage.setItem(THEME_KEY, theme) } catch { /* Storage is optional. */ }
+  }, [theme])
+  useEffect(() => {
+    const onPointer = () => document.documentElement.classList.add("mouse")
+    const onKey = () => document.documentElement.classList.remove("mouse")
+    window.addEventListener("pointerdown", onPointer, true)
+    window.addEventListener("keydown", onKey, true)
+    return () => {
+      window.removeEventListener("pointerdown", onPointer, true)
+      window.removeEventListener("keydown", onKey, true)
+    }
+  }, [])
   const [source, setSource] = useState<SourceId>(initialSource)
   const [yAxis, setYAxis] = useState<YAxis>(initialYAxis)
   const [hidden, setHidden] = useState<ReadonlySet<ProviderId>>(() => new Set(loadVisibility().providers))
@@ -281,18 +297,41 @@ export default function App() {
         <p className="eyebrow">{view === "timeline" ? t("release_trends") : meta.eyebrow}</p>
         <div className="title-row">
           <h1>AI Model Compare <span className="version">v{APP_VERSION}</span></h1>
-          <button
-            type="button"
-            className="language"
-            aria-label={t("language_aria")}
-            onClick={() => setLanguage(language === "zh" ? "en" : "zh")}
-          >
-            <svg className="toolbar-icon" viewBox="0 0 16 16" aria-hidden="true">
-              <circle cx="8" cy="8" r="6.25" />
-              <path d="M1.75 8h12.5M8 1.75c1.8 1.9 2.6 3.9 2.6 6.25S9.8 12.35 8 14.25C6.2 12.35 5.4 10.35 5.4 8S6.2 3.65 8 1.75" />
-            </svg>
-            <span>{t("language_target")}</span>
-          </button>
+          <div className="toolbar">
+            <button
+              type="button"
+              className="language"
+              aria-label={t("language_aria")}
+              onClick={() => setLanguage(language === "zh" ? "en" : "zh")}
+            >
+              <svg className="toolbar-icon" viewBox="0 0 16 16" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.25" />
+                <path d="M1.75 8h12.5M8 1.75c1.8 1.9 2.6 3.9 2.6 6.25S9.8 12.35 8 14.25C6.2 12.35 5.4 10.35 5.4 8S6.2 3.65 8 1.75" />
+              </svg>
+              <span>{t("language_target")}</span>
+            </button>
+            <label className="theme-select">
+              <svg className="toolbar-icon" viewBox="0 0 16 16" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.25" />
+                <path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor" />
+              </svg>
+              <select
+                aria-label={t("theme")}
+                value={theme}
+                onChange={(event) => {
+                  const next = event.target.value as Theme
+                  setTheme(THEMES.includes(next) ? next : "auto")
+                }}
+              >
+                {THEMES.map((option) => (
+                  <option key={option} value={option}>{t(`theme_${option}`)}</option>
+                ))}
+              </select>
+              <svg className="toolbar-chev" viewBox="0 0 10 10" aria-hidden="true">
+                <path d="M2 3.75l3 3 3-3" />
+              </svg>
+            </label>
+          </div>
         </div>
         <p className="deck">
           {view === "timeline" ? t("release_trends_intro") : t("each_point_is_a_model_score_vs_cost_per_task")}
@@ -398,13 +437,13 @@ export default function App() {
       <ul className="chart-key" aria-label={t("point_symbols")}>
         <li>
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="7" fill="currentColor" stroke="#fff" strokeWidth="2.5" />
+            <circle cx="12" cy="12" r="7" fill="currentColor" stroke="var(--paper)" strokeWidth="2.5" />
           </svg>
           {t("large_filled_dot_my_regular_choice")}
         </li>
         <li>
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="5.5" fill="#fff" stroke="currentColor" strokeWidth="2.5" />
+            <circle cx="12" cy="12" r="5.5" fill="var(--paper)" stroke="currentColor" strokeWidth="2.5" />
           </svg>
           {t("hollow_circle_api_default")}
         </li>

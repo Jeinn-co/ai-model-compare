@@ -1,6 +1,6 @@
 import type { TimelineMetric, TimelineRow } from "./timeline-data"
 
-const COLORS = ["#d97757", "#10a37f", "#3186ff", "#9553ff", "#18181b", "#dc2626", "#0891b2", "#b45309"]
+const COLORS = ["#d97757", "#10a37f", "#3186ff", "#9553ff", "var(--brand-grok)", "#dc2626", "#0891b2", "#b45309"]
 const finite = (value: number | null): value is number => value !== null && Number.isFinite(value)
 
 export function timelineValue(row: TimelineRow, metric: TimelineMetric) {

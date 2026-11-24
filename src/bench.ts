@@ -50,9 +50,9 @@ export const PROVIDERS: readonly {
   { id: "claude", name: "Claude Code", creator: "Anthropic", color: "#d97757" },
   { id: "codex", name: "Codex", creator: "OpenAI", color: "#10a37f" },
   { id: "gemini", name: "Gemini", creator: "Google DeepMind", color: "#3186ff" },
-  { id: "grok", name: "Grok", creator: "xAI", color: "#000000" },
+  { id: "grok", name: "Grok", creator: "xAI", color: "var(--brand-grok)" },
   { id: "muse", name: "Muse", creator: "Meta", color: "#9553ff" },
-  { id: "cursor", name: "Cursor", creator: "Cursor", color: "#475569" },
+  { id: "cursor", name: "Cursor", creator: "Cursor", color: "var(--brand-cursor)" },
 ]
 
 export function compareCreators(a: string, b: string) {
@@ -156,26 +156,22 @@ export function previousGenerations(models: readonly string[]) {
 // One hue per CLI (its chip colour), one shade per line within it: darkest for the
 // flagship line, lightest for the small one. A colour tells you the CLI at a glance.
 const LINE_COLOR: Record<string, string> = {
-  Fable: "#a8492a", Opus: "#d97757", Sonnet: "#eaa284",
-  Astra: "#0a6e56", Sol: "#10a37f", Terra: "#45c39f", Luna: "#93dcc4",
-  Grok: "#000000", "Grok Build": "#6b6b6b",
+  Fable: "var(--brand-fable)", Opus: "#d97757", Sonnet: "#eaa284",
+  Astra: "var(--brand-astra)", Sol: "#10a37f", Terra: "#45c39f", Luna: "#93dcc4",
+  Grok: "var(--brand-grok)", "Grok Build": "var(--brand-grok-build)",
   "Muse Spark": "#9553ff", "Muse Glimmer": "#c3a3ff",
-  "Gemini Carbon": "#0b3a8c", "Gemini Argon": "#1554c7", "Gemini Neon": "#1c65d8", "Gemini Hydrogen": "#2475e8", "Gemini Pro Preview": "#1f6ae6", "Gemini Flash": "#3186ff", "Gemini Flash-Lite": "#8dbcff",
-  Composer: "#475569",
+  "Gemini Carbon": "var(--brand-gemini-carbon)", "Gemini Argon": "var(--brand-gemini-argon)", "Gemini Neon": "#1c65d8", "Gemini Hydrogen": "#2475e8", "Gemini Pro Preview": "#1f6ae6", "Gemini Flash": "#3186ff", "Gemini Flash-Lite": "#8dbcff",
+  Composer: "var(--brand-cursor)",
 }
 
-// Share of white mixed in per step behind the newest version of a line: the older, the
-// paler, so faded lines still read as their CLI's colour.
+// Share of the chart surface mixed in per step behind the newest version of a line:
+// older models recede in both light and dark themes while keeping their CLI's hue.
 const FADE = [0, 0.35, 0.55, 0.7, 0.8]
 
-function fade(hex: string, behind: number) {
+function fade(color: string, behind: number) {
   const t = FADE[Math.min(Math.max(behind, 0), FADE.length - 1)]
-  if (!t) return hex
-  const channel = (i: number) => {
-    const value = parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16)
-    return Math.round(value + (255 - value) * t).toString(16).padStart(2, "0")
-  }
-  return `#${channel(0)}${channel(1)}${channel(2)}`
+  if (!t) return color
+  return `color-mix(in srgb, ${color} ${Math.round((1 - t) * 100)}%, var(--surface))`
 }
 
 export function seriesColor(model: string, provider: ProviderId, behind = 0) {

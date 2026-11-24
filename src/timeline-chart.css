@@ -29,11 +29,11 @@
 
 /* Hover guides stay quiet: light slate lines, the nearest value one step darker. */
 .timeline-guide-active {
-  color: #94a3b8;
+  color: var(--timeline-guide-active);
 }
 
 .timeline-guide-muted {
-  color: #cbd5e1;
+  color: var(--timeline-guide-muted);
 }
 
 .timeline-tick.timeline-guide-active,
@@ -47,19 +47,19 @@
   font-weight: 400;
 }
 
-/* Hover labels: regular weight, dark slate rather than pure black. */
+/* Hover labels: regular weight, slate rather than pure black/white. */
 .timeline-guide-active .timeline-value-label {
-  fill: #334155;
+  fill: var(--timeline-label);
 }
 
 .timeline-axis-value-bg {
-  fill: var(--paper);
+  fill: var(--surface);
   stroke: currentColor;
   stroke-width: 0.75;
 }
 
 .timeline-active-point {
-  fill: var(--paper);
+  fill: var(--surface);
   stroke: currentColor;
   stroke-width: 2;
 }
@@ -104,7 +104,7 @@
 
 .timeline-score {
   fill: currentColor;
-  stroke: var(--paper);
+  stroke: var(--surface);
   stroke-width: 1;
 }
 
@@ -115,8 +115,8 @@
 }
 
 .timeline-focus-label {
-  fill: #334155;
-  stroke: var(--paper);
+  fill: var(--timeline-label);
+  stroke: var(--surface);
   stroke-width: 4;
   paint-order: stroke fill;
   font-size: 13px;
@@ -125,7 +125,7 @@
 
 .timeline-model-label {
   fill: currentColor;
-  stroke: var(--paper);
+  stroke: var(--surface);
   stroke-width: 3;
   paint-order: stroke fill;
   font-size: 11px;
@@ -189,8 +189,8 @@
   padding: 6px;
   border: 1px solid var(--line);
   border-radius: 4px;
-  background: var(--paper);
-  box-shadow: 0 8px 24px rgb(23 35 46 / 12%);
+  background: var(--surface);
+  box-shadow: var(--shadow-menu);
   font-size: 12px;
 }
 

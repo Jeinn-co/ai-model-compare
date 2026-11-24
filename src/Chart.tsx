@@ -166,7 +166,7 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
       <title id="chart-desc">
         {t("chart_description", { score: scoreName, axis: axisLabel })}
       </title>
-      <rect x={pad.l} y={pad.t} width={plotW} height={plotH} fill="#ffffff" />
+      <rect x={pad.l} y={pad.t} width={plotW} height={plotH} fill="var(--surface)" />
       {yTicks.map((tick) => (
         <g key={`y-${tick}`}>
           <line
@@ -174,7 +174,7 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
             x2={pad.l + plotW}
             y1={yOf(tick)}
             y2={yOf(tick)}
-            stroke="#d5e0e7"
+            stroke="var(--chart-grid)"
           />
           <text
             x={pad.l - 10}
@@ -194,7 +194,7 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
             x2={xOf(tick)}
             y1={pad.t}
             y2={pad.t + plotH}
-            stroke="#e7eef2"
+            stroke="var(--chart-grid-soft)"
           />
           <text
             x={xOf(tick)}
@@ -280,9 +280,9 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
                     className="point"
                     // Both: ring plus a small centre dot inside the regular dot's footprint.
                     r={apiDefault && daily ? radius - 3.5 : radius}
-                    fill={apiDefault && !daily ? "#ffffff" : color}
+                    fill={apiDefault && !daily ? "var(--surface)" : color}
                     fillOpacity={hot || emphasis === null ? 1 : 0.45}
-                    stroke={apiDefault && !daily ? color : apiDefault ? "none" : "#ffffff"}
+                    stroke={apiDefault && !daily ? color : apiDefault ? "none" : "var(--surface)"}
                     strokeWidth={2.5}
                   />
                 </g>
@@ -295,7 +295,7 @@ export default function Chart({ t, rows: visibleRows, previous, unit, scoreName,
                 textAnchor={label.anchor}
                 fill={label.color}
                 className="model-label"
-                stroke="#ffffff"
+                stroke="var(--surface)"
                 strokeWidth="4"
                 paintOrder="stroke fill"
               >
