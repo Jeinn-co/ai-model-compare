@@ -2,19 +2,19 @@
   "daily": [
     {
       "provider": "claude",
-      "model": "Opus 5.5",
+      "model": "Sonnet 5.5",
       "effort": "high"
     },
     {
       "provider": "codex",
       "model": "GPT-6.2 Sol",
       "label": "GPT-6.2-Sol",
-      "effort": "high"
+      "effort": "medium"
     },
     {
       "provider": "gemini",
-      "model": "Gemini 4 Hydrogen",
-      "effort": "high"
+      "model": "Gemini 4 Neon",
+      "effort": "low"
     }
   ],
   "roles": {
