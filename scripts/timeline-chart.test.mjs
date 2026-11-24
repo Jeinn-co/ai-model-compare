@@ -8,10 +8,18 @@ import { renderToStaticMarkup } from "react-dom/server"
 import ts from "typescript"
 
 const require = createRequire(import.meta.url)
-const retirementScope = { exports: {} }
-runInNewContext(ts.transpileModule(await readFile(new URL("../src/model-retirements.ts", import.meta.url), "utf8"), {
-  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
-}).outputText, { exports: retirementScope.exports })
+async function loadStandaloneModule(name) {
+  const source = await readFile(new URL(`../src/${name}.ts`, import.meta.url), "utf8")
+  const scope = { exports: {} }
+  const { outputText } = ts.transpileModule(source, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
+  })
+  runInNewContext(outputText, scope)
+  return scope.exports
+}
+
+const retirements = await loadStandaloneModule("model-retirements")
+const chartUtils = await loadStandaloneModule("timeline-chart-utils")
 const source = await readFile(new URL("../src/TimelineChart.tsx", import.meta.url), "utf8")
 const output = ts.transpileModule(source, { compilerOptions: {
   module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2020,
@@ -20,10 +28,12 @@ const scope = { exports: {} }
 runInNewContext(output, { exports: scope.exports, require: (id) => {
   if (id.endsWith(".css")) return {}
   if (id === "./bench") return { niceCeil: (value) => Math.ceil(value), tickValues: (low, high) => [low, high] }
-  if (id === "./model-retirements") return retirementScope.exports
+  if (id === "./model-retirements") return retirements
+  if (id === "./timeline-chart-utils") return chartUtils
   return require(id)
 } })
-const { default: TimelineChart, timelineValue, nearestTimelinePoint, timelineGuides } = scope.exports
+const { default: TimelineChart } = scope.exports
+const { timelineValue, nearestTimelinePoint, timelineGuides } = chartUtils
 const row = { id: "example", name: "Example model", provider: "Example", releasedAt: "2026-11-12",
   eci: 150, eciLow: 148, eciHigh: 152, inputPrice: 2, outputPrice: 10 }
 

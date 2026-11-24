@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
-import TimelineChart, { timelineColor } from "./TimelineChart"
+import TimelineChart from "./TimelineChart"
+import { timelineColor } from "./timeline-chart-utils"
 import { compareCreators, modelLine, modelLineRank } from "./bench"
 import { modelRetirement, RETIREMENTS_CHECKED_AT } from "./model-retirements"
 import type { Language } from "./language"
