@@ -144,6 +144,7 @@ export const SOURCES: readonly { name: Text; url: string }[] = [
   { name: textPair("guidance_anthropic_model_selection"), url: "https://www.anthropic.com/claude-fable-and-mythos-5-2" },
   { name: textPair("guidance_claude_pricing"), url: "https://platform.claude.com/docs/en/about-claude/pricing" },
   { name: textPair("guidance_claude_effort"), url: "https://platform.claude.com/docs/en/build-with-claude/effort" },
+  { name: textPair("guidance_openai_responses_api"), url: "https://developers.openai.com/api/reference/resources/responses/methods/create" },
   { name: textPair("guidance_codex_models"), url: "https://learn.chatgpt.com/docs/models" },
   { name: textPair("guidance_gpt_6_2_astra"), url: "https://developers.openai.com/api/docs/models/gpt-6.2-astra" },
   { name: textPair("guidance_gpt_6_astra"), url: "https://developers.openai.com/api/docs/models/gpt-6-astra" },
