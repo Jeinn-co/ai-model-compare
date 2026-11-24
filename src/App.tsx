@@ -298,18 +298,6 @@ export default function App() {
         <div className="title-row">
           <h1>AI Model Compare <span className="version">v{APP_VERSION}</span></h1>
           <div className="toolbar">
-            <button
-              type="button"
-              className="language"
-              aria-label={t("language_aria")}
-              onClick={() => setLanguage(language === "zh" ? "en" : "zh")}
-            >
-              <svg className="toolbar-icon" viewBox="0 0 16 16" aria-hidden="true">
-                <circle cx="8" cy="8" r="6.25" />
-                <path d="M1.75 8h12.5M8 1.75c1.8 1.9 2.6 3.9 2.6 6.25S9.8 12.35 8 14.25C6.2 12.35 5.4 10.35 5.4 8S6.2 3.65 8 1.75" />
-              </svg>
-              <span>{t("language_target")}</span>
-            </button>
             <label className="theme-select">
               <svg className="toolbar-icon" viewBox="0 0 16 16" aria-hidden="true">
                 <circle cx="8" cy="8" r="6.25" />
@@ -331,6 +319,18 @@ export default function App() {
                 <path d="M2 3.75l3 3 3-3" />
               </svg>
             </label>
+            <button
+              type="button"
+              className="language"
+              aria-label={t("language_aria")}
+              onClick={() => setLanguage(language === "zh" ? "en" : "zh")}
+            >
+              <svg className="toolbar-icon" viewBox="0 0 16 16" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.25" />
+                <path d="M1.75 8h12.5M8 1.75c1.8 1.9 2.6 3.9 2.6 6.25S9.8 12.35 8 14.25C6.2 12.35 5.4 10.35 5.4 8S6.2 3.65 8 1.75" />
+              </svg>
+              <span>{t("language_target")}</span>
+            </button>
           </div>
         </div>
         <p className="deck">
