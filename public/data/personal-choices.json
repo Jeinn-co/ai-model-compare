@@ -2,8 +2,8 @@
   "daily": [
     {
       "provider": "claude",
-      "model": "Sonnet 5.5",
-      "effort": "high"
+      "model": "Opus 5.5",
+      "effort": "medium"
     },
     {
       "provider": "codex",
@@ -14,7 +14,7 @@
     {
       "provider": "gemini",
       "model": "Gemini 4 Neon",
-      "effort": "low"
+      "effort": "medium"
     }
   ],
   "roles": {

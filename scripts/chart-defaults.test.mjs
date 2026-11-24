@@ -65,7 +65,7 @@ test("API defaults use the table's model/effort records, not personal picks or g
 
 test("regular choices remain limited to the confirmed My usage entries", () => {
   const { data } = harness()
-  for (const [model, effort] of [["Sonnet 5.5", "High"], ["GPT-6.2 Sol", "Medium"], ["Gemini 4 Neon", "Low"]]) {
+  for (const [model, effort] of [["Opus 5.5", "Medium"], ["GPT-6.2 Sol", "Medium"], ["Gemini 4 Neon", "Medium"]]) {
     assert.equal(data.isDailyChoice(model, effort), true)
     assert.equal(data.isDailyChoice(model, "Extra High"), false)
   }
@@ -75,21 +75,22 @@ test("personal effort identifiers match the benchmark's Extra High label", () =>
   const { data } = harness()
   data.DAILY_CHOICES.find(choice => choice.model === "Gemini 4 Neon").effort = "xhigh"
   assert.equal(data.isDailyChoice("Gemini 4 Neon", "Extra High"), true)
-  assert.equal(data.isDailyChoice("Gemini 4 Neon", "Low"), false)
+  assert.equal(data.isDailyChoice("Gemini 4 Neon", "Medium"), false)
 })
 
 test("regular, default and combined markers have distinct shapes on every axis in both languages", () => {
   const { data, render } = harness()
+  data.DAILY_CHOICES.find(choice => choice.model === "Opus 5.5").effort = "high"
   // GPT-6.1 Sol has a listed API default effort (medium), so it can be both markers at once.
   Object.assign(data.DAILY_CHOICES.find(choice => choice.model === "GPT-6.2 Sol"), { model: "GPT-6.1 Sol", effort: "medium" })
-  const rows = [row("Sonnet 5.5", "High", "claude"), row("Opus 5.5", "Medium", "claude"),
+  const rows = [row("Opus 5.5", "High", "claude"), row("Opus 5.5", "Medium", "claude"),
     row("GPT-6.1 Sol", "Medium", "codex"), row("GPT-6 Astra", "High", "codex")]
   for (const axis of ["score", "speed", "verbosity", "latency", "tokens", "steps"]) {
     for (const language of ["en", "zh"]) {
       const html = render(rows, axis, null, language)
       const points = [...html.matchAll(/<g([^>]*class="point-hit"[^>]*)>([\s\S]*?)<\/g>/g)]
       const point = label => points.find(p => p[1].includes(label + ":"))
-      const regular = point("Sonnet 5.5 High"), defaults = point("Opus 5.5 Medium")
+      const regular = point("Opus 5.5 High"), defaults = point("Opus 5.5 Medium")
       const both = point("GPT-6.1 Sol Medium"), ordinary = point("GPT-6 Astra High")
       assert.match(regular[2], /class="point" r="7" fill="(?!#ffffff)/)
       assert.ok(!regular[2].includes("point-default"))
@@ -108,9 +109,11 @@ test("regular, default and combined markers have distinct shapes on every axis i
 test("hovering preserves hollow and combined shapes with only modest enlargement", () => {
   const { data, render } = harness()
   const defaults = row("Opus 5.5", "Medium", "claude")
+  const daily = data.DAILY_CHOICES.find(choice => choice.model === "Opus 5.5")
+  daily.effort = "high"
   let html = render([defaults], "score", defaults.label)
   assert.match(html, /class="point" r="6.5" fill="#ffffff"/)
-  Object.assign(data.DAILY_CHOICES.find(choice => choice.model === "Sonnet 5.5"), { model: "Opus 5.5", effort: "medium" })
+  daily.effort = "medium"
   html = render([defaults], "score", defaults.label)
   assert.match(html, /class="point-default" r="10"/)
   assert.match(html, /class="point" r="8" fill="(?!#ffffff)/)
