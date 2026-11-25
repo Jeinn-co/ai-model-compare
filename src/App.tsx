@@ -26,6 +26,7 @@ import { createTranslator, initialLanguage, LANGUAGE_KEY, type Language } from "
 import { applyTheme, initialTheme, THEME_KEY, THEMES, type Theme } from "./theme"
 import Arena from "./Arena"
 import Guidance from "./Guidance"
+import { KEY_SHARE } from "./guidance-data"
 import Chart from "./Chart"
 import Legend from "./Legend"
 import Timeline from "./Timeline"
@@ -357,6 +358,24 @@ export default function App() {
       </div>
 
       {compareStarted ? <div hidden={view !== "compare"}>
+      <section className="key-share" aria-labelledby="key-share-title">
+        <div className="key-share-head">
+          <h2 id="key-share-title">{t("key_share_title")}</h2>
+          <span className="key-share-tag">{t("key_share_tag")}</span>
+        </div>
+        <ul className="key-share-list">
+          {KEY_SHARE.map((line) => {
+            const text = line[language === "zh" ? 1 : 0]
+            const cut = text.search(/[:：]/) + 1
+            return (
+              <li key={line[0]}>
+                {cut ? <><strong>{text.slice(0, cut)}</strong>{text.slice(cut)}</> : text}
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+
       <div className="controls">
         <div className="control">
           <span className="control-label" id="source-label">

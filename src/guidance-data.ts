@@ -101,6 +101,12 @@ export const PROMOS: readonly Line[] = [
   textPair("promo_openai_black_friday"),
 ]
 
+export const KEY_SHARE: readonly Line[] = [
+  textPair("key_share_what"),
+  textPair("key_share_why"),
+  textPair("key_share_tip"),
+]
+
 const NOT_STATED: Text = textPair("guidance_not_stated")
 // OpenAI gives no default for these; GPT-6.1 Sol, GPT-6 Sol and GPT-6 Luna default to medium.
 export const ESTIMATED_MEDIUM: Text = textPair("guidance_not_given_estimated_medium")
