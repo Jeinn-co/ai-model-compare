@@ -1,6 +1,7 @@
 import { textPair } from "./language"
 import type { ProviderId } from "./bench"
 import catalog from "../public/data/gemini-models.json"
+// Offline fallback only; SSOT is the Notion config page (4118e936085b810891bdc1a77dd59b63), synced on deploy.
 import personal from "../public/data/personal-choices.json"
 
 // shortcut: typed in by hand from each vendor's own pages (no feed publishes these);
