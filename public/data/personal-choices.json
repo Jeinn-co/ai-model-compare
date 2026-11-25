@@ -3,7 +3,7 @@
     {
       "provider": "claude",
       "model": "Opus 5.5",
-      "effort": "medium"
+      "effort": "high"
     },
     {
       "provider": "codex",
