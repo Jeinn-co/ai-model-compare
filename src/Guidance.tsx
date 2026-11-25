@@ -2,7 +2,7 @@ import { useState } from "react"
 import { providerById, type ProviderId, type Row } from "./bench"
 import type { Translate } from "./language"
 
-import { GUIDANCE, OPUS_LEVELS, EFFORT, ESTIMATED_MEDIUM, PRICES, SOURCES, SELECTION_POLICY, type Text, type Line, type Price } from "./guidance-data"
+import { GUIDANCE, OPUS_LEVELS, EFFORT, PROMOS, ESTIMATED_MEDIUM, PRICES, SOURCES, SELECTION_POLICY, type Text, type Line, type Price } from "./guidance-data"
 
 function Swatch({ provider }: { provider: ProviderId }) {
   return <span className="swatch" style={{ background: providerById(provider).color }} />
@@ -176,12 +176,18 @@ export default function Guidance({ t, aaRows }: { t: Translate; aaRows: readonly
         </table>
       </div>
 
+      <div className="guidance-card" style={{ marginTop: "1rem" }}>
+        <h3 className="guidance-label">{t("promotions_and_black_friday")}</h3>
+        <Rows lines={PROMOS} t={t} />
+      </div>
+
       <p className="readout">
         <span>{t("standard_api_prices_in_us_dollars_not_subscription_quota")}</span>
         <span>
           {t("aa_score_artificial_analysis_intelligence_index_at_high_effort")}
         </span>
         <span>{t("guidance_estimated_effort_footnote")}</span>
+        <span>{t("antigravity_pro_footnote")}</span>
       </p>
       <details className="guidance-sources">
         <summary>{t("sources")}</summary>

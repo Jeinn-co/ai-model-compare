@@ -23,6 +23,23 @@ const promotion = (model: (typeof catalog.models)[number]): Text => {
   return textPair(halfPrice ? "promotion_half" : "promotion_rates", { rates, date: price.through })
 }
 
+const antigravityNote = (model: (typeof catalog.models)[number]): Text => {
+  const ag = model.antigravity
+  if (!ag?.plans?.length) return ["", ""]
+  const shortPlan = (plan: string) => plan.replace(/^Google AI /, "")
+  const plans = ag.plans.map(shortPlan).join(" / ")
+  const base = textPair("antigravity_plans", { plans })
+  if (!("removedOn" in ag) || !ag.removedOn) return base
+  const removal = textPair("antigravity_removed", { date: ag.removedOn })
+  return [`${base[0]}; ${removal[0]}`, `${base[1]}；${removal[1]}`]
+}
+
+const joinNotes = (...parts: Text[]): Text | undefined => {
+  const en = parts.map((p) => p[0].trim()).filter(Boolean).join(" · ")
+  const zh = parts.map((p) => p[1].trim()).filter(Boolean).join(" · ")
+  return en || zh ? [en, zh] : undefined
+}
+
 // One line per model, so each reads on its own.
 export const GUIDANCE: readonly { provider: ProviderId; lines: readonly Line[] }[] = [
   {
@@ -78,6 +95,12 @@ export const EFFORT: readonly Line[] = [
   textPair("guidance_effort_names_do_not_mean_the_same_amount_of_thinking"),
 ]
 
+export const PROMOS: readonly Line[] = [
+  [...textPair("promo_google_black_friday"), true],
+  textPair("promo_claude_black_friday"),
+  textPair("promo_openai_black_friday"),
+]
+
 const NOT_STATED: Text = textPair("guidance_not_stated")
 // OpenAI gives no default for these; GPT-6.1 Sol, GPT-6 Sol and GPT-6 Luna default to medium.
 export const ESTIMATED_MEDIUM: Text = textPair("guidance_not_given_estimated_medium")
@@ -108,13 +131,13 @@ export const PRICES: readonly Price[] = [
   { provider: "codex", model: "GPT-6 Luna", input: "$0.10", output: "$0.50", effort: "medium" },
   ...catalog.models.map((model): Price => {
     const price = model.pricePerMillionTokens
-    const promo = promotion(model)
+    const note = joinNotes(promotion(model), antigravityNote(model))
     return {
       provider: "gemini", model: model.model,
       input: price ? usd(price.input) : "—",
       output: price ? usd(price.outputIncludingThinking) : "—",
       effort: model.defaultEffort ?? NOT_STATED,
-      note: promo[0] ? [promo[0].trim(), promo[1].trim()] : undefined,
+      note,
     }
   }),
 ]
@@ -161,6 +184,7 @@ export const SOURCES: readonly { name: Text; url: string }[] = [
   { name: textPair("guidance_antigravity_settings"), url: "https://antigravity.google/docs/settings/" },
   { name: textPair("guidance_carbon_access_in_antigravity"), url: "https://antigravity.google/blog/gemini-4-carbon-in-google-antigravity/" },
   { name: textPair("guidance_antigravity_model_availability"), url: "https://antigravity.google/docs/models" },
+  { name: textPair("guidance_antigravity_plans"), url: "https://antigravity.google/docs/plans" },
 ]
 
 
