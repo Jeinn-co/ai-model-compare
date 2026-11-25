@@ -159,5 +159,6 @@
   "sort_score": "AA 分數",
   "sort_ascending": "由低到高",
   "sort_descending": "由高到低",
+  "my_regular_choice_note": "平常用有些任務本身就很有難度，不是都要送出去給 subagent，主力常用不能用太笨的；若覺得被動或容易停下來發呆，就是 effort 要升了，不夠再升 model。",
   "gemini_policy": "我的 Gemini 用法：日常工作用 {{daily}}。安全工作用 {{security}}，以安全性與正確性優先。因成本排除 {{excluded}}。"
 }

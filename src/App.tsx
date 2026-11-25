@@ -475,6 +475,8 @@ export default function App() {
         </li>
       </ul>
 
+      <p className="arena-note">{t("my_regular_choice_note")}</p>
+
       <p className="readout">
         {focus ? (
           <>

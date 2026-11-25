@@ -159,5 +159,6 @@
   "sort_score": "AA score",
   "sort_ascending": "low to high",
   "sort_descending": "high to low",
+  "my_regular_choice_note": "Not every daily task gets delegated to a subagent—plenty of routine work is already hard, so daily drivers cannot be too weak. If a model feels passive or keeps stalling mid-task, raise effort first; if that is still not enough, step up the model.",
   "gemini_policy": "My Gemini choices: {{daily}} for routine work; {{security}} for security, prioritizing safety and correctness. {{excluded}} is excluded because of cost."
 }

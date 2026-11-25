@@ -9,7 +9,7 @@
       "provider": "codex",
       "model": "GPT-6.2 Sol",
       "label": "GPT-6.2-Sol",
-      "effort": "medium"
+      "effort": "high"
     },
     {
       "provider": "gemini",
