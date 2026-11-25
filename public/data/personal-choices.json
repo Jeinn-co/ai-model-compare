@@ -13,8 +13,8 @@
     },
     {
       "provider": "gemini",
-      "model": "Gemini 4 Neon",
-      "effort": "medium"
+      "model": "Gemini 4 Hydrogen",
+      "effort": "high"
     }
   ],
   "roles": {
