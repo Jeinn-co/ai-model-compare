@@ -26,23 +26,24 @@ test("Notion model IDs become the names the report and page already use", () => 
 })
 
 test("roles come only from the s-agent block and keep their names", () => {
-  const next = buildPersonal([agent, usage], previous)
-  assert.deepEqual(next.roles.planner, { ...previous.roles.planner,
+  const withLegacy = structuredClone(agent)
+  withLegacy.roles.planner = { codex: pick("gpt-6.2-sol"), claude: pick("claude-opus-5-5"), gemini: pick("gemini-4-neon") }
+  const next = buildPersonal([withLegacy, usage], previous)
+  assert.deepEqual(next.roles.reviewer, { ...previous.roles.reviewer,
     models: { anth: ["Opus 5.5", "high"], oai: ["GPT-6.2-Sol", "high"], gemini: ["Gemini 4 Argon", "high"] } })
   assert.deepEqual(next.roles.security.models.gemini, ["Gemini 4 Carbon", "high"])
+  assert.deepEqual(Object.keys(next.roles), ["reviewer", "security"])
   assert.deepEqual(next.daily, usage.daily)
   assert.deepEqual(Object.keys(next), ["daily", "roles", "excludedGeminiPicks"])
 })
 
 test("a Gemini role shows its configured effort with no optional range", () => {
   const hydrogen = structuredClone(agent)
-  hydrogen.roles.planner.gemini = pick("gemini-4-hydrogen")
-  hydrogen.roles.executor.gemini = pick("gemini-4-hydrogen", "medium")
+  hydrogen.roles.reviewer.gemini = pick("gemini-4-hydrogen", "medium")
   const next = buildPersonal([hydrogen, usage], previous)
-  assert.deepEqual(next.roles.planner.models.gemini, ["Gemini 4 Hydrogen", "high"])
-  assert.deepEqual(next.roles.executor.models.gemini, ["Gemini 4 Hydrogen", "medium"])
+  assert.deepEqual(next.roles.reviewer.models.gemini, ["Gemini 4 Hydrogen", "medium"])
   assert.deepEqual(next.roles.security.models.gemini, ["Gemini 4 Carbon", "high"])
-  assert.deepEqual(next.roles.planner.models.oai, ["GPT-6.2-Sol", "high"])
+  assert.deepEqual(next.roles.reviewer.models.oai, ["GPT-6.2-Sol", "high"])
 })
 
 test("a half-edited page is rejected as a whole", () => {

@@ -18,60 +18,6 @@
     }
   ],
   "roles": {
-    "planner": {
-      "role": "Planner",
-      "description": "planner_description",
-      "models": {
-        "anth": [
-          "Opus 5.5",
-          "high"
-        ],
-        "oai": [
-          "GPT-6.2-Sol",
-          "high"
-        ],
-        "gemini": [
-          "Gemini 4 Neon",
-          "high"
-        ]
-      }
-    },
-    "designer": {
-      "role": "Designer",
-      "description": "designer_description",
-      "models": {
-        "anth": [
-          "Opus 5.5",
-          "high"
-        ],
-        "oai": [
-          "GPT-6.1-Terra",
-          "high"
-        ],
-        "gemini": [
-          "Gemini 4 Hydrogen",
-          "high"
-        ]
-      }
-    },
-    "executor": {
-      "role": "Executor",
-      "description": "executor_description",
-      "models": {
-        "anth": [
-          "Sonnet 5.5",
-          "medium"
-        ],
-        "oai": [
-          "GPT-6.2-Sol",
-          "medium"
-        ],
-        "gemini": [
-          "Gemini 4 Hydrogen",
-          "medium"
-        ]
-      }
-    },
     "reviewer": {
       "role": "Reviewer",
       "description": "reviewer_description",
@@ -86,24 +32,6 @@
         ],
         "gemini": [
           "Gemini 4 Neon",
-          "high"
-        ]
-      }
-    },
-    "devops": {
-      "role": "DevOps",
-      "description": "devops_description",
-      "models": {
-        "anth": [
-          "Opus 5.5",
-          "high"
-        ],
-        "oai": [
-          "GPT-6.2-Sol",
-          "high"
-        ],
-        "gemini": [
-          "Gemini 4 Hydrogen",
           "high"
         ]
       }
